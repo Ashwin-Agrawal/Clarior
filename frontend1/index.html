@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- 🔒 Security Meta Tags -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.razorpay.com https://www.googleapis.com; frame-src https://checkout.razorpay.com; form-action 'self';" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="description" content="Clarior - Mentorship Platform for Students" />
+    <meta name="theme-color" content="#3525cd" />
+    
+    <!-- Preconnect for Performance & Security -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+    <title>Clarior - Your Mentorship Journey</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- 🔒 Only load Razorpay from official CDN -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js" integrity="sha384-..." crossorigin="anonymous"></script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: rgb(var(--bg));
+  color: rgb(var(--fg));
+}
+
+:root {
+  color-scheme: light;
+
+  /* neutrals */
+  --bg: 241 247 255; /* trust blue background */
+  --surface: 255 255 255;
+  --surface-2: 248 250 252;
+  --border: 205 224 247;
+  --fg: 16 33 59;
+  --muted: 86 113 152;
+
+  /* brand */
+  --primary: 37 99 235; /* blue-600 */
+  --primary-fg: 255 255 255;
+  --accent: 59 130 246; /* blue-500 */
+  --accent-fg: 255 255 255;
+
+  /* states */
+  --success: 16 185 129; /* emerald-500 */
+  --warning: 245 158 11; /* amber-500 */
+  --danger: 239 68 68; /* red-500 */
+
+  /* hero gradient - light mode: subtle, soft blue */
+  --hero-gradient: radial-gradient(
+    circle at top left,
+    rgba(59, 91, 219, 0.08),
+    transparent 45%
+  ), radial-gradient(
+    circle at top right,
+    rgba(14, 165, 233, 0.06),
+    transparent 50%
+  );
+  
+  /* hero blur accents - light mode */
+  --hero-blur-left: rgba(59, 91, 219, 0.08);
+  --hero-blur-right: rgba(14, 165, 233, 0.06);
+
+  /* accent badge backgrounds - light mode */
+  --badge-primary: rgba(59, 91, 219, 0.12);
+  --badge-accent: rgba(14, 165, 233, 0.12);
+  --badge-warning: rgba(245, 158, 11, 0.12);
+
+  /* hero card shadow - light mode */
+  --shadow-hero: 0 20px 70px rgba(59, 91, 219, 0.12);
+}
+
+html.dark {
+  color-scheme: dark;
+
+  --bg: 9 17 31;
+  --surface: 15 29 51;
+  --surface-2: 20 36 63;
+  --border: 35 57 92;
+  --fg: 223 234 252;
+  --muted: 149 176 220;
+  --primary: 96 165 250;
+  --accent: 56 189 248;
+
+  /* hero gradient - dark mode: richer, deeper blue */
+  --hero-gradient: radial-gradient(
+    circle at top left,
+    rgba(96, 165, 250, 0.12),
+    transparent 40%
+  ), radial-gradient(
+    circle at top right,
+    rgba(56, 189, 248, 0.1),
+    transparent 45%
+  );
+
+  /* hero blur accents - dark mode */
+  --hero-blur-left: rgba(96, 165, 250, 0.1);
+  --hero-blur-right: rgba(56, 189, 248, 0.08);
+
+  /* accent badge backgrounds - dark mode */
+  --badge-primary: rgba(96, 165, 250, 0.15);
+  --badge-accent: rgba(56, 189, 248, 0.15);
+  --badge-warning: rgba(245, 158, 11, 0.15);
+
+  /* hero card shadow - dark mode */
+  --shadow-hero: 0 20px 70px rgba(96, 165, 250, 0.1);
+}
+
+/* Smooth theme transition */
+html.theme-animate * {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity, transform;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+button {
+  background-color: rgb(var(--primary));
+  color: rgb(var(--primary-fg));
+  border-color: rgb(var(--primary));
+}
+
+button:hover {
+  opacity: 0.95;
+}
+
+.brand-text {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 23px;
+  letter-spacing: 0.5px;
+  color: #0e1b2c;
+}
