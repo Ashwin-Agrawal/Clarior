@@ -15,33 +15,34 @@ const withdrawRoutes = require("./routes/withdraw.routes");
 const googleRoutes = require("./routes/google.routes");
 const globalErrorHandler = require("./middleware/errorHandler.middleware");
 
-const paymentRoutes = require("./routes/payments.routes"); // use if needed
+const paymentRoutes = require("./routes/payments.routes");
 
 const app = express();
 
 // 🔐 Security
 app.use(helmet());
 
-// 🔒 Additional Security Headers
+// 🔒 Additional Security Headers + FIXED CSP
 app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("X-XSS-Protection", "1; mode=block");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
-  
-  // 🔒 Content Security Policy
+
+  // ✅ FIXED CSP (IMPORTANT)
   res.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.razorpay.com https://www.googleapis.com; frame-src https://checkout.razorpay.com;"
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.razorpay.com https://www.googleapis.com https://clarior-frontend.vercel.app https://clarior-backend.onrender.com; frame-src https://checkout.razorpay.com;"
   );
+
   next();
 });
 
 // 🛡️ RATE LIMITING
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: {
     success: false,
     message: "Too many requests from this IP, please try again later."
@@ -50,10 +51,9 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-// 🛡️ Stricter rate limiting for auth endpoints
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 login attempts per 15 minutes
+  windowMs: 15 * 60 * 1000,
+  max: 5,
   message: {
     success: false,
     message: "Too many login attempts. Please try again later."
@@ -61,10 +61,9 @@ const authLimiter = rateLimit({
   skipSuccessfulRequests: true,
 });
 
-// 🛡️ Stricter rate limiting for payment endpoints
 const paymentLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10, // limit each IP to 10 payment attempts per hour
+  windowMs: 60 * 60 * 1000,
+  max: 10,
   message: {
     success: false,
     message: "Too many payment attempts. Please try again later."
@@ -76,11 +75,10 @@ app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
 app.use("/api/payment", paymentLimiter);
 
-// 🌐 CORS
+// 🌐 CORS (FIXED)
 app.use(
   cors({
     origin: (origin, callback) => {
-      // allow non-browser clients / same-origin (e.g. curl, server-to-server)
       if (!origin) return callback(null, true);
 
       const allowed = new Set(
@@ -90,15 +88,14 @@ app.use(
           .filter(Boolean)
       );
 
-      // Only add localhost origins in development
+      // ✅ YOUR FRONTEND
+      allowed.add("https://clarior-frontend.vercel.app");
+
+      // Dev localhost
       if (process.env.NODE_ENV !== "production") {
         allowed.add("http://localhost:3000");
         allowed.add("http://localhost:5173");
-        allowed.add("http://localhost:5174");
-        allowed.add("http://localhost:5175");
         allowed.add("http://127.0.0.1:5173");
-        allowed.add("http://127.0.0.1:5174");
-        allowed.add("http://127.0.0.1:5175");
       }
 
       if (allowed.has(origin)) return callback(null, true);
@@ -108,9 +105,8 @@ app.use(
   })
 );
 
-
 // 🧠 Body Parser
-app.use(express.json({ limit: "1mb" })); // 🔒 Prevent large payloads
+app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ limit: "1mb", extended: true }));
 
 // 🍪 Cookies
@@ -125,7 +121,6 @@ app.get("/", (req, res) => {
 });
 
 // 🚀 ROUTES
-// 🧪 Test routes only available in development
 if (process.env.NODE_ENV !== "production") {
   app.use("/api/test", testRoutes);
 }
@@ -140,9 +135,9 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/withdraw", withdrawRoutes);
 app.use("/api/google", googleRoutes);
 
-app.use("/api/payment", paymentRoutes); // optional
+app.use("/api/payment", paymentRoutes);
 
-// ❗ 404 LAST
+// ❗ 404
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -150,7 +145,7 @@ app.use((req, res) => {
   });
 });
 
-// 🔥 GLOBAL ERROR HANDLER (MUST BE LAST)
+// 🔥 ERROR HANDLER
 app.use(globalErrorHandler);
 
 module.exports = app;
