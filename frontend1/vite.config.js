@@ -18,7 +18,7 @@ export default defineConfig({
     // 🔒 Security: disable source maps in production to prevent code exposure
     sourcemap: false,
     // 🔒 Security: minify and optimize
-    minify: 'terser',
+    minify: true,
   },
   define: {
     // 🔒 Security: remove debug code in production
