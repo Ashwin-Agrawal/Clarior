@@ -1,7 +1,10 @@
 import axios from "axios";
 
+const apiBaseUrl =
+  (import.meta.env.VITE_API_URL || "https://clarior-backend.onrender.com/api").replace(/\/$/, "");
+
 const api = axios.create({
-  baseURL: "https://clarior-backend.onrender.com/api",
+  baseURL: apiBaseUrl,
   withCredentials: true, // 🔥 ENABLE COOKIES
   timeout: 30000, // 🔒 Add request timeout
 });
