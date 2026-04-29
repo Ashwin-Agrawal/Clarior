@@ -12,6 +12,16 @@ const ERROR_MESSAGES = {
   USER_NOT_FOUND: "User not found",
 };
 
+const isProd = process.env.NODE_ENV === "production";
+const authCookieOptions = {
+  httpOnly: true,
+  secure: isProd,
+  // Cross-site frontend (Vercel) + backend (Render) requires SameSite=None in prod.
+  sameSite: isProd ? "none" : "lax",
+  maxAge: 24 * 60 * 60 * 1000,
+  path: "/",
+};
+
 // 🔐 REGISTER
 exports.register = async (req, res) => {      
   try {
@@ -49,13 +59,7 @@ exports.login = async (req, res) => {
     const { token, user } = await AuthService.loginUser(email, password);
 
     // ✅ SET HTTP-ONLY COOKIE
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict", // 🔒 Changed from "lax" to "strict" for production
-      maxAge: 24 * 60 * 60 * 1000, // 🔒 Changed from 7 days to 1 day
-      path: "/"
-    });
+    res.cookie("token", token, authCookieOptions);
 
     return sendSuccess(res, "Login successful", { user });
   } catch (error) {
@@ -66,7 +70,8 @@ exports.login = async (req, res) => {
 // 🔐 LOGOUT
 exports.logout = async (req, res) => {
   try {
-    res.clearCookie("token"); // 🔥 cookie remove
+    // Clear with same options to ensure browser removes cookie reliably.
+    res.clearCookie("token", authCookieOptions);
     return sendSuccess(res, "Logged out successfully");
   } catch (error) {
     return sendError(res, error.message);
