@@ -19,6 +19,9 @@ const paymentRoutes = require("./routes/payments.routes");
 
 const app = express();
 
+// 🛡️ TRUST PROXY (Required for Render/Vercel to handle rate limiting correctly)
+app.set("trust proxy", 1);
+
 // ─── 🌐 CORS (must come BEFORE helmet & other middleware) ───
 const allowedOrigins = new Set(
   String(process.env.CORS_ORIGINS || "")
@@ -56,7 +59,7 @@ const corsOptions = {
 };
 
 // Handle preflight (OPTIONS) for ALL routes first
-app.options("*", cors(corsOptions));
+app.options("(.*)", cors(corsOptions));
 app.use(cors(corsOptions));
 
 // 🔐 Security — configured to NOT conflict with CORS
