@@ -25,10 +25,17 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // 🔒 Handle 401 Unauthorized - redirect to login
+    // 🔒 Handle 401 Unauthorized
     if (error.response?.status === 401) {
       localStorage.removeItem("user");
-      window.location.href = "/login";
+      
+      const isAuthCheck = error.config?.url?.includes("/users/me");
+      const isAuthPage = window.location.pathname === "/login" || window.location.pathname === "/register";
+      
+      // Only redirect if it's not an initial auth check and not already on auth pages
+      if (!isAuthCheck && !isAuthPage) {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }

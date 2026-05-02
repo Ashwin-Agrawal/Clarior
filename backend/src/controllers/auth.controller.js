@@ -12,10 +12,10 @@ const ERROR_MESSAGES = {
   USER_NOT_FOUND: "User not found",
 };
 
-const isProd = process.env.NODE_ENV === "production";
+const isProd = process.env.NODE_ENV === "production" || process.env.RENDER === "true" || process.env.RENDER === "1";
 const authCookieOptions = {
   httpOnly: true,
-  secure: isProd,
+  secure: isProd, // Must be true for SameSite=None
   // Cross-site frontend (Vercel) + backend (Render) requires SameSite=None in prod.
   sameSite: isProd ? "none" : "lax",
   maxAge: 24 * 60 * 60 * 1000,
