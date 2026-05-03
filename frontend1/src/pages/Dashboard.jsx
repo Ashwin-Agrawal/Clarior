@@ -178,7 +178,8 @@ function Dashboard() {
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
-  }, [user]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?._id]); // ✅ primitive dep — avoids re-firing on new object references with same data
 
   useEffect(() => {
     const interval = setInterval(() => {

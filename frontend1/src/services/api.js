@@ -22,19 +22,23 @@ api.interceptors.request.use(
 );
 
 // 🔥 RESPONSE INTERCEPTOR - Handle auth errors
+// ⚠️ IMPORTANT: We dispatch a custom event instead of using window.location.href
+// window.location.href causes a full page reload → remounts AuthContext → fetchUser fires
+// again → another 401 → another reload → infinite loop.
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // 🔒 Handle 401 Unauthorized
     if (error.response?.status === 401) {
-      localStorage.removeItem("user");
-      
       const isAuthCheck = error.config?.url?.includes("/users/me");
-      const isAuthPage = window.location.pathname === "/login" || window.location.pathname === "/register";
-      
-      // Only redirect if it's not an initial auth check and not already on auth pages
+      const isAuthPage =
+        window.location.pathname === "/login" ||
+        window.location.pathname === "/register";
+
+      // Only fire the event for real session expiry (not the initial /me check,
+      // and not when the user is already on an auth page).
       if (!isAuthCheck && !isAuthPage) {
-        window.location.href = "/login";
+        // Let AuthContext / App catch this and do a soft React Router redirect.
+        window.dispatchEvent(new CustomEvent("clarior:session-expired"));
       }
     }
     return Promise.reject(error);
