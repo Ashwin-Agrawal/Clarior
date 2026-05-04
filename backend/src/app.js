@@ -59,7 +59,7 @@ const corsOptions = {
 };
 
 // Handle preflight (OPTIONS) for ALL routes first
-app.options("(.*)", cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(cors(corsOptions));
 
 // 🔐 Security — configured to NOT conflict with CORS
