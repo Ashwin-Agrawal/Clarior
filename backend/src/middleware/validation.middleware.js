@@ -19,8 +19,8 @@ const validateRegistration = [
     .trim()
     .isLength({ min: 2, max: 50 })
     .withMessage("Name must be 2-50 characters")
-    .matches(/^[a-zA-Z\s]+$/)
-    .withMessage("Name can only contain letters and spaces"),
+    .matches(/^[a-zA-Z\s.-]+$/)
+    .withMessage("Name can only contain letters, spaces, dots, and hyphens"),
 
   body("email")
     .isEmail()

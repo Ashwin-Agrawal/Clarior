@@ -58,8 +58,7 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-// Handle preflight (OPTIONS) for ALL routes first
-app.options("*", cors(corsOptions));
+// Handle preflight (OPTIONS) for ALL routes handled by cors middleware
 app.use(cors(corsOptions));
 
 // 🔐 Security — configured to NOT conflict with CORS
@@ -78,10 +77,22 @@ app.use((req, res, next) => {
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
 
-  // ✅ FIXED CSP (IMPORTANT)
+  // ✅ DYNAMIC CSP (Environment Aware)
+  const connectSrc = [
+    "'self'",
+    "https://api.razorpay.com",
+    "https://www.googleapis.com",
+    ...allowedOrigins
+  ];
+
+  // In development, explicitly allow the backend port if not already in allowedOrigins
+  if (process.env.NODE_ENV !== "production") {
+    connectSrc.push(`http://localhost:${process.env.PORT || 3002}`);
+  }
+
   res.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.razorpay.com https://www.googleapis.com https://clarior-frontend.vercel.app https://clarior-backend.onrender.com; frame-src https://checkout.razorpay.com;"
+    `default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src ${connectSrc.join(" ")}; frame-src https://checkout.razorpay.com;`
   );
 
   next();

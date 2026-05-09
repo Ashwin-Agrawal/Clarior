@@ -8,6 +8,37 @@ import Button from "../components/ui/Button";
 
 const SESSION_SECONDS = 25 * 60;
 
+function SessionTimer({ actualStart }) {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const remaining = useMemo(() => {
+    if (!actualStart) return SESSION_SECONDS;
+    const elapsed = Math.floor((now - actualStart) / 1000);
+    return Math.max(0, SESSION_SECONDS - elapsed);
+  }, [actualStart, now]);
+
+  const remainingLabel = useMemo(() => {
+    const m = Math.floor(remaining / 60);
+    const s = remaining % 60;
+    return `${m}:${String(s).padStart(2, "0")}`;
+  }, [remaining]);
+
+  return (
+    <>
+      <div className="text-xs font-semibold text-muted">Timer (25:00)</div>
+      <div className="mt-1 text-5xl font-extrabold tabular-nums">{remainingLabel}</div>
+      <div className="mt-2 text-sm text-muted">
+        {remaining === 0 ? "Session window complete" : "Complete full duration"}
+      </div>
+    </>
+  );
+}
+
 function Session() {
   const { bookingId } = useParams();
   const navigate = useNavigate();
@@ -53,23 +84,6 @@ function Session() {
     return d;
   }, [booking?.actualStartTime]);
 
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const t = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  const remaining = useMemo(() => {
-    if (!actualStart) return SESSION_SECONDS;
-    const elapsed = Math.floor((now - actualStart) / 1000);
-    return Math.max(0, SESSION_SECONDS - elapsed);
-  }, [actualStart, now]);
-
-  const remainingLabel = useMemo(() => {
-    const m = Math.floor(remaining / 60);
-    const s = remaining % 60;
-    return `${m}:${String(s).padStart(2, "0")}`;
-  }, [remaining]);
 
   const startCall = async () => {
     const res = await api.patch(`/bookings/start/${bookingId}`);
@@ -150,17 +164,7 @@ function Session() {
               </div>
 
               <div className="text-right">
-                <div className="text-xs font-semibold text-muted">
-                  Timer (25:00)
-                </div>
-                <div className="mt-1 text-5xl font-extrabold tabular-nums">
-                  {remainingLabel}
-                </div>
-                <div className="mt-2 text-sm text-muted">
-                  {remaining === 0
-                    ? "Session window complete"
-                    : "Complete full duration"}
-                </div>
+                <SessionTimer actualStart={actualStart} />
               </div>
             </div>
 

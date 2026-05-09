@@ -102,28 +102,34 @@ function SessionList({ items, userRole, actionLabel, emptyTitle, emptyDescriptio
 }
 
 async function loadDashboardData({ user, setMsg, setDataLoading, setBookings, setSlots }) {
+  console.log("[Dashboard] loadDashboardData starting for user:", user?._id);
   setMsg("");
   setDataLoading(true);
 
   try {
     const bookingsResponse = await api.get("/bookings/my");
+    console.log("[Dashboard] loadDashboardData - bookings received:", bookingsResponse.data.length);
     setBookings(Array.isArray(bookingsResponse.data) ? bookingsResponse.data : []);
 
     if (user?.role === "senior" && user?._id) {
+      console.log("[Dashboard] loadDashboardData - fetching senior slots...");
       const slotResponse = await api.get(`/slots/senior/${user._id}`);
       setSlots(slotResponse.data?.slots || []);
     } else {
       setSlots([]);
     }
   } catch (err) {
+    console.log("[Dashboard] loadDashboardData failed:", err.response?.status);
     setMsg(err?.response?.data?.message || "Failed to load dashboard data");
   } finally {
+    console.log("[Dashboard] loadDashboardData finished.");
     setDataLoading(false);
   }
 }
 
 function Dashboard() {
   const { user, setUser } = useAuth();
+  console.log("[Dashboard] Render - user:", user?._id);
   const navigate = useNavigate();
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
@@ -165,9 +171,14 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    if (!user) return;
+    console.log("[Dashboard] useEffect fired - user._id:", user?._id);
+    if (!user) {
+      console.log("[Dashboard] No user, skipping fetch.");
+      return;
+    }
 
     const timeoutId = window.setTimeout(() => {
+      console.log("[Dashboard] Timeout execution of loadDashboardData");
       loadDashboardData({
         user,
         setMsg,
@@ -177,7 +188,10 @@ function Dashboard() {
       });
     }, 0);
 
-    return () => window.clearTimeout(timeoutId);
+    return () => {
+      console.log("[Dashboard] Cleanup of useEffect");
+      window.clearTimeout(timeoutId);
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?._id]); // ✅ primitive dep — avoids re-firing on new object references with same data
 
