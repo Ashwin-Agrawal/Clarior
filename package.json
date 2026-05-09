@@ -1,0 +1,16 @@
+{
+  "name": "clarior-monorepo",
+  "private": true,
+  "workspaces": [
+    "frontend1",
+    "backend"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=frontend",
+    "install:frontend": "npm install --workspace=frontend",
+    "start:backend": "npm start --workspace=backend"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
