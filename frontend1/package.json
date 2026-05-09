@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "clarior-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -28,7 +28,7 @@
     "globals": "^17.5.0",
     "vite": "^8.0.9"
   },
-  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "description": "Production frontend for Clarior - A mentorship platform for students.",
   "main": "eslint.config.js",
   "keywords": [],
   "author": "",
