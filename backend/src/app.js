@@ -26,14 +26,15 @@ app.set("trust proxy", 1);
 const allowedOrigins = new Set(
   String(process.env.CORS_ORIGINS || "")
     .split(",")
-    .map((s) => s.trim())
+    .map((s) => s.trim().replace(/\/$/, "")) // Remove trailing slashes
     .filter(Boolean)
 );
 
 // Safe fallback so production doesn't break if env var is missing.
 allowedOrigins.add("https://clarior-frontend.vercel.app");
 allowedOrigins.add("https://www.clarior-frontend.vercel.app");
-allowedOrigins.add("https://www.clarior.in/");
+allowedOrigins.add("https://www.clarior.in");
+allowedOrigins.add("https://clarior.in");
 
 if (process.env.NODE_ENV !== "production") {
   allowedOrigins.add("http://localhost:3000");

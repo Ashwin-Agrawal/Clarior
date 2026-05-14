@@ -338,7 +338,7 @@
 ### Common Issues
 | Issue | Solution |
 |-------|----------|
-| CORS errors | Check CORS_ORIGINS in .env |
+| CORS errors | Check CORS_ORIGINS in .env (ensure no trailing slashes) |
 | 401 errors | Verify JWT_SECRET is correct |
 | Database connection failed | Check MONGO_URI and network access |
 | Payment not working | Verify Razorpay keys are production keys |
