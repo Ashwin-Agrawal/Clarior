@@ -33,6 +33,7 @@ const allowedOrigins = new Set(
 // Safe fallback so production doesn't break if env var is missing.
 allowedOrigins.add("https://clarior-frontend.vercel.app");
 allowedOrigins.add("https://www.clarior-frontend.vercel.app");
+allowedOrigins.add("https://www.clarior.in/");
 
 if (process.env.NODE_ENV !== "production") {
   allowedOrigins.add("http://localhost:3000");
