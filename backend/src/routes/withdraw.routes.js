@@ -8,6 +8,7 @@ const {
   requestWithdraw,
   approveWithdraw,
   rejectWithdraw,
+  getPendingWithdraws,
 } = require("../controllers/withdraw.controller");
 
 // 🎓 SENIOR REQUEST
@@ -32,6 +33,14 @@ router.patch(
   authMiddleware,
   authorizeRoles("admin"),
   rejectWithdraw
+);
+
+// 👑 ADMIN GET PENDING
+router.get(
+  "/pending",
+  authMiddleware,
+  authorizeRoles("admin"),
+  getPendingWithdraws
 );
 
 module.exports = router;

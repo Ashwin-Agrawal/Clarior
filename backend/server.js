@@ -17,6 +17,8 @@ require("dotenv").config();
 const app = require("./src/app");
 const connectDB = require("./src/db/db");
 const seedAdmin = require("./src/utils/seedAdmin");
+require("./src/utils/cron"); // Initialize cron jobs
+
 // Connect Database
 connectDB();
 

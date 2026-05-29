@@ -30,10 +30,15 @@ class BookingService {
       if (!slot) throw new Error("SLOT_NOT_FOUND");
       if (slot.isBooked) throw new Error("SLOT_ALREADY_BOOKED");
 
-      // 3. Mark slot as booked
+      // 3. Verify senior exists and is verified
+      const senior = await User.findById(slot.senior).session(session);
+      if (!senior || senior.role !== "senior") throw new Error("SENIOR_NOT_FOUND");
+      if (!senior.isVerified) throw new Error("SENIOR_NOT_VERIFIED");
+
+      // 4. Mark slot as booked
       await Slot.updateOne({ _id: slotId }, { isBooked: true }).session(session);
 
-      // 4. Deduct credits
+      // 5. Deduct credits
       user.callCredits -= 1;
       await user.save({ session });
 
@@ -46,6 +51,7 @@ class BookingService {
           {
             student: studentId,
             senior: slot.senior,
+            slot: slotId,
             date: slot.date,
             timeSlot: slot.time,
             status: "confirmed",
@@ -131,10 +137,12 @@ class BookingService {
       ).session(session);
 
       // Release slot
-      await Slot.updateOne(
-        { _id: booking.slotId },
-        { isBooked: false }
-      ).session(session);
+      if (booking.slot) {
+        await Slot.updateOne(
+          { _id: booking.slot },
+          { isBooked: false }
+        ).session(session);
+      }
 
       await session.commitTransaction();
       return booking;

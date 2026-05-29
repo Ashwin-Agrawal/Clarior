@@ -17,6 +17,10 @@ const bookingSchema = new mongoose.Schema(
       enum: ["pending", "confirmed", "completed", "cancelled"],
       default: "pending",
     },
+    slot: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Slot",
+    },
     date: Date,
     timeSlot: String,
 
@@ -44,5 +48,11 @@ const bookingSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Create indexes for faster queries
+bookingSchema.index({ student: 1 });
+bookingSchema.index({ senior: 1 });
+bookingSchema.index({ status: 1 });
+bookingSchema.index({ startTime: 1 });
 
 module.exports = mongoose.model("Booking", bookingSchema);

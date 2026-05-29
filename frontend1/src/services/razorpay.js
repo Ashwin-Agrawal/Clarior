@@ -7,10 +7,8 @@ export async function waitForRazorpay({ timeoutMs = 8000 } = {}) {
 
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
-    // eslint-disable-next-line no-await-in-loop
     await new Promise((r) => setTimeout(r, 50));
     if (isRazorpayAvailable()) return true;
   }
   return false;
 }
-

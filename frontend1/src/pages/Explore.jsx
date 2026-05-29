@@ -1,147 +1,193 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
-import MentorCard from "../components/MentorCard";
 import Footer from "../components/Footer";
+import MentorCard from "../components/MentorCard";
+import Skeleton from "../components/ui/Skeleton";
+import Button from "../components/ui/Button";
+import SiteContainer from "../components/layout/SiteContainer";
+
+const DOMAINS = ["All", "Engineering", "Medical", "Commerce", "Arts", "Law", "Other"];
+
+function SearchIcon({ className = "h-5 w-5" }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="11" cy="11" r="7.5" />
+      <path strokeLinecap="round" d="m20 20-3.8-3.8" />
+    </svg>
+  );
+}
 
 function Explore() {
   const [seniors, setSeniors] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [query, setQuery] = useState("");
-  const [activeTag, setActiveTag] = useState("All");
-  const [domain, setDomain] = useState("All");
-  const [branch, setBranch] = useState("");
+  const [search, setSearch] = useState("");
+  const [course, setCourse] = useState("All");
+  const [branch, setBranch] = useState("All");
 
   useEffect(() => {
     const fetchSeniors = async () => {
       try {
-        setError("");
         setLoading(true);
-        const college = activeTag === "All" ? "" : activeTag;
-        const res = await api.get("/users/seniors", {
-          params: {
-            q: query.trim() || undefined,
-            college: college || undefined,
-            domain: domain === "All" ? undefined : domain,
-            branch: branch.trim() || undefined,
-          },
-        });
-        setSeniors(res.data.seniors);
-      } catch (err) {
-        setError(err?.response?.data?.message || "Failed to load seniors");
-      } finally {
-        setLoading(false);
-      }
+        const res = await api.get("/users/seniors");
+        setSeniors(res.data.seniors || []);
+      } catch (err) { console.error("Failed to fetch seniors", err); } finally { setLoading(false); }
     };
+    fetchSeniors();
+  }, []);
 
-    const t = setTimeout(fetchSeniors, 250);
-    return () => clearTimeout(t);
-  }, [query, activeTag, domain, branch]);
+  const branches = useMemo(() => {
+    const b = new Set(seniors.map(s => s.branch).filter(Boolean));
+    return ["All", ...Array.from(b).sort()];
+  }, [seniors]);
 
-  const tags = ["All", "NST", "SST", "Vedam", "NIAT", "Polaris", "100x"];
-  const domains = ["All", "Engineering", "Medical", "Commerce", "Arts", "Law", "Other"];
+  const filtered = useMemo(() => {
+    return seniors.filter((s) => {
+      const matchSearch = !search.trim() || [s.name, s.college, s.branch, s.domain].filter(Boolean).join(" ").toLowerCase().includes(search.trim().toLowerCase());
+      const matchCourse = course === "All" || s.domain === course;
+      const matchBranch = branch === "All" || s.branch === branch;
+      return matchSearch && matchCourse && matchBranch;
+    });
+  }, [seniors, search, course, branch]);
+
+  const hasFilters = search.trim() || course !== "All" || branch !== "All";
+  const clearFilters = () => {
+    setSearch("");
+    setCourse("All");
+    setBranch("All");
+  };
 
   return (
     <>
       <Navbar />
-
-      <div className="px-6 pt-10 pb-14 max-w-6xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-9">
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">Explore seniors</h2>
-          <p className="text-muted mt-3 text-lg">
-            Discover verified seniors, compare profiles, and book a session in minutes.
-          </p>
-          <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm text-muted">
-            <span className="font-semibold text-fg">{seniors.length}</span> seniors currently available
-          </div>
-        </div>
-
-        <div className="bg-surface border border-border rounded-2xl p-5 shadow-sm mb-8">
-          <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-            <div className="flex-1">
-              <div className="text-sm font-semibold text-fg">Search by college</div>
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search by college name"
-                className="mt-2 w-full h-12 border border-border rounded-xl px-4 bg-surface2 text-fg placeholder:text-muted outline-none focus:ring-2 focus:ring-primary/20"
-              />
+      <main className="bg-bg min-h-screen">
+        {/* Header Section */}
+        <section className="relative pt-20 pb-16 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none opacity-40" style={{ background: "var(--hero-gradient)" }} />
+          <SiteContainer className="relative">
+            <div className="max-w-4xl mx-auto text-center animate-fade-up">
+              <h1 className="heading-display text-4xl md:text-7xl font-black text-fg tracking-tight leading-[1.1]">
+                Find your <span className="gradient-text">perfect mentor.</span>
+              </h1>
+              <p className="mt-8 text-xl text-muted leading-relaxed font-medium max-w-2xl mx-auto">
+                Talk to seniors who've actually cleared the exams and colleges you're aiming for. No bias, just experience.
+              </p>
             </div>
 
-            <div className="md:w-[520px]">
-              <div className="text-sm font-semibold text-fg">Filter by college</div>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {tags.map((t) => {
-                  const active = t === activeTag;
-                  return (
-                    <button
-                      key={t}
-                      onClick={() => setActiveTag(t)}
-                      className={
-                        active
-                          ? "px-3 py-1.5 rounded-full text-sm font-semibold bg-primary text-primaryFg"
-                          : "px-3 py-1.5 rounded-full text-sm font-semibold border border-border bg-surface hover:bg-surface2 text-fg"
-                      }
+            {/* Search & Filter Bar */}
+            <div className="mt-12 max-w-5xl mx-auto space-y-4 animate-fade-up delay-100">
+              <div className="rounded-[32px] border border-border bg-surface/80 p-3 shadow-card backdrop-blur-xl">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                  <div className="relative flex-1 group">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors">
+                      <SearchIcon className="h-6 w-6" />
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Search by name or college..."
+                      className="w-full h-14 pl-12 pr-4 rounded-2xl border border-border bg-surface outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-base font-bold"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative min-w-[160px]">
+                      <select
+                        className="w-full h-14 px-4 rounded-2xl border border-border bg-surface outline-none focus:ring-4 focus:ring-primary/10 transition-all text-sm font-bold appearance-none cursor-pointer"
+                        value={course}
+                        onChange={(e) => setCourse(e.target.value)}
+                      >
+                        {DOMAINS.map(d => <option key={d} value={d}>{d === "All" ? "All Courses" : d}</option>)}
+                      </select>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+                      </div>
+                    </div>
+
+                    <div className="relative min-w-[160px]">
+                      <select
+                        className="w-full h-14 px-4 rounded-2xl border border-border bg-surface outline-none focus:ring-4 focus:ring-primary/10 transition-all text-sm font-bold appearance-none cursor-pointer"
+                        value={branch}
+                        onChange={(e) => setBranch(e.target.value)}
+                      >
+                        {branches.map(b => <option key={b} value={b}>{b === "All" ? "All Branches" : b}</option>)}
+                      </select>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="secondary"
+                      className="h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-xs"
+                      disabled={!hasFilters}
+                      onClick={clearFilters}
                     >
-                      {t}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="mt-4 grid sm:grid-cols-2 gap-3">
-                <label className="block">
-                  <div className="text-sm font-semibold text-fg">Domain</div>
-                  <select
-                    className="mt-2 w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-fg outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary/40"
-                    value={domain}
-                    onChange={(e) => setDomain(e.target.value)}
-                  >
-                    {domains.map((d) => (
-                      <option key={d} value={d}>
-                        {d}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="block">
-                  <div className="text-sm font-semibold text-fg">Branch</div>
-                  <input
-                    value={branch}
-                    onChange={(e) => setBranch(e.target.value)}
-                    placeholder="CSE, ECE, MBBS…"
-                    className="mt-2 w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-fg outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary/40"
-                  />
-                </label>
+                      Reset
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {loading && <div className="text-muted">Loading…</div>}
-        {!loading && error && (
-          <div className="text-sm text-danger bg-surface2 border border-danger rounded-xl p-3">
-            {error}
-          </div>
-        )}
-
-        {!loading && !error && (
-          <>
-            <div className="text-sm text-muted mb-4">
-              Showing <span className="font-semibold text-fg">{seniors.length}</span> seniors
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {seniors.map((mentor) => (
-                <MentorCard key={mentor._id} mentor={mentor} />
+            {/* Quick Filter Chips (Course) */}
+            <div className="mt-8 flex flex-wrap justify-center gap-2 animate-fade-up delay-200">
+              {DOMAINS.map(d => (
+                <button
+                  key={d}
+                  onClick={() => setCourse(d)}
+                  className={`px-5 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                    course === d 
+                      ? "bg-primary text-white shadow-hero" 
+                      : "bg-surface/50 backdrop-blur-sm border border-border text-muted hover:border-primary/40 hover:text-primary"
+                  }`}
+                >
+                  {d}
+                </button>
               ))}
             </div>
-          </>
-        )}
-      </div>
+          </SiteContainer>
+        </section>
 
+        {/* Grid Section */}
+        <SiteContainer className="pb-32">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-8 animate-fade-in">
+            <h2 className="text-sm font-black text-muted uppercase tracking-[0.2em]">
+              Showing {filtered.length} mentors
+            </h2>
+            {hasFilters && (
+              <p className="text-sm text-muted">
+                Filtered by <span className="font-semibold text-fg">{course}</span>{branch !== "All" ? <> · <span className="font-semibold text-fg">{branch}</span></> : null}{search.trim() ? <> · <span className="font-semibold text-fg">"{search.trim()}"</span></> : null}
+              </p>
+            )}
+            {loading && <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" />}
+          </div>
+
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1,2,3,4,5,6].map(i => <Skeleton key={i} className="h-80 rounded-2xl" />)}
+            </div>
+          ) : filtered.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filtered.map((mentor, idx) => (
+                <MentorCard key={mentor._id} mentor={mentor} index={idx} />
+              ))}
+            </div>
+          ) : (
+            <div className="py-32 text-center animate-fade-in">
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-surface2 text-muted">
+                <SearchIcon className="h-8 w-8" />
+              </div>
+              <h3 className="text-2xl font-black text-fg">No seniors found</h3>
+              <p className="text-muted mt-2 max-w-sm mx-auto">Try adjusting your search terms or filters to find more results.</p>
+              <Button variant="primary" className="mt-8 rounded-full px-10" onClick={clearFilters}>
+                See All Seniors
+              </Button>
+            </div>
+          )}
+        </SiteContainer>
+      </main>
       <Footer />
     </>
   );

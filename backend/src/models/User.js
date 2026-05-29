@@ -124,4 +124,9 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Create indexes for faster queries
+userSchema.index({ email: 1 });
+userSchema.index({ role: 1 });
+userSchema.index({ isVerified: 1 });
+
 module.exports = mongoose.model("User", userSchema);

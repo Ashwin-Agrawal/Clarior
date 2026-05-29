@@ -197,3 +197,67 @@ exports.fastForwardBooking = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+// 💰 ADMIN: GET PENDING EARNINGS RELEASES
+exports.getPendingReleases = async (req, res) => {
+  try {
+    const Booking = require("../models/Booking");
+    const bookings = await Booking.find({
+      isSeniorMarkedDone: true,
+      isStudentConfirmed: false,
+      status: "confirmed"
+    })
+      .populate("senior", "name email upiId")
+      .populate("student", "name email")
+      .sort({ updatedAt: 1 });
+
+    res.json({
+      success: true,
+      count: bookings.length,
+      bookings,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// 💰 ADMIN: RELEASE EARNINGS FOR A BOOKING
+exports.releaseEarnings = async (req, res) => {
+  try {
+    const Booking = require("../models/Booking");
+    const User = require("../models/User");
+    const { bookingId } = req.params;
+
+    const booking = await Booking.findById(bookingId);
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    if (!booking.isSeniorMarkedDone || booking.isStudentConfirmed || booking.status !== "confirmed") {
+      return res.status(400).json({ message: "Booking is not eligible for release" });
+    }
+
+    const senior = await User.findById(booking.senior);
+    if (!senior) return res.status(404).json({ message: "Senior not found" });
+
+    const payout = parseInt(process.env.PAYOUT_AMOUNT) || 52;
+
+    if (senior.pendingEarnings < payout) {
+      return res.status(400).json({ message: "Senior has insufficient pending earnings" });
+    }
+
+    senior.pendingEarnings -= payout;
+    senior.availableBalance += payout;
+    await senior.save();
+
+    booking.isStudentConfirmed = true;
+    booking.status = "completed";
+    await booking.save();
+
+    res.json({
+      success: true,
+      message: "Earnings released successfully",
+      bookingId: booking._id
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

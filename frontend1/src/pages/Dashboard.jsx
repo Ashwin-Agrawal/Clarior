@@ -10,7 +10,12 @@ function formatDateTime(value) {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleString();
+  return new Intl.DateTimeFormat("en-IN", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
 }
 
 function formatDayLabel(date) {
@@ -21,9 +26,9 @@ function formatDayLabel(date) {
   }).format(date);
 }
 
-function StatIcon({ children, tint = "bg-[rgba(59,91,219,0.14)] text-primary" }) {
+function StatIcon({ children, tint = "bg-primary/10 text-primary" }) {
   return (
-    <div className={`flex h-8 w-8 items-center justify-center rounded-[20px] ${tint}`}>
+    <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${tint}`}>
       {children}
     </div>
   );
@@ -31,11 +36,11 @@ function StatIcon({ children, tint = "bg-[rgba(59,91,219,0.14)] text-primary" })
 
 function EmptyState({ title, description }) {
   return (
-    <div className="flex min-h-[240px] flex-col items-center justify-center rounded-[28px] border border-dashed border-border bg-surface2/70 px-6 py-10 text-center">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-primary shadow-soft">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-7 w-7">
-          <rect x="3.5" y="5" width="17" height="15" rx="3" />
-          <path d="M8 3v4M16 3v4M3.5 10.5h17" />
+    <div className="flex min-h-[280px] flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-surface2/50 px-6 py-10 text-center animate-fade-in">
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface text-primary shadow-soft">
+        <svg className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2" />
+          <path d="M16 2v4M8 2v4M3 10h18" />
         </svg>
       </div>
       <div className="mt-5 text-xl font-bold text-fg">{title}</div>
@@ -51,47 +56,52 @@ function SessionList({ items, userRole, actionLabel, emptyTitle, emptyDescriptio
 
   return (
     <div className="mt-6 space-y-4">
-      {items.map((booking) => (
+      {items.map((booking, idx) => (
         <div
           key={booking._id}
-          className="flex flex-wrap items-center justify-between gap-4 rounded-[28px] border border-border bg-white p-5 shadow-soft"
+          className="group flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-border bg-surface p-5 shadow-soft hover:shadow-lift hover:border-primary/20 transition-all duration-200 animate-fade-up"
+          style={{ animationDelay: `${idx * 100}ms` }}
         >
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-3">
-              <div className="text-lg font-bold text-fg">
+              <div className="text-lg font-bold text-fg group-hover:text-primary transition-colors">
                 {userRole === "student"
                   ? booking?.senior?.name || "Senior"
                   : booking?.student?.name || "Student"}
               </div>
-              <span className="rounded-full bg-[rgba(59,91,219,0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+              <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
+                booking.status === "confirmed" ? "bg-success/10 text-success border border-success/20" :
+                booking.status === "completed" ? "bg-primary/10 text-primary border border-primary/20" :
+                "bg-muted/10 text-muted border border-muted/20"
+              }`}>
                 {booking.status}
               </span>
             </div>
 
-            <div className="mt-3 grid gap-3 text-sm text-muted md:grid-cols-2 xl:grid-cols-3">
-              <div>
-                <div className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted/80">
-                  Starts
+            <div className="mt-3 grid gap-4 text-xs text-muted md:grid-cols-2 lg:grid-cols-3">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-surface2 flex items-center justify-center text-muted">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
                 </div>
-                <div className="mt-1 text-fg">{formatDateTime(booking.startTime)}</div>
+                <div>
+                  <div className="font-semibold text-muted/60 uppercase tracking-widest text-[9px]">Date & Time</div>
+                  <div className="text-fg font-medium">{formatDateTime(booking.startTime)}</div>
+                </div>
               </div>
-              <div>
-                <div className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted/80">
-                  Ends
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-surface2 flex items-center justify-center text-muted">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                 </div>
-                <div className="mt-1 text-fg">{formatDateTime(booking.endTime)}</div>
-              </div>
-              <div>
-                <div className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted/80">
-                  Format
+                <div>
+                  <div className="font-semibold text-muted/60 uppercase tracking-widest text-[9px]">Duration</div>
+                  <div className="text-fg font-medium">25-minute call</div>
                 </div>
-                <div className="mt-1 text-fg">25-minute guided session</div>
               </div>
             </div>
           </div>
 
-          <Link to={`/session/${booking._id}`}>
-            <Button variant={actionLabel === "View details" ? "secondary" : "primary"} size="lg">
+          <Link to={`/session/${booking._id}`} className="w-full sm:w-auto">
+            <Button variant={actionLabel === "View details" ? "secondary" : "primary"} className="w-full sm:w-auto rounded-2xl">
               {actionLabel}
             </Button>
           </Link>
@@ -102,34 +112,28 @@ function SessionList({ items, userRole, actionLabel, emptyTitle, emptyDescriptio
 }
 
 async function loadDashboardData({ user, setMsg, setDataLoading, setBookings, setSlots }) {
-  console.log("[Dashboard] loadDashboardData starting for user:", user?._id);
   setMsg("");
   setDataLoading(true);
 
   try {
     const bookingsResponse = await api.get("/bookings/my");
-    console.log("[Dashboard] loadDashboardData - bookings received:", bookingsResponse.data.length);
     setBookings(Array.isArray(bookingsResponse.data) ? bookingsResponse.data : []);
 
     if (user?.role === "senior" && user?._id) {
-      console.log("[Dashboard] loadDashboardData - fetching senior slots...");
       const slotResponse = await api.get(`/slots/senior/${user._id}`);
       setSlots(slotResponse.data?.slots || []);
     } else {
       setSlots([]);
     }
   } catch (err) {
-    console.log("[Dashboard] loadDashboardData failed:", err.response?.status);
     setMsg(err?.response?.data?.message || "Failed to load dashboard data");
   } finally {
-    console.log("[Dashboard] loadDashboardData finished.");
     setDataLoading(false);
   }
 }
 
 function Dashboard() {
   const { user, setUser } = useAuth();
-  console.log("[Dashboard] Render - user:", user?._id);
   const navigate = useNavigate();
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
@@ -143,12 +147,10 @@ function Dashboard() {
     try {
       setMsg("");
       const amount = Number(withdrawAmount);
-
       if (!amount || amount <= 0) {
         setMsg("Enter a valid withdraw amount.");
         return;
       }
-
       setLoading(true);
       await api.post("/withdraw/request", { amount });
       setMsg("Withdraw request sent.");
@@ -161,68 +163,32 @@ function Dashboard() {
   };
 
   const refresh = async () => {
-    await loadDashboardData({
-      user,
-      setMsg,
-      setDataLoading,
-      setBookings,
-      setSlots,
-    });
+    await loadDashboardData({ user, setMsg, setDataLoading, setBookings, setSlots });
   };
 
   useEffect(() => {
-    console.log("[Dashboard] useEffect fired - user._id:", user?._id);
-    if (!user) {
-      console.log("[Dashboard] No user, skipping fetch.");
-      return;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      console.log("[Dashboard] Timeout execution of loadDashboardData");
-      loadDashboardData({
-        user,
-        setMsg,
-        setDataLoading,
-        setBookings,
-        setSlots,
-      });
-    }, 0);
-
-    return () => {
-      console.log("[Dashboard] Cleanup of useEffect");
-      window.clearTimeout(timeoutId);
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?._id]); // ✅ primitive dep — avoids re-firing on new object references with same data
+    if (!user) return;
+    loadDashboardData({ user, setMsg, setDataLoading, setBookings, setSlots });
+  }, [user]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(Date.now());
-    }, 60000);
-
+    const interval = setInterval(() => setCurrentTime(Date.now()), 60000);
     return () => clearInterval(interval);
   }, []);
 
   const { upcoming, past } = useMemo(() => {
     const now = currentTime;
     const list = Array.isArray(bookings) ? bookings : [];
-
     return {
-      upcoming: list.filter((booking) => {
-        if (booking.status === "cancelled" || booking.status === "completed") {
-          return false;
-        }
-
-        const time = new Date(booking.startTime || booking.date || 0).getTime();
-        return Number.isNaN(time) ? true : time >= now;
+      upcoming: list.filter((b) => {
+        if (b.status === "cancelled" || b.status === "completed") return false;
+        const time = new Date(b.startTime || b.date || 0).getTime();
+        return isNaN(time) ? true : time >= now;
       }),
-      past: list.filter((booking) => {
-        if (booking.status === "cancelled" || booking.status === "completed") {
-          return true;
-        }
-
-        const time = new Date(booking.startTime || booking.date || 0).getTime();
-        return Number.isNaN(time) ? false : time < now;
+      past: list.filter((b) => {
+        if (b.status === "cancelled" || b.status === "completed") return true;
+        const time = new Date(b.startTime || b.date || 0).getTime();
+        return isNaN(time) ? false : time < now;
       }),
     };
   }, [bookings, currentTime]);
@@ -232,309 +198,232 @@ function Dashboard() {
   const isUnverifiedSenior = user?.role === "senior" && !user?.isVerified;
 
   const handleLogout = async () => {
-    try {
-      await api.get("/auth/logout");
-    } catch {
-      // no-op
+    try { await api.get("/auth/logout"); } catch {
+      // Logout remains local-first so users are never trapped by a stale session.
     }
     setUser(null);
     navigate("/");
   };
 
   return (
-    <AppShell
-      title="Dashboard"
-      subtitle="Everything you need to manage your Clarior journey in one place."
-    >
-      <div className="space-y-8">
-        <section className="rounded-[32px] border border-white/70 bg-white p-6 shadow-soft">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-5">
-              <div className="flex h-20 w-20 items-center justify-center rounded-[28px] bg-slate-950 text-3xl font-bold text-white shadow-[0_20px_40px_rgba(15,23,42,0.15)]">
+    <AppShell title="Dashboard">
+      <div className="space-y-8 pb-10">
+        {/* Welcome Header */}
+        <section className="relative overflow-hidden rounded-[32px] border border-border bg-surface p-8 shadow-card animate-fade-up">
+          <div className="absolute right-0 top-0 h-40 w-40 rounded-full blur-3xl bg-primary/5 -translate-y-1/2 translate-x-1/2" />
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between relative z-10">
+            <div className="flex items-center gap-6">
+              <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-[28px] bg-gradient-to-br from-primary to-accent text-3xl font-extrabold text-white shadow-lift">
                 {user?.name?.trim()?.[0] || "C"}
               </div>
               <div>
-                <div className="text-sm uppercase tracking-[0.22em] text-primary">
+                <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary mb-2">
                   {formatDayLabel(today)}
                 </div>
-                <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-fg sm:text-5xl">
-                  {/* Welcome back, {firstName}. */}
-                  {user?.role === "admin" ? `Radhe Radhe ❤️`: `Welcome back, ${firstName}`}
+                <h2 className="heading-display text-3xl font-extrabold text-fg sm:text-4xl">
+                  {user?.role === "admin" ? "Admin command center" : `Welcome back, ${firstName}`}
                 </h2>
-                <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
-                  Your dashboard now spans the screen with quick stats, session previews, and clear next steps for your role.
+                <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
+                  {user?.role === "senior" 
+                    ? "Your senior portal is ready. Track your earnings and manage your availability below."
+                    : "Ready to get some clarity? Book a session or manage your upcoming calls here."}
                 </p>
                 {isUnverifiedSenior && (
-                  <div className="mt-4 inline-flex rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-700">
-                    Verification status: Pending. Booking and slot management will unlock after approval.
+                  <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-amber-700">
+                    <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                    Verification pending
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="grid w-full gap-3 sm:grid-cols-2 lg:w-[360px]">
+            <div className="grid w-full gap-3 sm:grid-cols-2 lg:w-[400px]">
               {(user?.role === "student" || user?.role === "senior") && (
                 <Link to="/bookings">
-                  <Button size="lg">Open sessions</Button>
+                  <Button className="w-full rounded-2xl" size="lg">Open sessions</Button>
                 </Link>
               )}
               {user?.role === "senior" && user?.isVerified && (
                 <Link to="/availability">
-                  <Button variant="secondary" size="lg">Manage slots</Button>
+                  <Button variant="secondary" className="w-full rounded-2xl" size="lg">Manage slots</Button>
                 </Link>
               )}
               {user?.role === "student" && (
-                <Link to="/become-senior">
-                  <Button variant="secondary" size="lg">Become a Senior</Button>
-                </Link>
-              )}
-              {user?.role === "student" && (
-                <Link to="/buy-credits">
-                  <Button variant="secondary" size="lg">Buy credits</Button>
+                <Link to="/explore">
+                  <Button variant="secondary" className="w-full rounded-2xl" size="lg">Find Seniors</Button>
                 </Link>
               )}
               {user?.role === "admin" && (
                 <Link to="/admin">
-                  <Button variant="secondary" size="lg">Admin panel</Button>
+                  <Button variant="secondary" className="w-full rounded-2xl" size="lg">Admin panel</Button>
                 </Link>
               )}
-              <Button variant="ghost" size="lg" onClick={handleLogout}>
+              <Button variant="ghost" className="w-full rounded-2xl" size="lg" onClick={handleLogout}>
                 Logout
               </Button>
             </div>
           </div>
         </section>
 
-        <div className="mt-6 grid gap-6">
-          <div className="grid grid-cols-3 gap-4">
-            <Card className="rounded-2xl bg-indigo-50 border border-indigo-200 shadow-sm p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">Role</div>
-                  <div className="mt-3 text-3xl font-extrabold capitalize">{user?.role || "—"}</div>
-                </div>
-                <StatIcon tint="bg-indigo-100 text-indigo-600">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-6 w-6">
-                    <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
-                    <path d="M5 20a7 7 0 0 1 14 0" />
-                  </svg>
-                </StatIcon>
+        {/* Stats Grid */}
+        <div className="grid gap-6 md:grid-cols-3">
+          {/* Role Card */}
+          <Card className="p-6 border-l-4 border-l-primary animate-fade-up delay-100">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-muted">Account Type</div>
+                <div className="mt-2 text-2xl font-extrabold capitalize text-fg">{user?.role || "—"}</div>
               </div>
-              <div className="mt-4 text-sm leading-6 text-muted">
-                {user?.role === "student"
-                  ? "Book sessions, confirm starts, and turn short calls into clear decisions."
-                  : user?.role === "senior"
-                  ? user?.isVerified
-                    ? "Set availability, support students, and keep your guidance rhythm organized."
-                    : "Your senior profile is pending verification. You can track status from this dashboard."
-                  : user?.role === "admin"
-                  ? "Review senior applications and keep platform quality high."
-                  : "—"}
+              <StatIcon>
+                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </StatIcon>
+            </div>
+            <p className="mt-4 text-xs leading-relaxed text-muted">
+              {user?.role === "student" ? "Book sessions and get clarity from top seniors." : "Help students and earn per session."}
+            </p>
+          </Card>
+
+          {/* Wallet/Credits Card */}
+          <Card className="p-6 border-l-4 border-l-success animate-fade-up delay-200">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-muted">
+                  {user?.role === "senior" ? "Total Earnings" : "Available Credits"}
+                </div>
+                <div className="mt-2 text-2xl font-extrabold text-fg">
+                  {user?.role === "senior" ? `₹${user?.availableBalance ?? 0}` : user?.callCredits ?? 0}
+                </div>
+              </div>
+              <StatIcon tint="bg-success/10 text-success">
+                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M16 14h2"/></svg>
+              </StatIcon>
+            </div>
+            {user?.role === "senior" ? (
+              <div className="mt-4 flex gap-2">
+                <div className="flex-1 rounded-xl bg-surface2 p-2 text-center">
+                  <div className="text-[9px] font-bold text-muted uppercase">Pending</div>
+                  <div className="text-xs font-bold text-fg">₹{user?.pendingEarnings ?? 0}</div>
+                </div>
+                <div className="flex-1 rounded-xl bg-success/10 px-2 py-2 text-center text-[10px] font-bold text-success">
+                  Ready
+                </div>
+              </div>
+            ) : (
+              <div className="mt-4 flex items-center justify-between">
+                <p className="text-xs text-muted">Use credits to book calls.</p>
+                <Link to="/buy-credits" className="text-xs font-bold text-primary hover:underline">Buy more →</Link>
+              </div>
+            )}
+          </Card>
+
+          {/* Activity Card */}
+          <Card className="p-6 border-l-4 border-l-accent animate-fade-up delay-300">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-muted">Sessions</div>
+                <div className="mt-2 text-2xl font-extrabold text-fg">{bookings.length}</div>
+              </div>
+              <StatIcon tint="bg-accent/10 text-accent">
+                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              </StatIcon>
+            </div>
+            <p className="mt-4 text-xs text-muted leading-relaxed">
+              Track your journey through completed conversations.
+            </p>
+          </Card>
+        </div>
+
+        {/* Sessions Section */}
+        {(user?.role === "student" || user?.role === "senior") && (
+          <div className="grid gap-8 lg:grid-cols-2">
+            {/* Upcoming */}
+            <div className="space-y-4 animate-fade-up">
+              <div className="flex items-center justify-between px-2">
+                <h3 className="heading-display text-xl font-extrabold text-fg">Upcoming</h3>
+                <Button variant="ghost" size="sm" onClick={refresh} loading={dataLoading} className="text-xs">
+                  Refresh
+                </Button>
+              </div>
+              <SessionList
+                items={upcoming.slice(0, 5)}
+                userRole={user?.role}
+                actionLabel="Join Call"
+                emptyTitle="All quiet for now"
+                emptyDescription={user?.role === "student" ? "Book a session to see it here." : "Waiting for students to book."}
+              />
+            </div>
+
+            {/* Past */}
+            <div className="space-y-4 animate-fade-up delay-200">
+              <div className="flex items-center justify-between px-2">
+                <h3 className="heading-display text-xl font-extrabold text-fg">History</h3>
+              </div>
+              <SessionList
+                items={past.slice(0, 5)}
+                userRole={user?.role}
+                actionLabel="View details"
+                emptyTitle="No history yet"
+                emptyDescription="Completed sessions will appear here."
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Senior Specific: Withdraw/Slots */}
+        {user?.role === "senior" && (
+          <div className="grid gap-8 lg:grid-cols-2 animate-fade-up">
+            {/* Withdrawal Request */}
+            <Card className="p-6">
+              <h3 className="heading-display text-lg font-extrabold text-fg mb-4">Request Withdrawal</h3>
+              <div className="space-y-4">
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold text-sm">₹</span>
+                  <input
+                    type="number"
+                    min="1"
+                    value={withdrawAmount}
+                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                    placeholder="Enter amount"
+                    className="w-full rounded-2xl border border-border bg-surface2 pl-8 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition"
+                  />
+                </div>
+                <Button
+                  onClick={handleWithdraw}
+                  disabled={loading || !user?.isVerified || !withdrawAmount}
+                  className="w-full rounded-2xl"
+                  size="lg"
+                  loading={loading}
+                >
+                  {user?.isVerified ? "Submit Request" : "Locked (Verify first)"}
+                </Button>
+                {msg && <p className="text-[10px] text-center font-bold uppercase tracking-wider text-primary">{msg}</p>}
               </div>
             </Card>
 
-            <Card className="rounded-2xl bg-teal-50 border border-teal-200 shadow-sm p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-                    {user?.role === "senior" ? "Wallet" : "Credits"}
-                  </div>
-                  <div className="mt-3 text-3xl font-extrabold">
-                    {user?.role === "senior"
-                      ? `₹${user?.availableBalance ?? 0}`
-                      : typeof user?.callCredits === "number"
-                      ? user.callCredits
-                      : "—"}
-                  </div>
-                </div>
-                <StatIcon tint="bg-teal-100 text-teal-600">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-6 w-6">
-                    <rect x="3.5" y="6.5" width="17" height="11" rx="2.5" />
-                    <path d="M8 12h8M8 15h5" />
-                  </svg>
-                </StatIcon>
+            {/* Slot Management Preview */}
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="heading-display text-lg font-extrabold text-fg">Open Slots</h3>
+                <Link to="/availability" className="text-xs font-bold text-primary hover:underline">Manage All →</Link>
               </div>
-              {user?.role === "senior" ? (
-                <>
-                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-[22px] bg-surface2 p-4">
-                      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">Pending</div>
-                      <div className="mt-2 text-xl font-bold text-fg">₹{user?.pendingEarnings ?? 0}</div>
+              <div className="space-y-3">
+                {slots.length ? (
+                  slots.slice(0, 3).map((slot) => (
+                    <div key={slot._id} className="flex items-center justify-between p-3 rounded-2xl bg-surface2 border border-border/50">
+                      <div>
+                        <div className="text-xs font-bold text-fg">{slot.date}</div>
+                        <div className="text-[10px] text-muted">{slot.startTime} - {slot.endTime}</div>
+                      </div>
+                      <span className="h-2 w-2 rounded-full bg-success shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                     </div>
-                    <div className="rounded-[22px] bg-surface2 p-4">
-                      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">Available</div>
-                      <div className="mt-2 text-xl font-bold text-fg">₹{user?.availableBalance ?? 0}</div>
-                    </div>
-                  </div>
-                  <div className="mt-5 flex flex-col gap-3">
-                    <input
-                      type="number"
-                      min="1"
-                      value={withdrawAmount}
-                      onChange={(event) => setWithdrawAmount(event.target.value)}
-                      placeholder="Enter withdrawal amount"
-                      className="w-full rounded-full border border-border bg-white px-5 py-3 text-sm outline-none transition focus:ring-2 focus:ring-primary/20"
-                    />
-                    <Button
-                      onClick={handleWithdraw}
-                      disabled={loading || !user?.isVerified}
-                      className="w-full"
-                      variant="secondary"
-                      size="lg"
-                    >
-                      {loading ? "Sending request..." : user?.isVerified ? "Withdraw balance" : "Available after verification"}
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <div className="mt-4 text-sm leading-6 text-muted">
-                  {user?.role === "student"
-                    ? "1 credit lets you book one focused 25-minute senior guidance session."
-                    : "Credits are used by students to book guided sessions."}
-                </div>
-              )}
-            </Card>
-
-            <Card className="rounded-2xl bg-teal-50 border border-teal-200 shadow-sm p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">Next step</div>
-                  <div className="mt-3 text-2xl font-extrabold">
-                    {user?.role === "senior"
-                      ? user?.isVerified
-                        ? "Keep your calendar open"
-                        : "Complete verification"
-                      : user?.role === "admin"
-                      ? "Review senior applications"
-                      : "Find the right senior"}
-                  </div>
-                </div>
-                <StatIcon tint="bg-teal-100 text-teal-600">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-6 w-6">
-                    <path d="M5 12h14" />
-                    <path d="m12 5 7 7-7 7" />
-                  </svg>
-                </StatIcon>
-              </div>
-              <div className="mt-4 text-sm leading-6 text-muted">
-                {user?.role === "senior"
-                  ? user?.isVerified
-                    ? "Add fresh time slots so students can book you and your upcoming sessions populate here."
-                    : "Your profile is pending admin review. You can explore the dashboard while booking and slot creation stay locked."
-                  : user?.role === "admin"
-                  ? "Approve or reject pending senior applications and keep Clarior trusted."
-                  : "Browse seniors, compare profiles, and book a slot that fits your questions."}
-              </div>
-              <div className="mt-6">
-                {user?.role === "admin" ? (
-                  <Link to="/admin">
-                    <Button variant="secondary" className="w-full rounded-full" size="lg">
-                      Open admin panel
-                    </Button>
-                  </Link>
-                ) : user?.role === "senior" ? (
-                  user?.isVerified ? (
-                    <Link to="/availability">
-                      <Button variant="secondary" className="w-full rounded-full" size="lg">
-                        Open availability
-                      </Button>
-                    </Link>
-                  ) : (
-                    <Link to="/verify">
-                      <Button variant="secondary" className="w-full rounded-full" size="lg">
-                        Complete verification
-                      </Button>
-                    </Link>
-                  )
+                  ))
                 ) : (
-                  <Link to="/explore">
-                    <Button variant="secondary" className="w-full rounded-full" size="lg">
-                      Explore seniors
-                    </Button>
-                  </Link>
+                  <p className="text-xs text-muted text-center py-4 italic">No active slots. Add some to get booked!</p>
                 )}
               </div>
             </Card>
           </div>
-
-          {(user?.role === "student" || user?.role === "senior") && (
-            <div className="grid grid-cols-2 gap-4">
-              <Card className="rounded-2xl bg-white border border-gray-100 shadow-sm p-6">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div>
-                    <div className="text-2xl font-extrabold tracking-tight text-fg">Upcoming sessions</div>
-                    <div className="mt-2 text-sm text-muted">Your next confirmed calls, with room to act fast.</div>
-                  </div>
-                  <Button variant="secondary" onClick={refresh} disabled={dataLoading} size="sm">
-                    {dataLoading ? "Refreshing..." : "Refresh"}
-                  </Button>
-                </div>
-
-                <SessionList
-                  items={upcoming.slice(0, 5)}
-                  userRole={user?.role}
-                  actionLabel="Open session"
-                  emptyTitle="No upcoming sessions yet"
-                  emptyDescription={
-                    user?.role === "student"
-                      ? "Explore seniors and book a session to see your next call here."
-                      : "Create availability so students can book you and your upcoming sessions populate here."
-                  }
-                />
-              </Card>
-
-              <Card className="rounded-2xl bg-white border border-gray-100 shadow-sm p-6">
-                <div>
-                  <div className="text-2xl font-extrabold tracking-tight text-fg">Past sessions</div>
-                  <div className="mt-2 text-sm text-muted">Completed and cancelled conversations, ready for review.</div>
-                </div>
-
-                <SessionList
-                  items={past.slice(0, 5)}
-                  userRole={user?.role}
-                  actionLabel="View details"
-                  emptyTitle="No past sessions yet"
-                  emptyDescription="Once sessions are completed or cancelled, they’ll appear here with their timeline."
-                />
-              </Card>
-            </div>
-          )}
-
-          {user?.role === "senior" && user?.isVerified && (
-            <div className="mt-10">
-              <div className="flex flex-wrap items-end justify-between gap-4">
-                <div>
-                  <div className="text-2xl font-extrabold tracking-tight">My open slots</div>
-                  <div className="mt-2 text-sm text-muted">Fresh availability helps students discover and book you faster.</div>
-                </div>
-                <Link to="/availability">
-                  <Button variant="secondary" size="lg">Create or manage slots</Button>
-                </Link>
-              </div>
-
-              <div className="mt-6 grid gap-4">
-                {slots.length ? (
-                  slots.map((slot) => (
-                    <Card key={slot._id} className="rounded-[28px] p-5">
-                      <div className="flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                          <div className="text-lg font-semibold text-fg">{slot.title || "Available slot"}</div>
-                          <div className="mt-1 text-sm text-muted">{slot.date} · {slot.startTime} - {slot.endTime}</div>
-                        </div>
-                        <div className="rounded-full bg-[rgba(59,91,219,0.08)] px-3 py-1 text-sm font-semibold text-primary">Open</div>
-                      </div>
-                    </Card>
-                  ))
-                ) : (
-                  <EmptyState
-                    title="No open slots yet"
-                    description="Add availability so students can book sessions directly from your profile."
-                  />
-                )}
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </AppShell>
   );

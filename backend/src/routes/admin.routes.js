@@ -11,6 +11,8 @@ const {
   deleteUser,
   grantCredits,
   fastForwardBooking,
+  getPendingReleases,
+  releaseEarnings,
 } = require("../controllers/admin.controller");
 
 // 🔐 only admin
@@ -22,5 +24,8 @@ router.patch("/verify/:userId", verifySenior);
 router.delete("/user/:userId", deleteUser);
 router.post("/grant-credits/:userId", grantCredits);
 router.post("/test/fast-forward-booking/:bookingId", fastForwardBooking);
+
+router.get("/pending-releases", getPendingReleases);
+router.patch("/release-earnings/:bookingId", releaseEarnings);
 
 module.exports = router;

@@ -7,7 +7,7 @@ function ToastContainer() {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
+    <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-3 pointer-events-none">
       {toasts.map((toast) => (
         <Toast key={toast.id} toast={toast} onClose={() => removeToast(toast.id)} />
       ))}
@@ -19,70 +19,39 @@ function Toast({ toast, onClose }) {
   const { type, message } = toast;
 
   useEffect(() => {
-    const timer = setTimeout(onClose, toast.duration);
+    const timer = setTimeout(onClose, toast.duration || 4000);
     return () => clearTimeout(timer);
   }, [onClose, toast.duration]);
 
   const getStyles = () => {
     switch (type) {
-      case "success":
-        return "border-success bg-surface text-success";
-      case "error":
-        return "border-danger bg-surface text-danger";
-      case "warning":
-        return "border-warning bg-surface text-warning";
-      default:
-        return "border-primary bg-surface text-primary";
+      case "success": return "border-success/30 bg-surface text-fg ring-success/10 shadow-[0_12px_32px_rgba(16,185,129,0.12)]";
+      case "error":   return "border-danger/30 bg-surface text-fg ring-danger/10 shadow-[0_12px_32px_rgba(239,68,68,0.12)]";
+      case "warning": return "border-warning/30 bg-surface text-fg ring-warning/10 shadow-[0_12px_32px_rgba(245,158,11,0.12)]";
+      default:        return "border-primary/30 bg-surface text-fg ring-primary/10 shadow-[0_12px_32px_rgba(37,99,235,0.12)]";
     }
   };
 
   const getIcon = () => {
     switch (type) {
-      case "success":
-        return (
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-          </svg>
-        );
-      case "error":
-        return (
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-          </svg>
-        );
-      case "warning":
-        return (
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
-        );
-      default:
-        return (
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-          </svg>
-        );
+      case "success": return <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center text-success text-sm">✓</div>;
+      case "error":   return <div className="h-8 w-8 rounded-full bg-danger/10 flex items-center justify-center text-danger text-sm">✕</div>;
+      case "warning": return <div className="h-8 w-8 rounded-full bg-warning/10 flex items-center justify-center text-warning text-sm">!</div>;
+      default:        return <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm">i</div>;
     }
   };
 
   return (
-    <div className={`max-w-sm w-full border rounded-xl p-4 shadow-lg animate-in slide-in-from-right-2 ${getStyles()}`}>
-      <div className="flex items-start gap-3">
-        <div className="flex-shrink-0">
-          {getIcon()}
-        </div>
-        <div className="flex-1 text-sm font-medium">
-          {message}
-        </div>
-        <button
-          onClick={onClose}
-          className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+    <div className={`max-w-md w-full pointer-events-auto border rounded-2xl p-4 flex items-center gap-4 animate-scale-in ring-1 ${getStyles()}`}>
+      <div className="flex-shrink-0">
+        {getIcon()}
       </div>
+      <div className="flex-1 text-sm font-bold tracking-tight">
+        {message}
+      </div>
+      <button onClick={onClose} className="flex-shrink-0 h-8 w-8 rounded-xl hover:bg-surface2 flex items-center justify-center opacity-40 hover:opacity-100 transition-all">
+        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
     </div>
   );
 }

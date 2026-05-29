@@ -18,4 +18,9 @@ const reviewSchema = new mongoose.Schema({
   comment: String,
 },{ timestamps: true });
 
-module.exports = mongoose.model("Review", reviewSchema)
+// Create indexes for faster queries
+reviewSchema.index({ senior: 1 });
+reviewSchema.index({ student: 1 });
+reviewSchema.index({ senior: 1, student: 1 }, { unique: true });
+
+module.exports = mongoose.model("Review", reviewSchema);

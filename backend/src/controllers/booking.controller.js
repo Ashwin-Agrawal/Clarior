@@ -10,6 +10,8 @@ const ERROR_MESSAGES = {
   ONLY_STUDENTS_CAN_BOOK: "Only students can book sessions",
   INSUFFICIENT_CREDITS: "Insufficient credits. Please buy a plan.",
   SLOT_NOT_FOUND: "Slot not found",
+  SENIOR_NOT_FOUND: "Senior not found",
+  SENIOR_NOT_VERIFIED: "This senior is not verified yet. Please choose another senior.",
   SLOT_ALREADY_BOOKED: "This slot is already booked",
   BOOKING_NOT_FOUND: "Booking not found",
   NOT_AUTHORIZED: "You are not authorized to cancel this booking",
@@ -178,34 +180,17 @@ exports.confirmByStudent = async (req, res) => {
   }
 };
 
-// ❌ CANCEL BOOKING (WITH REFUND)
+// ❌ CANCEL BOOKING (WITH REFUND & SLOT RELEASE)
 exports.cancelBooking = async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.bookingId);
-
-    if (!booking) {
-      return res.status(404).json({ message: "Not found" });
+    const booking = await BookingService.cancelBooking(req.params.bookingId, req.user.id);
+    res.json({ message: "Booking cancelled & credit refunded", booking });
+  } catch (error) {
+    const errorMessage = ERROR_MESSAGES[error.message] || error.message;
+    if (error.message === "NOT_AUTHORIZED") {
+      return sendForbidden(res, errorMessage);
     }
-
-    if (booking.student.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Not authorized" });
-    }
-
-    if (booking.status === "cancelled") {
-      return res.status(400).json({ message: "Already cancelled" });
-    }
-
-    booking.status = "cancelled";
-    await booking.save();
-
-    // ✅ refund credit
-    const user = await User.findById(req.user.id);
-    user.callCredits += 1;
-    await user.save();
-
-    res.json({ message: "Booking cancelled & credit refunded" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendBadRequest(res, errorMessage);
   }
 };
 

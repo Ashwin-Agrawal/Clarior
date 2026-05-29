@@ -1,21 +1,24 @@
 @import "tailwindcss";
 
-html,
-body,
-#root {
-  height: 100%;
-}
+/* ─── Base Layout ─────────────────────────────────────────── */
+html, body, #root { height: 100%; }
+
+html { scroll-behavior: smooth; }
 
 body {
   background: rgb(var(--bg));
   color: rgb(var(--fg));
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ─── Light Mode Tokens ───────────────────────────────────── */
 :root {
   color-scheme: light;
 
   /* neutrals */
-  --bg: 241 247 255; /* trust blue background */
+  --bg: 241 247 255;
   --surface: 255 255 255;
   --surface-2: 248 250 252;
   --border: 205 224 247;
@@ -23,40 +26,35 @@ body {
   --muted: 86 113 152;
 
   /* brand */
-  --primary: 37 99 235; /* blue-600 */
+  --primary: 37 99 235;
   --primary-fg: 255 255 255;
-  --accent: 59 130 246; /* blue-500 */
+  --accent: 59 130 246;
   --accent-fg: 255 255 255;
 
   /* states */
-  --success: 16 185 129; /* emerald-500 */
-  --warning: 245 158 11; /* amber-500 */
-  --danger: 239 68 68; /* red-500 */
+  --success: 16 185 129;
+  --warning: 245 158 11;
+  --danger: 239 68 68;
 
-  /* hero gradient - light mode: subtle, soft blue */
-  --hero-gradient: radial-gradient(
-    circle at top left,
-    rgba(59, 91, 219, 0.08),
-    transparent 45%
-  ), radial-gradient(
-    circle at top right,
-    rgba(14, 165, 233, 0.06),
-    transparent 50%
-  );
-  
-  /* hero blur accents - light mode */
+  /* hero gradient */
+  --hero-gradient: radial-gradient(circle at top left, rgba(59,91,219,0.08), transparent 45%),
+                   radial-gradient(circle at top right, rgba(14,165,233,0.06), transparent 50%);
   --hero-blur-left: rgba(59, 91, 219, 0.08);
   --hero-blur-right: rgba(14, 165, 233, 0.06);
 
-  /* accent badge backgrounds - light mode */
+  /* badge backgrounds */
   --badge-primary: rgba(59, 91, 219, 0.12);
-  --badge-accent: rgba(14, 165, 233, 0.12);
+  --badge-accent:  rgba(14, 165, 233, 0.12);
   --badge-warning: rgba(245, 158, 11, 0.12);
 
-  /* hero card shadow - light mode */
+  /* shadows */
   --shadow-hero: 0 20px 70px rgba(59, 91, 219, 0.12);
+  --shadow-glow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
+  --shadow-lift: 0 4px 16px rgba(0,0,0,0.08), 0 24px 48px rgba(0,0,0,0.08);
 }
 
+/* ─── Dark Mode Tokens ────────────────────────────────────── */
 html.dark {
   color-scheme: dark;
 
@@ -69,51 +67,170 @@ html.dark {
   --primary: 96 165 250;
   --accent: 56 189 248;
 
-  /* hero gradient - dark mode: richer, deeper blue */
-  --hero-gradient: radial-gradient(
-    circle at top left,
-    rgba(96, 165, 250, 0.12),
-    transparent 40%
-  ), radial-gradient(
-    circle at top right,
-    rgba(56, 189, 248, 0.1),
-    transparent 45%
-  );
-
-  /* hero blur accents - dark mode */
-  --hero-blur-left: rgba(96, 165, 250, 0.1);
+  --hero-gradient: radial-gradient(circle at top left, rgba(96,165,250,0.12), transparent 40%),
+                   radial-gradient(circle at top right, rgba(56,189,248,0.10), transparent 45%);
+  --hero-blur-left: rgba(96, 165, 250, 0.10);
   --hero-blur-right: rgba(56, 189, 248, 0.08);
 
-  /* accent badge backgrounds - dark mode */
   --badge-primary: rgba(96, 165, 250, 0.15);
-  --badge-accent: rgba(56, 189, 248, 0.15);
+  --badge-accent:  rgba(56, 189, 248, 0.15);
   --badge-warning: rgba(245, 158, 11, 0.15);
 
-  /* hero card shadow - dark mode */
-  --shadow-hero: 0 20px 70px rgba(96, 165, 250, 0.1);
+  --shadow-hero: 0 20px 70px rgba(96, 165, 250, 0.10);
+  --shadow-glow: 0 0 0 3px rgba(96, 165, 250, 0.30);
 }
 
-/* Smooth theme transition */
+/* ─── Theme Transition ────────────────────────────────────── */
 html.theme-animate * {
-  transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity, transform;
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity;
   transition-duration: 200ms;
   transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-button {
-  background-color: rgb(var(--primary));
-  color: rgb(var(--primary-fg));
-  border-color: rgb(var(--primary));
+/* ─── Gradient Text Utility ──────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, rgb(var(--primary)) 0%, rgb(var(--accent)) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-button:hover {
-  opacity: 0.95;
+.gradient-text-warm {
+  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
+/* ─── Keyframe Animations ────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0 rgba(37,99,235,0.35); }
+  70%  { box-shadow: 0 0 0 10px rgba(37,99,235,0); }
+  100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+}
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+@keyframes float-slow {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+/* ─── Animation Utility Classes ─────────────────────────── */
+.animate-fade-up   { animation: fadeUp   0.6s cubic-bezier(0.22,1,0.36,1) both; }
+.animate-fade-in   { animation: fadeIn   0.5s ease both; }
+.animate-scale-in  { animation: scaleIn  0.4s cubic-bezier(0.22,1,0.36,1) both; }
+.animate-slide-down{ animation: slideDown 0.35s cubic-bezier(0.22,1,0.36,1) both; }
+.animate-count-up  { animation: countUp  0.5s ease both; }
+.animate-float     { animation: float 6s ease-in-out infinite; }
+.animate-float-slow{ animation: float-slow 12s ease-in-out infinite; }
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+
+/* ─── Skeleton Shimmer ───────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg,
+    rgb(var(--surface-2)) 0%,
+    rgb(var(--border)) 50%,
+    rgb(var(--surface-2)) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  border-radius: 12px;
+}
+
+/* ─── Glass Effect ───────────────────────────────────────── */
+.glass {
+  background: rgba(255,255,255,0.4);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+html.dark .glass {
+  background: rgba(15,29,51,0.5);
+  border-color: rgba(255,255,255,0.1);
+}
+
+.majestic-blob {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+  filter: blur(80px);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ─── Brand Typography ───────────────────────────────────── */
 .brand-text {
   font-family: 'Playfair Display', serif;
   font-weight: 800;
   font-size: 23px;
   letter-spacing: 0.5px;
   color: #0e1b2c;
+}
+html.dark .brand-text { color: rgb(var(--fg)); }
+
+.heading-display {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+/* ─── Global Link Hover ──────────────────────────────────── */
+a { transition: color 0.15s ease; }
+
+/* ─── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--border));
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--muted)); }
+
+/* ─── Selection ──────────────────────────────────────────── */
+::selection {
+  background: rgba(37, 99, 235, 0.2);
+  color: rgb(var(--fg));
+}
+
+/* ─── Focus Ring ─────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid rgb(var(--primary));
+  outline-offset: 2px;
+  border-radius: 6px;
 }

@@ -2,62 +2,83 @@ import { Link } from "react-router-dom";
 import { Logo } from "./layout/icons";
 
 function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="border-t border-border bg-surface">
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        <div className="grid md:grid-cols-4 gap-8">
-          <div>
-            <Logo size="footer" />
-            <p className="text-sm text-muted mt-2 leading-relaxed">
-              Talk to real seniors. Get real clarity. Built on trust, quality, and accountability.
+    <footer className="bg-surface border-t border-border">
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12">
+          {/* Brand Column */}
+          <div className="col-span-2 lg:col-span-2">
+            <div className="flex items-center gap-3">
+              <Logo size="footer" />
+              <span className="brand-text font-extrabold text-2xl tracking-wide" style={{ fontFamily: "'Playfair Display', serif" }}>
+                Clarior
+              </span>
+            </div>
+            <p className="mt-6 text-sm text-muted leading-relaxed max-w-xs">
+              Talk to verified seniors from top Indian colleges. Get real clarity, honest advice, and personalized guidance for your academic journey.
             </p>
-          </div>
-
-          <div>
-            <div className="text-sm font-semibold text-fg">Platform</div>
-            <div className="mt-3 space-y-2 text-sm">
-              <Link className="block text-muted hover:text-fg" to="/explore">
-                Seniors
-              </Link>
-              <Link className="block text-muted hover:text-fg" to="/how-it-works">
-                How it works
-              </Link>
-              <Link className="block text-muted hover:text-fg" to="/#pricing">
-                Pricing
-              </Link>
+            {/* Social Links */}
+            <div className="mt-8 flex gap-4">
+              {[
+                { icon: "X", link: "#" },
+                { icon: "LinkedIn", link: "#" },
+                { icon: "Instagram", link: "#" },
+              ].map((s) => (
+                <a
+                  key={s.icon}
+                  href={s.link}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-border text-xs font-bold text-muted hover:border-primary/40 hover:text-primary transition-all hover:-translate-y-1"
+                >
+                  {s.icon[0]}
+                </a>
+              ))}
             </div>
           </div>
 
+          {/* Platform Column */}
           <div>
-            <div className="text-sm font-semibold text-fg">Company</div>
-            <div className="mt-3 space-y-2 text-sm">
-              <Link
-                className="block text-muted hover:text-fg"
-                to="/mentor-guidelines"
-              >
-                Senior Guidelines
-              </Link>
-              <Link
-                className="block text-muted hover:text-fg"
-                to="/contact"
-              >
-                Contact
-              </Link>
-            </div>
+            <h4 className="text-sm font-bold text-fg uppercase tracking-widest">Platform</h4>
+            <ul className="mt-6 space-y-4">
+              <li><Link className="text-sm text-muted hover:text-primary transition" to="/explore">Seniors</Link></li>
+              <li><Link className="text-sm text-muted hover:text-primary transition" to="/how-it-works">How it works</Link></li>
+              <li><Link className="text-sm text-muted hover:text-primary transition" to="/#pricing">Pricing</Link></li>
+              <li><Link className="text-sm text-muted hover:text-primary transition" to="/become-senior">Join as Senior</Link></li>
+            </ul>
           </div>
 
+          {/* Company Column */}
           <div>
-            <div className="text-sm font-semibold text-fg">Legal</div>
-            <div className="mt-3 space-y-2 text-sm text-muted">
-              <div>Privacy Policy (coming soon)</div>
-              <div>Terms (coming soon)</div>
-            </div>
+            <h4 className="text-sm font-bold text-fg uppercase tracking-widest">Company</h4>
+            <ul className="mt-6 space-y-4">
+              <li><Link className="text-sm text-muted hover:text-primary transition" to="/mentor-guidelines">Senior Guidelines</Link></li>
+              <li><Link className="text-sm text-muted hover:text-primary transition" to="/contact">Contact Support</Link></li>
+              <li><Link className="text-sm text-muted hover:text-primary transition" to="/about">Our Mission</Link></li>
+            </ul>
+          </div>
+
+          {/* Legal Column */}
+          <div>
+            <h4 className="text-sm font-bold text-fg uppercase tracking-widest">Legal</h4>
+            <ul className="mt-6 space-y-4">
+              <li><span className="text-sm text-muted cursor-not-allowed">Privacy Policy</span></li>
+              <li><span className="text-sm text-muted cursor-not-allowed">Terms of Service</span></li>
+            </ul>
           </div>
         </div>
 
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-3 text-xs text-muted">
-          <div>© {new Date().getFullYear()} Clarior. All rights reserved.</div>
-          <div>Experince the 10-20 Lakhs value worth 69!</div>
+        {/* Bottom Bar */}
+        <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="text-xs font-medium text-muted">
+            © {currentYear} Clarior Mentorship. Built with ❤️ for students.
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+            <span className="text-xs font-bold text-fg tracking-wide uppercase">
+              Experience the value of clarity for ₹69
+            </span>
+          </div>
         </div>
       </div>
     </footer>
@@ -65,4 +86,3 @@ function Footer() {
 }
 
 export default Footer;
-

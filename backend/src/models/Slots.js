@@ -24,4 +24,10 @@ const slotSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Create indexes for faster queries
+slotSchema.index({ senior: 1 });
+slotSchema.index({ isBooked: 1 });
+slotSchema.index({ date: 1 });
+slotSchema.index({ senior: 1, date: 1, time: 1 }, { unique: true });
+
 module.exports = mongoose.model("Slot", slotSchema);

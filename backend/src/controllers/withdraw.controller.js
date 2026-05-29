@@ -126,3 +126,20 @@ exports.rejectWithdraw = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// 👑 GET PENDING WITHDRAWS (ADMIN)
+exports.getPendingWithdraws = async (req, res) => {
+  try {
+    const withdraws = await Withdraw.find({ status: "pending" })
+      .populate("senior", "name email phone upiId college branch year cgpa")
+      .sort({ createdAt: 1 });
+
+    res.json({
+      success: true,
+      count: withdraws.length,
+      withdraws,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

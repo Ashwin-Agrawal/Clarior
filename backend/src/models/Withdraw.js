@@ -24,4 +24,8 @@ const withdrawSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Create indexes for faster queries
+withdrawSchema.index({ senior: 1 });
+withdrawSchema.index({ status: 1 });
+
 module.exports = mongoose.model("Withdraw", withdrawSchema);
