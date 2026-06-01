@@ -146,34 +146,12 @@ exports.confirmByStudent = async (req, res) => {
       });
     }
 
-    const senior = await User.findById(booking.senior);
-
-    if (!senior.upiId) {
-      return res.status(400).json({
-        message: "Senior has not added UPI",
-      });
-    }
-
-    const payout = parseInt(process.env.PAYOUT_AMOUNT) || 52;
-
-    // ✅ SAFE WALLET UPDATE
-    if (senior.pendingEarnings < payout) {
-      return res.status(400).json({
-        message: "Invalid payout state",
-      });
-    }
-
-    senior.pendingEarnings -= payout;
-    senior.availableBalance += payout;
-
-    await senior.save();
-
     booking.isStudentConfirmed = true;
     booking.status = "completed";
     await booking.save();
 
     res.json({
-      message: "Confirmed. Money released.",
+      message: "Confirmed. Pending admin release.",
     });
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -204,8 +204,10 @@ exports.getPendingReleases = async (req, res) => {
     const Booking = require("../models/Booking");
     const bookings = await Booking.find({
       isSeniorMarkedDone: true,
-      isStudentConfirmed: false,
-      status: "confirmed"
+      $or: [
+        { status: "confirmed", isEarningsReleased: { $ne: true } },
+        { status: "completed", isEarningsReleased: false }
+      ]
     })
       .populate("senior", "name email upiId")
       .populate("student", "name email")
@@ -231,7 +233,7 @@ exports.releaseEarnings = async (req, res) => {
     const booking = await Booking.findById(bookingId);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
 
-    if (!booking.isSeniorMarkedDone || booking.isStudentConfirmed || booking.status !== "confirmed") {
+    if (!booking.isSeniorMarkedDone || booking.isEarningsReleased) {
       return res.status(400).json({ message: "Booking is not eligible for release" });
     }
 
@@ -248,8 +250,10 @@ exports.releaseEarnings = async (req, res) => {
     senior.availableBalance += payout;
     await senior.save();
 
-    booking.isStudentConfirmed = true;
-    booking.status = "completed";
+    booking.isEarningsReleased = true;
+    if (booking.status !== "completed") {
+      booking.status = "completed";
+    }
     await booking.save();
 
     res.json({
