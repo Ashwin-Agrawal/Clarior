@@ -51,7 +51,8 @@ const corsOptions = {
     // Allow non-browser clients (curl, server-to-server).
     if (!origin) return callback(null, true);
     if (allowedOrigins.has(origin)) return callback(null, true);
-    return callback(new Error(`CORS blocked for origin: ${origin}`));
+    // Returning false instead of throwing an Error prevents a 500 Internal Server Error
+    return callback(null, false);
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
