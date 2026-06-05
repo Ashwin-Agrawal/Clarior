@@ -49,9 +49,21 @@ const corsOptions = {
   origin: (origin, callback) => {
     // Allow non-browser clients (curl, server-to-server).
     if (!origin) return callback(null, true);
+
+    // Allow exact whitelisted origins.
     if (allowedOrigins.has(origin)) return callback(null, true);
-    // Returning false instead of throwing an Error prevents a 500 Internal Server Error
-    return callback(null, false);
+
+    // During local development, allow any localhost origin so frontend dev servers
+    // on ports like 3000, 5173, 5174, etc. can talk to this backend.
+    if (
+      process.env.NODE_ENV !== "production" &&
+      /^(https?:\/\/)?(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)
+    ) {
+      return callback(null, true);
+    }
+
+    // Reject all other origins explicitly.
+    return callback(new Error(`CORS origin denied: ${origin}`), false);
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
