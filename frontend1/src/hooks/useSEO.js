@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 
-const useSEO = ({ title, description }) => {
+export default function useSEO(title, description) {
   useEffect(() => {
-    if (title) {
-      document.title = `${title} | Clarior`;
-    }
+    // Set the document title
+    document.title = title ? `${title} | Clarior` : 'Clarior - Your Mentorship Journey';
 
+    // Update or create the meta description
     if (description) {
       let metaDescription = document.querySelector('meta[name="description"]');
       if (metaDescription) {
@@ -18,6 +18,4 @@ const useSEO = ({ title, description }) => {
       }
     }
   }, [title, description]);
-};
-
-export default useSEO;
+}

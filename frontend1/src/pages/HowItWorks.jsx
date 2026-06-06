@@ -52,10 +52,9 @@ function HowItWorks() {
       <Navbar />
 
       {/* Hero */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#1a3a8f] via-primary to-accent py-16">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.1),transparent_55%)]" />
+      <div className="relative overflow-hidden bg-[#1a3a8f] py-16">
         <div className="relative max-w-5xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/25 px-4 py-1.5 text-xs font-semibold text-white mb-4">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#2563eb] border border-[#3b82f6] px-4 py-1.5 text-xs font-semibold text-white mb-4">
             How it works
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>

@@ -70,7 +70,7 @@ function Register() {
   return (
     <div className="min-h-screen flex">
       {/* Branding panel */}
-      <div className="hidden lg:flex lg:w-[46%] flex-col justify-between relative overflow-hidden bg-gradient-to-br from-[#0f2851] via-[#1a3a8f] to-[#2563eb] p-12">
+      <div className="hidden lg:flex lg:w-[46%] flex-col justify-between relative overflow-hidden bg-[#0f2851] p-12">
         <div className="relative flex items-center gap-3">
           <Logo size="footer" />
           <span className="text-white font-extrabold text-2xl" style={{ fontFamily: "'Playfair Display', serif" }}>Clarior</span>
@@ -84,7 +84,7 @@ function Register() {
           </p>
           <div className="grid grid-cols-2 gap-4 mt-8">
             {[["500+","Active seniors"],["₹69","Starting price"],["25min","Per session"],["4.9★","Avg. rating"]].map(([v, l]) => (
-              <div key={l} className="rounded-2xl bg-white/10 border border-white/20 p-4 text-center">
+              <div key={l} className="rounded-2xl bg-[#1a3a8f] border border-[#2563eb] p-4 text-center">
                 <div className="text-2xl font-extrabold text-white">{v}</div>
                 <div className="text-blue-200 text-xs mt-1">{l}</div>
               </div>

@@ -62,8 +62,7 @@ function Home() {
 
         {/* Hero Section */}
         <section className="relative pt-28 pb-32 md:pt-40 md:pb-48 overflow-hidden">
-          <div className="absolute top-[-10%] left-[-10%] majestic-blob animate-float-slow" style={{ backgroundColor: 'rgba(37, 99, 235, 0.2)' }} />
-          <div className="absolute bottom-[-10%] right-[-10%] majestic-blob animate-float-slow delay-500" style={{ backgroundColor: 'rgba(99, 102, 241, 0.15)' }} />
+
           <div className="absolute inset-0 pointer-events-none opacity-40" style={{ background: "var(--hero-gradient)" }} />
           <SiteContainer className="relative">
               <div className="text-center max-w-4xl mx-auto">
@@ -112,7 +111,7 @@ function Home() {
 
         {/* Trust/Colleges Section */}
         <section className="py-32 relative overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 majestic-blob opacity-10" />
+
           <SiteContainer>
             <div className="glass p-12 md:p-20 rounded-[64px] border border-white/20 shadow-2xl">
               <h2 className="text-[12px] font-black uppercase tracking-[0.5em] text-muted mb-16 text-center">Seniors from top institutions</h2>
@@ -163,7 +162,7 @@ function Home() {
               </div>
 
               <div className="relative">
-                <div className="absolute inset-0 bg-primary/20 blur-[120px] rounded-full" />
+
                 <Card className="relative p-8 border-border/50 bg-surface  overflow-hidden shadow-hero hover:shadow-lift transition-all duration-500 hover:scale-[1.02]">
                   <div className="flex items-center gap-4 mb-8">
                     <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold">JD</div>

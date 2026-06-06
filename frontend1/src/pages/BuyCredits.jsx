@@ -245,7 +245,7 @@ function BuyCredits() {
               className="absolute inset-0 w-full h-full object-cover"
               src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=80"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-bg/95 via-bg/80 to-transparent flex items-center">
+            <div className="absolute inset-0 bg-surface flex items-center">
               <div className="px-8 md:px-16 max-w-xl">
                 <h2 className="heading-display text-3xl md:text-4xl font-extrabold tracking-tight text-fg leading-tight">
                   Accelerate your <br /> career goals.

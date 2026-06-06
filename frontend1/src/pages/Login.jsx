@@ -48,8 +48,7 @@ function Login() {
   return (
     <div className="min-h-screen flex">
       {/* ── Left Panel — Branding ─────────────────────────────── */}
-      <div className="hidden lg:flex lg:w-[48%] xl:w-[44%] flex-col justify-between relative overflow-hidden bg-gradient-to-br from-[#1a3a8f] via-[#2563eb] to-[#0ea5e9] p-12">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(14,165,233,0.25),transparent_60%)]" />
+      <div className="hidden lg:flex lg:w-[48%] xl:w-[44%] flex-col justify-between relative overflow-hidden bg-[#1a3a8f] p-12">
 
         {/* Logo */}
         <div className="relative flex items-center gap-3">
@@ -72,14 +71,14 @@ function Login() {
           <ul className="space-y-3 mt-8">
             {trustPoints.map((point) => (
               <li key={point} className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-white text-xs font-bold flex-shrink-0">✓</span>
+                <span className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#2563eb] text-white text-xs font-bold flex-shrink-0">✓</span>
                 <span className="text-blue-50 text-sm leading-6">{point}</span>
               </li>
             ))}
           </ul>
 
           {/* Testimonial snippet */}
-          <div className="mt-8 rounded-2xl bg-white/10 border border-white/20 p-5 backdrop-blur-sm">
+          <div className="mt-8 rounded-2xl bg-[#2563eb] border border-[#3b82f6] p-5">
             <div className="flex gap-0.5 mb-3">
               {[...Array(5)].map((_, i) => (
                 <svg key={i} width="14" height="14" fill="#fbbf24" viewBox="0 0 24 24">

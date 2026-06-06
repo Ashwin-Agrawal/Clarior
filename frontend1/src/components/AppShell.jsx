@@ -81,7 +81,7 @@ function AppShell({ title, subtitle, children }) {
       {/* ── Sidebar ───────────────────────────────────────── */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border/70 lg:bg-surface lg:">
         {/* Top gradient accent */}
-        <div className="h-1 w-full bg-gradient-to-r from-primary via-accent to-primary" />
+        <div className="h-1 w-full bg-primary" />
 
         <div className="flex h-full flex-col justify-between px-4 py-5">
           {/* Logo */}
@@ -112,7 +112,7 @@ function AppShell({ title, subtitle, children }) {
           {/* User card + logout */}
           <div className="rounded-2xl border border-border bg-surface2/80 p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-xs font-bold uppercase tracking-wide text-white shadow-soft">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary text-xs font-bold uppercase tracking-wide text-white shadow-soft">
                 {initials}
               </div>
               <div className="min-w-0">

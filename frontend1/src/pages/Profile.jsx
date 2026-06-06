@@ -98,8 +98,7 @@ function Profile() {
     <>
       <Navbar />
       <main className="bg-bg min-h-screen pb-20 relative overflow-hidden">
-        <div className="absolute top-[-10%] right-[-10%] majestic-blob animate-float-slow opacity-20" />
-        <div className="absolute bottom-[-10%] left-[-10%] majestic-blob animate-float-slow delay-500 opacity-15" />
+
         
         <SiteContainer className="max-w-6xl relative">
           {loading && (
@@ -130,7 +129,7 @@ function Profile() {
                   
                   <div className="absolute inset-0 p-8 md:p-16 flex flex-col items-center justify-center text-center">
                     <div className="flex flex-col items-center gap-6 md:gap-10">
-                      <div className="flex h-32 w-32 md:h-48 md:w-48 flex-shrink-0 items-center justify-center rounded-[40px] bg-white/20  border border-white/40 text-white text-5xl md:text-7xl font-black shadow-2xl animate-float group-hover:scale-105 transition-transform duration-700">
+                      <div className="flex h-32 w-32 md:h-48 md:w-48 flex-shrink-0 items-center justify-center rounded-[40px] bg-[#2563eb] border border-[#3b82f6] text-white text-5xl md:text-7xl font-black shadow-2xl animate-float group-hover:scale-105 transition-transform duration-700">
                         {initials}
                       </div>
                       <div className="space-y-6">
