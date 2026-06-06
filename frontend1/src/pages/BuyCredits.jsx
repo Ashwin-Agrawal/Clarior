@@ -8,8 +8,14 @@ import { useAuth } from "../context/AuthContext";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import SiteContainer from "../components/layout/SiteContainer";
+import useSEO from "../hooks/useSEO";
 
 function CheckIcon() {
+  useSEO({
+    title: "CheckIcon",
+    description: "Clarior CheckIcon page"
+  });
+
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-success">
       <polyline points="20 6 9 17 4 12" />

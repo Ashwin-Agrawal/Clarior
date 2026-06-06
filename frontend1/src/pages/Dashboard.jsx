@@ -5,6 +5,7 @@ import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
+import useSEO from "../hooks/useSEO";
 
 function formatDateTime(value) {
   if (!value) return "—";

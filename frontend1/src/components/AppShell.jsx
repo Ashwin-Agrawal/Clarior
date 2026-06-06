@@ -79,7 +79,7 @@ function AppShell({ title, subtitle, children }) {
   return (
     <div className="min-h-screen bg-bg text-fg">
       {/* ── Sidebar ───────────────────────────────────────── */}
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border/70 lg:bg-surface/98 lg:backdrop-blur-xl">
+      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border/70 lg:bg-surface lg:">
         {/* Top gradient accent */}
         <div className="h-1 w-full bg-gradient-to-r from-primary via-accent to-primary" />
 
@@ -135,7 +135,7 @@ function AppShell({ title, subtitle, children }) {
       {/* ── Main content ──────────────────────────────────── */}
       <main className="min-h-screen lg:pl-64">
         {/* Mobile header */}
-        <div className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-surface/95 backdrop-blur-xl px-4 py-3 lg:hidden">
+        <div className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-surface  px-4 py-3 lg:hidden">
           <button onClick={() => navigate("/dashboard")} className="flex items-center gap-2">
             <Logo size="navbar" />
             <span className="font-extrabold text-base text-fg" style={{ fontFamily: "'Playfair Display', serif" }}>Clarior</span>
@@ -154,7 +154,7 @@ function AppShell({ title, subtitle, children }) {
         <div className="min-h-screen bg-bg pb-20 lg:pb-0">
           <SiteContainer className="py-6 lg:py-8">
             {(title || subtitle) && (
-              <div className="mb-8 rounded-2xl border border-border/70 bg-surface/90 p-5 shadow-soft backdrop-blur-xl">
+              <div className="mb-8 rounded-2xl border border-border/70 bg-surface p-5 shadow-soft ">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div>
                     {title && <h1 className="text-2xl font-extrabold tracking-tight text-fg" style={{ fontFamily: "'Outfit', sans-serif" }}>{title}</h1>}
@@ -175,7 +175,7 @@ function AppShell({ title, subtitle, children }) {
           </SiteContainer>
         </div>
 
-        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-3 py-2 shadow-lift backdrop-blur-xl lg:hidden" aria-label="Primary">
+        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface px-3 py-2 shadow-lift  lg:hidden" aria-label="Primary">
           <div className="mx-auto grid max-w-md gap-1" style={{ gridTemplateColumns: `repeat(${Math.min(nav.length, 4)}, minmax(0, 1fr))` }}>
             {nav.slice(0, 4).map((item) => {
               const active = location.pathname === item.to;

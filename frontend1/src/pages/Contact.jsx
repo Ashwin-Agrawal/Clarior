@@ -4,8 +4,14 @@ import Footer from "../components/Footer";
 import Card from "../components/ui/Card";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
+import useSEO from "../hooks/useSEO";
 
 function Contact() {
+  useSEO({
+    title: "Contact",
+    description: "Clarior Contact page"
+  });
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");

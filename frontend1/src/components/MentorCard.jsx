@@ -62,7 +62,7 @@ function MentorCard({ mentor }) {
           navigate(`/profile/${mentor._id}`);
         }
       }}
-      className="group relative rounded-[32px] border border-border bg-surface/50 backdrop-blur-xl shadow-card hover:shadow-2xl hover:-translate-y-2 hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 cursor-pointer overflow-hidden"
+      className="group relative rounded-[32px] border border-border bg-surface  shadow-card hover:shadow-2xl hover:-translate-y-2 hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 cursor-pointer overflow-hidden"
     >
       {/* Top accent stripe */}
       <div className={`h-1 w-full bg-gradient-to-r ${gradient}`} />

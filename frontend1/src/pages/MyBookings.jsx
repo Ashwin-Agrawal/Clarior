@@ -6,6 +6,7 @@ import AppShell from "../components/AppShell";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Skeleton from "../components/ui/Skeleton";
+import useSEO from "../hooks/useSEO";
 
 function formatDateTime(d) {
   if (!d) return "—";
@@ -30,6 +31,11 @@ async function loadBookings({ setError, setLoading, setBookings }) {
 }
 
 function MyBookings() {
+  useSEO({
+    title: "MyBookings",
+    description: "Clarior MyBookings page"
+  });
+
   const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -6,6 +6,7 @@ import AppShell from "../components/AppShell";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
+import useSEO from "../hooks/useSEO";
 
 function parseSlotDateTime(slotDate, slotTime) {
   if (!slotDate || !slotTime) return null;
@@ -38,6 +39,11 @@ async function loadSeniorSlots({ userId, setLoading, setMySlots, setMsg }) {
 }
 
 function SeniorSlots() {
+  useSEO({
+    title: "SeniorSlots",
+    description: "Clarior SeniorSlots page"
+  });
+
   const { user } = useAuth();
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");

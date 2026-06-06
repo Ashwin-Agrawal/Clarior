@@ -1,6 +1,12 @@
 import Navbar from "../components/Navbar";
+import useSEO from "../hooks/useSEO";
 
 function MentorGuidelines() {
+  useSEO({
+    title: "MentorGuidelines",
+    description: "Clarior MentorGuidelines page"
+  });
+
   return (
     <>
       <Navbar />

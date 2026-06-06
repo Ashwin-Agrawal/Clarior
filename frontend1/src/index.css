@@ -173,13 +173,11 @@ html.theme-animate * {
 
 /* ─── Glass Effect ───────────────────────────────────────── */
 .glass {
-  background: rgba(255,255,255,0.4);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  background: rgb(var(--surface));
   border: 1px solid rgba(255,255,255,0.3);
 }
 html.dark .glass {
-  background: rgba(15,29,51,0.5);
+  background: rgb(var(--surface));
   border-color: rgba(255,255,255,0.1);
 }
 

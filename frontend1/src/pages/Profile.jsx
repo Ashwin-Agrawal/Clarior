@@ -8,6 +8,7 @@ import Button from "../components/ui/Button";
 import Skeleton from "../components/ui/Skeleton";
 import Footer from "../components/Footer";
 import SiteContainer from "../components/layout/SiteContainer";
+import useSEO from "../hooks/useSEO";
 
 function getGradient(name = "") {
   const g = ["from-violet-600 to-indigo-600","from-rose-600 to-pink-600","from-teal-600 to-emerald-600","from-amber-600 to-orange-600","from-blue-600 to-cyan-600","from-fuchsia-600 to-purple-600"];
@@ -129,7 +130,7 @@ function Profile() {
                   
                   <div className="absolute inset-0 p-8 md:p-16 flex flex-col items-center justify-center text-center">
                     <div className="flex flex-col items-center gap-6 md:gap-10">
-                      <div className="flex h-32 w-32 md:h-48 md:w-48 flex-shrink-0 items-center justify-center rounded-[40px] bg-white/20 backdrop-blur-xl border border-white/40 text-white text-5xl md:text-7xl font-black shadow-2xl animate-float group-hover:scale-105 transition-transform duration-700">
+                      <div className="flex h-32 w-32 md:h-48 md:w-48 flex-shrink-0 items-center justify-center rounded-[40px] bg-white/20  border border-white/40 text-white text-5xl md:text-7xl font-black shadow-2xl animate-float group-hover:scale-105 transition-transform duration-700">
                         {initials}
                       </div>
                       <div className="space-y-6">
@@ -161,7 +162,7 @@ function Profile() {
                   { label: "Experience", value: mentor.year ? `${mentor.year}th Year` : "Senior", icon: "experience" },
                   { label: "Response", value: "< 24h", icon: "response" },
                 ].map(stat => (
-                  <Card key={stat.label} className="p-6 md:p-8 text-center bg-surface/90 backdrop-blur-2xl shadow-hero border-white/50 dark:border-white/5 rounded-3xl">
+                  <Card key={stat.label} className="p-6 md:p-8 text-center bg-surface  shadow-hero border-white/50 dark:border-white/5 rounded-3xl">
                     <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                       <StatIcon type={stat.icon} />
                     </div>
@@ -176,7 +177,7 @@ function Profile() {
                 <div className="space-y-12">
                   <section>
                     <h2 className="heading-display text-2xl font-black text-fg uppercase tracking-widest mb-6">About Me</h2>
-                    <Card className="p-10 border-border/50 bg-surface/50 backdrop-blur-sm">
+                    <Card className="p-10 border-border/50 bg-surface ">
                       <StarRow rating={mentor.rating} reviews={mentor.numReviews} />
                       <p className="mt-8 text-fg/90 text-lg leading-relaxed font-medium">
                         {mentor.bio || "Hello! I'm here to help you navigate the complex world of college admissions and career planning. Whether you're worried about which branch to pick or how to prepare for placements, I've got you covered with honest, firsthand experience."}
@@ -287,7 +288,7 @@ function Profile() {
 
       {/* Sticky Mobile Booking Bar */}
       {!loading && mentor && slots.length > 0 && (
-        <div className="fixed bottom-0 left-0 w-full p-4 bg-surface/80 backdrop-blur-xl border-t border-border z-[60] md:hidden animate-slide-down">
+        <div className="fixed bottom-0 left-0 w-full p-4 bg-surface  border-t border-border z-[60] md:hidden animate-slide-down">
           <div className="flex items-center justify-between gap-4">
             <div>
               <div className="text-[10px] font-black uppercase text-muted tracking-widest">Next available</div>

@@ -9,6 +9,7 @@ import iitDelhiLogo from "../assets/iitdelhi.jpg";
 import iitBomabay from "../assets/iitbombay.png";
 import dtuLogo from "../assets/dtu.png";
 import bitsLogo from "../assets/bitapilani.jpg";
+import useSEO from "../hooks/useSEO";
 
 const stats = [
   { label: "Active Seniors", value: "200+", icon: "users" },
@@ -66,7 +67,7 @@ function Home() {
           <div className="absolute inset-0 pointer-events-none opacity-40" style={{ background: "var(--hero-gradient)" }} />
           <SiteContainer className="relative">
               <div className="text-center max-w-4xl mx-auto">
-                <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-surface/80 px-4 py-2 text-[11px] font-black text-primary uppercase tracking-[0.18em] mb-8 animate-fade-in shadow-sm backdrop-blur-xl mx-auto">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-surface px-4 py-2 text-[11px] font-black text-primary uppercase tracking-[0.18em] mb-8 animate-fade-in shadow-sm  mx-auto">
                   <span className="h-2 w-2 rounded-full bg-success shadow-[0_0_0_4px_rgba(16,185,129,0.14)]" />
                   Trusted by 5000+ students
                 </div>
@@ -163,7 +164,7 @@ function Home() {
 
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 blur-[120px] rounded-full" />
-                <Card className="relative p-8 border-border/50 bg-surface/50 backdrop-blur-3xl overflow-hidden shadow-hero hover:shadow-lift transition-all duration-500 hover:scale-[1.02]">
+                <Card className="relative p-8 border-border/50 bg-surface  overflow-hidden shadow-hero hover:shadow-lift transition-all duration-500 hover:scale-[1.02]">
                   <div className="flex items-center gap-4 mb-8">
                     <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold">JD</div>
                     <div>
@@ -195,7 +196,7 @@ function Home() {
         </section>
 
         {/* Pricing Section */}
-        <section id="pricing" className="scroll-mt-28 py-24 bg-surface/35 border-y border-border/50">
+        <section id="pricing" className="scroll-mt-28 py-24 bg-surface border-y border-border/50">
           <SiteContainer>
             <div className="mx-auto max-w-3xl text-center">
               <div className="text-[10px] font-black uppercase tracking-[0.25em] text-primary">Simple pricing</div>

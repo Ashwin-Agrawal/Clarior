@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { Logo } from "../components/layout/icons";
+import useSEO from "../hooks/useSEO";
 
 const trustPoints = [
   "Verified seniors from top Indian colleges",
@@ -13,6 +14,11 @@ const trustPoints = [
 ];
 
 function Login() {
+  useSEO({
+    title: "Login",
+    description: "Clarior Login page"
+  });
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setUser } = useAuth();

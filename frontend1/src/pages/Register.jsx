@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { Logo } from "../components/layout/icons";
+import useSEO from "../hooks/useSEO";
 
 function PasswordStrength({ password }) {
   const checks = [

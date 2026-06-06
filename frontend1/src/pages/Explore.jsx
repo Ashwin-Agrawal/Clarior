@@ -6,6 +6,7 @@ import MentorCard from "../components/MentorCard";
 import Skeleton from "../components/ui/Skeleton";
 import Button from "../components/ui/Button";
 import SiteContainer from "../components/layout/SiteContainer";
+import useSEO from "../hooks/useSEO";
 
 const DOMAINS = ["All", "Engineering", "Medical", "Commerce", "Arts", "Law", "Other"];
 
@@ -76,7 +77,7 @@ function Explore() {
 
             {/* Search & Filter Bar */}
             <div className="mt-12 max-w-5xl mx-auto space-y-4 animate-fade-up delay-100">
-              <div className="rounded-[32px] border border-border bg-surface/80 p-3 shadow-card backdrop-blur-xl">
+              <div className="rounded-[32px] border border-border bg-surface p-3 shadow-card ">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center">
                   <div className="relative flex-1 group">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors">
@@ -140,7 +141,7 @@ function Explore() {
                   className={`px-5 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
                     course === d 
                       ? "bg-primary text-white shadow-hero" 
-                      : "bg-surface/50 backdrop-blur-sm border border-border text-muted hover:border-primary/40 hover:text-primary"
+                      : "bg-surface  border border-border text-muted hover:border-primary/40 hover:text-primary"
                   }`}
                 >
                   {d}

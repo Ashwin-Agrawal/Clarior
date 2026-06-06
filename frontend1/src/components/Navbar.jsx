@@ -68,7 +68,7 @@ function Navbar() {
     <div className="sticky top-0 z-50 w-full">
       {/* Desktop floating pill navbar */}
       <SiteContainer className="py-3">
-        <div className="mx-auto flex w-full max-w-[960px] items-center gap-2 rounded-2xl border border-border bg-surface/95 px-3 py-2.5 shadow-[0_8px_32px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:rounded-full sm:px-4">
+        <div className="mx-auto flex w-full max-w-[960px] items-center gap-2 rounded-2xl border border-border bg-surface px-3 py-2.5 shadow-[0_8px_32px_rgba(15,23,42,0.10)]  sm:rounded-full sm:px-4">
           {/* Logo + Brand */}
           <button
             type="button"
@@ -169,7 +169,7 @@ function Navbar() {
 
         {/* Mobile Menu Dropdown */}
         {menuOpen && (
-          <div className="mx-auto mt-2 w-full max-w-[960px] animate-slide-down rounded-2xl border border-border bg-surface/98 shadow-lift backdrop-blur-xl p-4 md:hidden">
+          <div className="mx-auto mt-2 w-full max-w-[960px] animate-slide-down rounded-2xl border border-border bg-surface shadow-lift  p-4 md:hidden">
             <nav className="flex flex-col gap-1">
               {filteredItems.map((item) => {
                 const isActive = item.to === "/#pricing"

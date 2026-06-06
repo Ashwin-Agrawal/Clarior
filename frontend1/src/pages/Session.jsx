@@ -6,6 +6,7 @@ import AppShell from "../components/AppShell";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
+import useSEO from "../hooks/useSEO";
 
 const SESSION_SECONDS = 25 * 60;
 

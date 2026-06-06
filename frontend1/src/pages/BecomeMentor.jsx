@@ -8,8 +8,14 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Card from "../components/ui/Card";
 import SiteContainer from "../components/layout/SiteContainer";
+import useSEO from "../hooks/useSEO";
 
 function BecomeMentor() {
+  useSEO({
+    title: "BecomeMentor",
+    description: "Clarior BecomeMentor page"
+  });
+
   const { user, fetchUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

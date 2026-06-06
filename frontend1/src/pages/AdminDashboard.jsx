@@ -3,6 +3,7 @@ import AppShell from "../components/AppShell";
 import api from "../services/api";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
+import useSEO from "../hooks/useSEO";
 
 async function fetchGoogleStatus(setGoogleStatus) {
   try {
@@ -36,6 +37,11 @@ async function loadAdminData({ setMsg, setLoading, setUsers, setPending, setGoog
 }
 
 function AdminDashboard() {
+  useSEO({
+    title: "AdminDashboard",
+    description: "Clarior AdminDashboard page"
+  });
+
   const [users, setUsers] = useState([]);
   const [pending, setPending] = useState([]);
   const [pendingPayouts, setPendingPayouts] = useState([]);
