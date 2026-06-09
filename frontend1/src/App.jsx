@@ -23,6 +23,9 @@ import HowItWorks from "./pages/HowItWorks";
 import Contact from "./pages/Contact";
 import BecomeMentor from "./pages/BecomeMentor";
 import AdminDashboard from "./pages/AdminDashboard";
+import About from "./pages/About";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 function App() {
   return (
@@ -43,6 +46,9 @@ function App() {
         <Route path="/become-senior" element={<BecomeMentor />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
 
         {/* 🔐 PROTECTED ROUTE */}
         <Route
@@ -91,7 +97,16 @@ function App() {
         />
 
         {/* 🧾 VERIFY PAGE */}
-        <Route path="/verify" element={<Verify />} />
+        <Route
+          path="/verify"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["senior"]}>
+                <Verify />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
 
       </Routes>
     </>

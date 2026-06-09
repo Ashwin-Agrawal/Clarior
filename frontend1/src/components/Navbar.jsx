@@ -36,13 +36,22 @@ function SunIcon() {
 }
 
 function useDarkMode() {
-  const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
+  const [dark, setDark] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    if (saved !== null) {
+      const isDark = saved === 'true';
+      document.documentElement.classList.toggle('dark', isDark);
+      return isDark;
+    }
+    return document.documentElement.classList.contains('dark');
+  });
   const toggle = () => {
-    document.documentElement.classList.add("theme-animate");
+    document.documentElement.classList.add('theme-animate');
     const next = !dark;
-    document.documentElement.classList.toggle("dark", next);
+    document.documentElement.classList.toggle('dark', next);
+    localStorage.setItem('darkMode', String(next));
     setDark(next);
-    setTimeout(() => document.documentElement.classList.remove("theme-animate"), 300);
+    setTimeout(() => document.documentElement.classList.remove('theme-animate'), 300);
   };
   return [dark, toggle];
 }
@@ -106,7 +115,6 @@ function Navbar() {
 
           {/* Right side actions */}
           <div className="flex items-center gap-2 ml-auto">
-            {/* Dark mode toggle - hidden currently
             <button
               type="button"
               onClick={toggleDark}
@@ -115,7 +123,6 @@ function Navbar() {
             >
               {dark ? <SunIcon /> : <MoonIcon />}
             </button>
-            */}
 
             {user ? (
               <button

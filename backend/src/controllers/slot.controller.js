@@ -1,4 +1,5 @@
 const Slot = require("../models/Slots");
+const mongoose = require("mongoose");
 
 // 👨‍🏫 Create single slot
 exports.createSlot = async (req, res) => {
@@ -44,10 +45,11 @@ exports.createSlot = async (req, res) => {
       });
     }
 
-    // 🔒 prevent duplicate slot for same senior
+    // Fix 6a: Use Date object for duplicate check to avoid type mismatch
+    const dateObj = new Date(date);
     const existing = await Slot.findOne({
       senior: req.user.id,
-      date,
+      date: dateObj,
       time,
     });
 
@@ -58,9 +60,10 @@ exports.createSlot = async (req, res) => {
       });
     }
 
+    // Fix 6a: Store dateObj (Date) instead of raw string
     const slot = await Slot.create({
       senior: req.user.id,
-      date,
+      date: dateObj,
       time,
     });
 
@@ -74,26 +77,50 @@ exports.createSlot = async (req, res) => {
   }
 };
 
-// 👨‍🏫 Create multiple slots (BULK)
+// 👨‍🏫 Create multiple slots (BULK) — Fix 6c: add date/time validation
 exports.createSlots = async (req, res) => {
   try {
     const { slots } = req.body;
+
+    if (!Array.isArray(slots) || slots.length === 0) {
+      return res.status(400).json({ success: false, message: "slots array is required" });
+    }
 
     // remove duplicates before inserting
     const newSlots = [];
 
     for (let slot of slots) {
+      const { date, time } = slot;
+
+      // Fix 6c: Validate each slot's date and time
+      if (!date || !time) {
+        return res.status(400).json({ success: false, message: "Each slot must have date and time" });
+      }
+
+      const slotDate = new Date(date);
+      if (isNaN(slotDate.getTime())) {
+        return res.status(400).json({ success: false, message: `Invalid date format: ${date}` });
+      }
+
+      if (slotDate < new Date()) {
+        return res.status(400).json({ success: false, message: `Slot date must be in the future: ${date}` });
+      }
+
+      if (!/^\d{1,2}:\d{2}(-\d{1,2}:\d{2})?$/.test(time)) {
+        return res.status(400).json({ success: false, message: `Invalid time format: ${time}` });
+      }
+
       const exists = await Slot.findOne({
         senior: req.user.id,
-        date: slot.date,
-        time: slot.time,
+        date: slotDate,
+        time,
       });
 
       if (!exists) {
         newSlots.push({
           senior: req.user.id,
-          date: slot.date,
-          time: slot.time,
+          date: slotDate,
+          time,
         });
       }
     }
@@ -152,10 +179,15 @@ exports.getAvailableSlots = async (req, res) => {
   }
 };
 
-// 🎯 Get slots of specific senior
+// 🎯 Get slots of specific senior — Fix 6b: ObjectId validation
 exports.getSlotsBySenior = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Fix 6b: Validate ObjectId before querying
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid senior ID" });
+    }
 
     const slots = await Slot.find({
       senior: id,

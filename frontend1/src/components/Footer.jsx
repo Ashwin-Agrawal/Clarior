@@ -22,13 +22,15 @@ function Footer() {
             {/* Social Links */}
             <div className="mt-8 flex gap-4">
               {[
-                { icon: "X", link: "#" },
-                { icon: "LinkedIn", link: "#" },
-                { icon: "Instagram", link: "#" },
+                { icon: "X", link: "https://x.com/clarior_in" },
+                { icon: "LinkedIn", link: "https://linkedin.com/company/clarior" },
+                { icon: "Instagram", link: "https://instagram.com/clarior.in" },
               ].map((s) => (
                 <a
                   key={s.icon}
                   href={s.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex h-9 w-9 items-center justify-center rounded-xl border border-border text-xs font-bold text-muted hover:border-primary/40 hover:text-primary transition-all hover:-translate-y-1"
                 >
                   {s.icon[0]}
@@ -62,8 +64,8 @@ function Footer() {
           <div>
             <h4 className="text-sm font-bold text-fg uppercase tracking-widest">Legal</h4>
             <ul className="mt-6 space-y-4">
-              <li><span className="text-sm text-muted cursor-not-allowed">Privacy Policy</span></li>
-              <li><span className="text-sm text-muted cursor-not-allowed">Terms of Service</span></li>
+              <li><Link className="text-sm text-muted hover:text-primary transition" to="/privacy">Privacy Policy</Link></li>
+              <li><Link className="text-sm text-muted hover:text-primary transition" to="/terms">Terms of Service</Link></li>
             </ul>
           </div>
         </div>

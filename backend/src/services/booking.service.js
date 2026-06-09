@@ -25,20 +25,20 @@ class BookingService {
       if (user.role !== "student") throw new Error("ONLY_STUDENTS_CAN_BOOK");
       if (user.callCredits <= 0) throw new Error("INSUFFICIENT_CREDITS");
 
-      // 2. Get slot with lock
-      const slot = await Slot.findById(slotId).session(session);
-      if (!slot) throw new Error("SLOT_NOT_FOUND");
-      if (slot.isBooked) throw new Error("SLOT_ALREADY_BOOKED");
+      // 2. Atomically lock the slot (prevents race conditions)
+      const slot = await Slot.findOneAndUpdate(
+        { _id: slotId, isBooked: false },
+        { $set: { isBooked: true } },
+        { new: true, session }
+      );
+      if (!slot) throw new Error("SLOT_ALREADY_BOOKED");
 
       // 3. Verify senior exists and is verified
       const senior = await User.findById(slot.senior).session(session);
       if (!senior || senior.role !== "senior") throw new Error("SENIOR_NOT_FOUND");
       if (!senior.isVerified) throw new Error("SENIOR_NOT_VERIFIED");
 
-      // 4. Mark slot as booked
-      await Slot.updateOne({ _id: slotId }, { isBooked: true }).session(session);
-
-      // 5. Deduct credits
+      // 4. Deduct credits
       user.callCredits -= 1;
       await user.save({ session });
 

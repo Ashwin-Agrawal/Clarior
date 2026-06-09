@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const isDev = import.meta.env.DEV;
-  if (isDev) console.log("[AuthContext] Render - user:", user?._id, "loading:", loading);
 
   // 🔒 Stabilized setter: only update state when the user data actually changes.
   // Without this, every setUser(newObj) — even with identical data — creates a new
@@ -27,6 +26,10 @@ export const AuthProvider = ({ children }) => {
       setUserRaw(next);
     }
   }, [isDev]);
+
+  useEffect(() => {
+    if (isDev) console.log("[AuthContext] Render - user:", user?._id, "loading:", loading);
+  }, [user, loading, isDev]);
 
   const fetchUser = useCallback(async () => {
     if (isDev) console.log("[AuthContext] fetchUser starting...");

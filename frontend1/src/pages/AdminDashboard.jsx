@@ -187,6 +187,13 @@ function AdminDashboard() {
           </div>
 
           <div className="space-y-4">
+            {loading && (
+              <div className="space-y-4">
+                {[1,2,3].map(i => (
+                  <div key={i} className="h-24 rounded-2xl bg-surface2 animate-pulse" />
+                ))}
+              </div>
+            )}
             {pending.map((s, idx) => (
               <Card key={s._id} className="p-6 animate-fade-up" style={{ animationDelay: `${idx * 100}ms` }}>
                 <div className="flex flex-col md:flex-row justify-between gap-6">
@@ -252,6 +259,13 @@ function AdminDashboard() {
           </div>
 
           <div className="space-y-4">
+            {loading && (
+              <div className="space-y-4">
+                {[1,2,3].map(i => (
+                  <div key={i} className="h-24 rounded-2xl bg-surface2 animate-pulse" />
+                ))}
+              </div>
+            )}
             {pendingPayouts.map((p, idx) => (
               <Card key={p._id} className="p-6 animate-fade-up" style={{ animationDelay: `${idx * 100}ms` }}>
                 <div className="flex flex-col md:flex-row justify-between gap-6">
@@ -304,6 +318,13 @@ function AdminDashboard() {
           </div>
 
           <div className="space-y-4">
+            {loading && (
+              <div className="space-y-4">
+                {[1,2,3].map(i => (
+                  <div key={i} className="h-24 rounded-2xl bg-surface2 animate-pulse" />
+                ))}
+              </div>
+            )}
             {pendingReleases.map((b, idx) => (
               <Card key={b._id} className="p-6 animate-fade-up" style={{ animationDelay: `${idx * 100}ms` }}>
                 <div className="flex flex-col md:flex-row justify-between gap-6">

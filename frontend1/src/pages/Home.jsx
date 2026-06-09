@@ -43,10 +43,13 @@ function LineIcon({ name, className = "h-5 w-5" }) {
 }
 
 function Home() {
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+    const handleScroll = () => {
+      const progress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+      setScrolled(Math.min(progress, 1));
+    };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -57,7 +60,7 @@ function Home() {
       <main className="bg-bg overflow-x-hidden">
         {/* Progress Bar */}
         <div className="fixed top-0 left-0 w-full h-1 z-[60] pointer-events-none">
-          <div className="h-full bg-primary origin-left transition-transform duration-150" style={{ transform: `scaleX(${scrolled ? 1 : 0})` }} />
+          <div className="h-full bg-primary origin-left transition-transform duration-150" style={{ transform: `scaleX(${scrolled})` }} />
         </div>
 
         {/* Hero Section */}

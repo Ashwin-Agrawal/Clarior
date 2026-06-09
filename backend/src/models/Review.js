@@ -4,10 +4,12 @@ const reviewSchema = new mongoose.Schema({
   student: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    required: true,
   },
   senior: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    required: true,
   },
   rating: {
     type: Number,

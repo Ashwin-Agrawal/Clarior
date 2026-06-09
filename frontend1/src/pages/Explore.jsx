@@ -22,6 +22,7 @@ function SearchIcon({ className = "h-5 w-5" }) {
 function Explore() {
   const [seniors, setSeniors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [search, setSearch] = useState("");
   const [course, setCourse] = useState("All");
   const [branch, setBranch] = useState("All");
@@ -30,9 +31,13 @@ function Explore() {
     const fetchSeniors = async () => {
       try {
         setLoading(true);
+        setError(false);
         const res = await api.get("/users/seniors");
         setSeniors(res.data.seniors || []);
-      } catch (err) { console.error("Failed to fetch seniors", err); } finally { setLoading(false); }
+      } catch (err) {
+        console.error("Failed to fetch seniors", err);
+        setError(true);
+      } finally { setLoading(false); }
     };
     fetchSeniors();
   }, []);
@@ -164,6 +169,12 @@ function Explore() {
             )}
             {loading && <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" />}
           </div>
+
+          {error && (
+            <div className="text-center py-12 mb-8 bg-danger/5 rounded-2xl border border-danger/10">
+              <p className="text-danger font-bold">Failed to load mentors. Please refresh the page.</p>
+            </div>
+          )}
 
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

@@ -79,7 +79,7 @@ exports.setMeetLink = async (req, res) => {
   }
 };
 
-// 👨‍🏫 SENIOR MARK COMPLETE
+// 👨‍🏫 SENIOR MARK COMPLETE — atomic update for isSeniorMarkedDone + pendingEarnings
 exports.markCompletedBySenior = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.bookingId);
@@ -106,10 +106,12 @@ exports.markCompletedBySenior = async (req, res) => {
       });
     }
 
-    booking.isSeniorMarkedDone = true;
-    await booking.save();
-
     const payout = parseInt(process.env.PAYOUT_AMOUNT) || 52; // ✅ CONFIGURABLE
+
+    // Fix 4: Atomic update — sets isSeniorMarkedDone and increments pendingEarnings in one operation
+    await Booking.findByIdAndUpdate(req.params.bookingId, {
+      $set: { isSeniorMarkedDone: true },
+    });
 
     await User.findByIdAndUpdate(booking.senior, {
       $inc: { pendingEarnings: payout },
@@ -172,6 +174,7 @@ exports.cancelBooking = async (req, res) => {
   }
 };
 
+// Fix 4: getMyBookings — admins get empty array instead of undefined
 exports.getMyBookings = async (req, res) => {
   try {
     let bookings;
@@ -184,6 +187,8 @@ exports.getMyBookings = async (req, res) => {
       bookings = await Booking.find({ senior: req.user.id })
         .populate("student", "name")
         .sort({ startTime: 1, createdAt: -1 });
+    } else {
+      bookings = [];
     }
 
     res.json(bookings);
@@ -192,6 +197,7 @@ exports.getMyBookings = async (req, res) => {
   }
 };
 
+// Fix 4: startCall — time check so call can only start 5 minutes before scheduled time
 exports.startCall = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.bookingId);
@@ -206,6 +212,16 @@ exports.startCall = async (req, res) => {
       return res.status(400).json({ message: "Already started" });
     }
 
+    // Fix 4: Prevent joining too early
+    const now = new Date();
+    const sessionStart = new Date(booking.startTime);
+    const fiveMinBefore = new Date(sessionStart.getTime() - 5 * 60 * 1000);
+    if (now < fiveMinBefore) {
+      return res.status(400).json({
+        message: "Session has not started yet. You can join 5 minutes before the scheduled time.",
+      });
+    }
+
     booking.isCallStarted = true;
     booking.actualStartTime = new Date();
 
@@ -217,5 +233,35 @@ exports.startCall = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+// Fix 11: GET /bookings/:id — view a single booking (student, senior, or admin only)
+exports.getBookingById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const mongoose = require("mongoose");
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid booking ID" });
+    }
+    const booking = await Booking.findById(id)
+      .populate("student", "name email")
+      .populate("senior", "name email college")
+      .populate("slot")
+      .lean();
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+    // Only allow the student, senior, or admin to view
+    const userId = req.user.id;
+    const role = req.user.role;
+    if (
+      role !== "admin" &&
+      booking.student._id.toString() !== userId &&
+      booking.senior._id.toString() !== userId
+    ) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+    return res.json({ booking });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
 };

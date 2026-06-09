@@ -93,10 +93,18 @@ exports.verifySenior = async (req, res) => {
 
 
 
-// ❌ REJECT / DELETE SENIOR (OPTIONAL BUT PRO 🔥)
+// ❌ REJECT / DELETE USER — with cascade cleanup
 exports.deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
+    const Slot = require("../models/Slots");
+    const Booking = require("../models/Booking");
+    const Review = require("../models/Review");
+
+    // Cascade cleanup before deleting the user
+    await Slot.deleteMany({ senior: userId });
+    await Booking.updateMany({ senior: userId }, { $set: { status: "cancelled" } });
+    await Review.deleteMany({ senior: userId });
 
     const user = await User.findByIdAndDelete(userId);
 
@@ -202,12 +210,10 @@ exports.fastForwardBooking = async (req, res) => {
 exports.getPendingReleases = async (req, res) => {
   try {
     const Booking = require("../models/Booking");
+    // Fix 7b: simplified query — any booking where senior marked done but earnings not yet released
     const bookings = await Booking.find({
       isSeniorMarkedDone: true,
-      $or: [
-        { status: "confirmed", isEarningsReleased: { $ne: true } },
-        { status: "completed", isEarningsReleased: false }
-      ]
+      isEarningsReleased: { $ne: true },
     })
       .populate("senior", "name email upiId")
       .populate("student", "name email")
@@ -227,28 +233,24 @@ exports.getPendingReleases = async (req, res) => {
 exports.releaseEarnings = async (req, res) => {
   try {
     const Booking = require("../models/Booking");
-    const User = require("../models/User");
     const { bookingId } = req.params;
 
-    const booking = await Booking.findById(bookingId);
+    const booking = await Booking.findById(bookingId).populate("senior");
     if (!booking) return res.status(404).json({ message: "Booking not found" });
 
     if (!booking.isSeniorMarkedDone || booking.isEarningsReleased) {
       return res.status(400).json({ message: "Booking is not eligible for release" });
     }
 
-    const senior = await User.findById(booking.senior);
-    if (!senior) return res.status(404).json({ message: "Senior not found" });
-
     const payout = parseInt(process.env.PAYOUT_AMOUNT) || 52;
 
-    if (senior.pendingEarnings < payout) {
-      return res.status(400).json({ message: "Senior has insufficient pending earnings" });
-    }
-
-    senior.pendingEarnings -= payout;
-    senior.availableBalance += payout;
-    await senior.save();
+    // Fix 7a: Atomic update — prevents race conditions on balance fields
+    const updated = await User.findOneAndUpdate(
+      { _id: booking.senior._id, pendingEarnings: { $gte: payout } },
+      { $inc: { pendingEarnings: -payout, availableBalance: payout } },
+      { new: true }
+    );
+    if (!updated) return res.status(400).json({ message: "Insufficient pending earnings" });
 
     booking.isEarningsReleased = true;
     if (booking.status !== "completed") {
@@ -259,7 +261,7 @@ exports.releaseEarnings = async (req, res) => {
     res.json({
       success: true,
       message: "Earnings released successfully",
-      bookingId: booking._id
+      bookingId: booking._id,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

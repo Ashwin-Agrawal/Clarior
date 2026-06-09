@@ -67,12 +67,18 @@ exports.oauthCallback = async (req, res) => {
 };
 
 exports.status = async (req, res) => {
-  const doc = await GoogleToken.findOne({ provider: "google" }).lean();
-  return res.json({
-    connected: Boolean(doc?.refreshToken),
-    updatedAt: doc?.updatedAt || null,
-    scopes: doc?.scope || null,
-  });
+  try {
+    const doc = await GoogleToken.findOne({ provider: "google" }).lean();
+    console.log("👉 Google Status Check Hit! Token found in DB:", !!doc);
+    return res.json({
+      connected: Boolean(doc?.refreshToken),
+      updatedAt: doc?.updatedAt || null,
+      scopes: doc?.scope || null,
+    });
+  } catch (err) {
+    console.error("👉 Google Status Check Error:", err);
+    return res.status(500).json({ message: err.message });
+  }
 };
 
 // Creates a Meet link by inserting a Calendar event with conferenceData.

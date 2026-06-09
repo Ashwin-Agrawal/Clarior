@@ -11,11 +11,6 @@ import SiteContainer from "../components/layout/SiteContainer";
 import useSEO from "../hooks/useSEO";
 
 function CheckIcon() {
-  useSEO({
-    title: "CheckIcon",
-    description: "Clarior CheckIcon page"
-  });
-
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-success">
       <polyline points="20 6 9 17 4 12" />
@@ -49,7 +44,8 @@ function FeatureIcon({ name }) {
 }
 
 function BuyCredits() {
-  const { user } = useAuth();
+  useSEO({ title: 'Buy Credits', description: 'Buy credits to book mentorship sessions on Clarior' });
+  const { user, fetchUser } = useAuth();
   const [loadingPlan, setLoadingPlan] = useState("");
   const [status, setStatus] = useState({ type: "", text: "" });
 
@@ -82,8 +78,13 @@ function BuyCredits() {
         prefill: { email: user?.email, name: user?.name },
         theme: { color: "#2563eb" },
         handler: async (response) => {
-          await api.post("/payment/verify", response);
-          setStatus({ type: "success", text: "Payment successful! Credits added to your account." });
+          try {
+            await api.post('/payment/verify', response);
+            await fetchUser();
+            setStatus({ type: 'success', text: 'Payment successful! Credits added to your account.' });
+          } catch (err) {
+            setStatus({ type: 'error', text: err?.response?.data?.message || 'Payment verification failed. Contact support.' });
+          }
         },
       };
 

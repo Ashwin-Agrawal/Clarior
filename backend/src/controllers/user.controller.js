@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const { sendSuccess, sendError } = require("../utils/response.util");
 
-// 🎯 Get all seniors
+// 🎯 Get all seniors — Fix 5: only return safe public fields
 exports.getAllSeniors = async (req, res) => {
   try {
     const { q, college, domain, course, branch } = req.query;
@@ -38,7 +38,10 @@ exports.getAllSeniors = async (req, res) => {
 
     const filter = and.length === 1 ? and[0] : { $and: and };
 
-    const seniors = await User.find(filter).select("-password");
+    // Fix 5: Only expose safe public fields — no phone, upiId, balances, credits, payments
+    const seniors = await User.find(filter).select(
+      "name college branch domain bio rating numReviews isVerified year linkedin sessionsCompleted"
+    );
 
     res.status(200).json({
       success: true,
@@ -157,5 +160,45 @@ exports.getMe = async (req, res) => {
     return sendSuccess(res, "User retrieved successfully", { user });
   } catch (error) {
     return sendError(res, error.message);
+  }
+};
+
+// Fix 10: GET /users/seniors/:id — public endpoint to fetch a single verified senior
+exports.getSeniorById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const mongoose = require("mongoose");
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid senior ID" });
+    }
+    const senior = await User.findOne({ _id: id, role: "senior", isVerified: true }).select(
+      "name college branch domain bio rating numReviews isVerified year linkedin sessionsCompleted"
+    );
+    if (!senior) return res.status(404).json({ message: "Senior not found" });
+    return res.json({ senior });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+// Fix 12: PATCH /users/verification-details — atomic college + upiId update for seniors
+exports.updateVerificationDetails = async (req, res) => {
+  try {
+    const { college, upiId } = req.body;
+    if (!college || !upiId) {
+      return res.status(400).json({ message: "College and UPI ID are required" });
+    }
+    const upiRegex = /^[\w.]+@[\w]+$/;
+    if (!upiRegex.test(upiId)) {
+      return res.status(400).json({ message: "Invalid UPI ID format" });
+    }
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { $set: { college, upiId } },
+      { new: true }
+    ).select("-password");
+    return res.json({ message: "Verification details updated", user });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
 };

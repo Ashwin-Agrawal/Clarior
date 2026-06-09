@@ -50,6 +50,7 @@ function SeniorSlots() {
   const [mySlots, setMySlots] = useState([]);
   const [msg, setMsg] = useState({ type: "", text: "" });
   const [loading, setLoading] = useState(false);
+  const [creating, setCreating] = useState(false);
   const [openSlotId, setOpenSlotId] = useState(null);
   const [now, setNow] = useState(() => Date.now());
   const [todayMin] = useState(() => new Date().toISOString().split("T")[0]);
@@ -71,6 +72,7 @@ function SeniorSlots() {
 
   const create = async () => {
     setMsg({ type: "", text: "" });
+    setCreating(true);
     try {
       if (!date || !time) return setMsg({ type: "error", text: "Please select date and time" });
       const slotDT = parseSlotDateTime(date, time);
@@ -82,6 +84,8 @@ function SeniorSlots() {
       load();
     } catch (e) {
       setMsg({ type: "error", text: e?.response?.data?.message || "Failed to create slot" });
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -97,7 +101,7 @@ function SeniorSlots() {
                 iconLeft={<svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>} />
               <Input label="Select Time" type="time" value={time} onChange={(e) => setTime(e.target.value)} hint="Future times only"
                 iconLeft={<svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>} />
-              <Button onClick={create} className="w-full rounded-2xl shadow-lift" size="lg">Create Slot</Button>
+              <Button onClick={create} loading={creating} disabled={creating} className="w-full rounded-2xl shadow-lift" size="lg">Create Slot</Button>
             </div>
             {msg.text && (
               <div className={`mt-4 rounded-xl px-4 py-3 text-xs font-bold animate-scale-in border ${
@@ -136,7 +140,7 @@ function SeniorSlots() {
                     <div>
                       <div className="text-[9px] font-bold text-muted uppercase tracking-[0.2em] mb-1">Time Slot</div>
                       <div className="font-bold text-fg leading-tight">
-                        {new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short" }).format(new Date(s.date))} • {formatTimeLabel(s.time)}
+                        {new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(s.date))} • {formatTimeLabel(s.time)}
                       </div>
                     </div>
                     <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border ${

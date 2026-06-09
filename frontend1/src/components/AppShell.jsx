@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import api from "../services/api";
 import SiteContainer from "./layout/SiteContainer";
 import { Logo } from "./layout/icons";
 
@@ -68,7 +69,10 @@ function AppShell({ title, subtitle, children }) {
     return items;
   }, [user?.role]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await api.get('/auth/logout');
+    } catch (_) {}
     localStorage.removeItem("token");
     setUser(null);
     navigate("/");

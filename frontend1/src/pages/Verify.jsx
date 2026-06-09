@@ -25,8 +25,7 @@ function Verify() {
     try {
       setMsg({ type: "", text: "" });
       setLoading(true);
-      await api.patch("/users/profile", { college });
-      await api.patch("/users/upi", { upiId });
+      await api.patch('/users/verification-details', { college, upiId });
       await fetchUser?.();
       setMsg({ type: "success", text: "Details saved! Your profile is now under review. ✅" });
     } catch (err) {

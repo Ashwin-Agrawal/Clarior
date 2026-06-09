@@ -9,6 +9,7 @@ import Input from "../components/ui/Input";
 import Card from "../components/ui/Card";
 import SiteContainer from "../components/layout/SiteContainer";
 import useSEO from "../hooks/useSEO";
+import AppShell from "../components/AppShell";
 
 function BecomeMentor() {
   useSEO({
@@ -28,6 +29,18 @@ function BecomeMentor() {
   const alreadyVerifiedMessage = user?.role === "senior" && user?.isVerified
     ? "You are already a verified senior."
     : "";
+
+  if (user?.role === 'senior' && !user?.isVerified) {
+    return (
+      <AppShell title="Application Under Review">
+        <div className="text-center py-20">
+          <div className="text-5xl mb-6">⏳</div>
+          <h2 className="text-2xl font-bold text-fg mb-3">Your application is under review</h2>
+          <p className="text-muted">Our team is reviewing your profile. You will be notified once approved.</p>
+        </div>
+      </AppShell>
+    );
+  }
 
   const update = (k, v) => { setForm(f => ({ ...f, [k]: v })); setFieldErrors(e => ({ ...e, [k]: "" })); };
 

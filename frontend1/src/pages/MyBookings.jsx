@@ -181,11 +181,15 @@ function MyBookings() {
               </div>
               <h3 className="text-xl font-bold text-fg">No sessions found</h3>
               <p className="text-muted mt-2 text-sm max-w-sm">
-                You haven't booked any sessions yet. Explore our verified seniors to get started.
+                {user?.role === 'senior'
+                  ? "No students have booked a session with you yet. Make sure you've added available slots."
+                  : "You haven't booked any sessions yet. Explore our verified seniors to get started."}
               </p>
-              <Link to="/explore" className="mt-6">
-                <Button variant="primary" className="rounded-full px-8">Find Seniors</Button>
-              </Link>
+              {user?.role === 'student' && (
+                <Link to="/explore" className="mt-6">
+                  <Button variant="primary" className="rounded-full px-8">Find Seniors</Button>
+                </Link>
+              )}
             </div>
           )}
         </div>

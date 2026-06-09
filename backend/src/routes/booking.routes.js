@@ -12,11 +12,12 @@ const {
   setMeetLink,
   markCompletedBySenior,
   confirmByStudent,
+  getBookingById,
 } = require("../controllers/booking.controller");
 
 
-// 🎓 BOOK
-router.post("/", authMiddleware, authorizeRoles("student", "senior"), createBooking);
+// 🎓 BOOK — Fix 9: students only (removed 'senior' from authorizeRoles)
+router.post("/", authMiddleware, authorizeRoles("student"), createBooking);
 
 // 📊 GET BOOKINGS
 router.get("/my", authMiddleware, getMyBookings);
@@ -55,5 +56,8 @@ router.patch(
   authorizeRoles("student"),
   confirmByStudent
 );
+
+// Fix 11: GET single booking by ID — must be AFTER /my and /meet-link to avoid conflicts
+router.get("/:id", authMiddleware, getBookingById);
 
 module.exports = router;

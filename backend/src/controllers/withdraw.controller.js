@@ -26,47 +26,51 @@ exports.requestWithdraw = async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
 
-    const user = await User.findById(req.user.id).session(session);
+    try {
+      const user = await User.findById(req.user.id).session(session);
 
-    if (!user.upiId) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(400).json({
-        message: "Add UPI first",
+      if (!user.upiId) {
+        await session.abortTransaction();
+        return res.status(400).json({
+          message: "Add UPI first",
+        });
+      }
+
+      if (user.availableBalance < amountNum) {
+        await session.abortTransaction();
+        return res.status(400).json({
+          message: "Insufficient balance",
+        });
+      }
+
+      // Reserve funds immediately to prevent multiple pending requests overspending.
+      user.availableBalance -= amountNum;
+      await user.save({ session });
+
+      const withdraw = await Withdraw.create(
+        [
+          {
+            senior: user._id,
+            amount: amountNum,
+            upiId: user.upiId,
+            status: "pending",
+          },
+        ],
+        { session }
+      );
+
+      await session.commitTransaction();
+
+      res.json({
+        message: "Withdraw request sent",
+        withdraw: withdraw[0],
       });
-    }
-
-    if (user.availableBalance < amountNum) {
+    } catch (err) {
       await session.abortTransaction();
+      res.status(500).json({ message: err.message });
+    } finally {
       session.endSession();
-      return res.status(400).json({
-        message: "Insufficient balance",
-      });
     }
-
-    // Reserve funds immediately to prevent multiple pending requests overspending.
-    user.availableBalance -= amountNum;
-    await user.save({ session });
-
-    const withdraw = await Withdraw.create(
-      [
-        {
-          senior: user._id,
-          amount: amountNum,
-          upiId: user.upiId,
-          status: "pending",
-        },
-      ],
-      { session }
-    );
-
-    await session.commitTransaction();
-    session.endSession();
-
-    res.json({
-      message: "Withdraw request sent",
-      withdraw: withdraw[0],
-    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

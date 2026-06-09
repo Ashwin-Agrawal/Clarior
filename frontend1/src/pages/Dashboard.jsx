@@ -73,6 +73,7 @@ function SessionList({ items, userRole, actionLabel, emptyTitle, emptyDescriptio
               <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
                 booking.status === "confirmed" ? "bg-success/10 text-success border border-success/20" :
                 booking.status === "completed" ? "bg-primary/10 text-primary border border-primary/20" :
+                booking.status === "cancelled" ? "bg-danger/10 text-danger border border-danger/20" :
                 "bg-muted/10 text-muted border border-muted/20"
               }`}>
                 {booking.status}
@@ -289,7 +290,7 @@ function Dashboard() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-widest text-muted">
-                  {user?.role === "senior" ? "Total Earnings" : "Available Credits"}
+                  {user?.role === "senior" ? "Available Balance" : "Available Credits"}
                 </div>
                 <div className="mt-2 text-2xl font-extrabold text-fg">
                   {user?.role === "senior" ? `₹${user?.availableBalance ?? 0}` : user?.callCredits ?? 0}

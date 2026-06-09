@@ -14,14 +14,8 @@ async function loadSessionBooking({ bookingId, setError, setLoading, setBooking 
   setError("");
   setLoading(true);
   try {
-    const res = await api.get("/bookings/my");
-    const list = Array.isArray(res.data) ? res.data : [];
-    const found = list.find((b) => b._id === bookingId);
-    if (!found) {
-      setError("Session not found");
-    } else {
-      setBooking(found);
-    }
+    const res = await api.get(`/bookings/${bookingId}`);
+    setBooking(res.data.booking);
   } catch (e) {
     setError(e?.response?.data?.message || "Failed to load session");
   } finally {
@@ -89,10 +83,12 @@ function Session() {
 
   const [prevBookingMeetLink, setPrevBookingMeetLink] = useState(null);
 
-  if (booking?.meetLink && booking.meetLink !== prevBookingMeetLink) {
-    setPrevBookingMeetLink(booking.meetLink);
-    setNewMeetLink(booking.meetLink);
-  }
+  useEffect(() => {
+    if (booking?.meetLink && booking.meetLink !== prevBookingMeetLink) {
+      setPrevBookingMeetLink(booking.meetLink);
+      setNewMeetLink(booking.meetLink);
+    }
+  }, [booking?.meetLink]);
 
   const updateMeetLink = async () => {
     setMeetLinkMsg("");

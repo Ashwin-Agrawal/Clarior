@@ -2,12 +2,15 @@ const express = require("express");
 const router = express.Router();
 
 const authMiddleware = require("../middleware/auth.middleware");
+const authorizeRoles = require("../middleware/role.middleware");
 
 const {
   getAllSeniors,
   updateProfile,
   updateUpi,
-  getMe
+  getMe,
+  getSeniorById,
+  updateVerificationDetails,
 } = require("../controllers/user.controller");
 
 // ✏️ PROFILE
@@ -16,10 +19,17 @@ router.patch("/profile", authMiddleware, updateProfile);
 // 💰 UPI
 router.patch("/upi", authMiddleware, updateUpi);
 
-// 🌍 PUBLIC
+// 🌍 PUBLIC — all verified seniors list
 router.get("/seniors", getAllSeniors);
+
+// Fix 10: PUBLIC — get single senior by ID (no auth required)
+router.get("/seniors/:id", getSeniorById);
+
 // 👤 GET CURRENT USER
 router.get("/me", authMiddleware, getMe);
+
+// Fix 12: PATCH /verification-details — seniors only, updates college + upiId atomically
+router.patch("/verification-details", authMiddleware, authorizeRoles("senior"), updateVerificationDetails);
 
 
 module.exports = router;

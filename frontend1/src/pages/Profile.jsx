@@ -60,24 +60,34 @@ function Profile() {
   const { user } = useAuth();
   const [mentor, setMentor] = useState(null);
   const [slots, setSlots] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [bookingMsg, setBookingMsg] = useState({ type: "", text: "" });
   const [bookingSlot, setBookingSlot] = useState(null);
   const bookingPanelRef = useRef(null);
 
+  const load = async () => {
+    try {
+      setError(""); setLoading(true);
+      const res = await api.get(`/users/seniors/${id}`);
+      setMentor(res.data.senior);
+      const slotRes = await api.get(`/slots/senior/${id}`);
+      setSlots(slotRes.data.slots || []);
+      const reviewRes = await api.get('/reviews/' + id);
+      setReviews(reviewRes.data.reviews || []);
+    } catch (err) {
+      const status = err?.response?.status;
+      if (status === 404) {
+        setError("Mentor not found");
+      } else {
+        setError(err?.response?.data?.message || "Failed to load senior");
+      }
+    } finally { setLoading(false); }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setError(""); setLoading(true);
-        const userRes = await api.get("/users/seniors");
-        const selected = userRes.data.seniors.find(u => u._id === id);
-        setMentor(selected);
-        const slotRes = await api.get(`/slots/senior/${id}`);
-        setSlots(slotRes.data.slots || []);
-      } catch (err) { setError(err?.response?.data?.message || "Failed to load senior"); } finally { setLoading(false); }
-    };
-    fetchData();
+    load();
   }, [id]);
 
   const handleBooking = async (slotId) => {
@@ -88,6 +98,7 @@ function Profile() {
       if (user.callCredits === 0) return navigate("/buy-credits");
       await api.post("/bookings", { slotId });
       setBookingMsg({ type: "success", text: "Session booked! Find joining links in your dashboard." });
+      setSlots(prev => prev.filter(s => s._id !== slotId));
     } catch (err) { setBookingMsg({ type: "error", text: err?.response?.data?.message || "Booking failed" }); } finally { setBookingSlot(null); }
   };
 
@@ -197,22 +208,24 @@ function Profile() {
                     </Card>
                   </section>
 
-                  {/* Reviews Section Placeholder */}
                   <section>
                     <h2 className="heading-display text-2xl font-black text-fg uppercase tracking-widest mb-6">Recent Reviews</h2>
                     <div className="space-y-4">
-                      {[
-                        { u: "Rahul S.", r: 5, t: "Amazing session! Cleared all my doubts about CSE vs IT." },
-                        { u: "Ananya P.", r: 5, t: "Very helpful and honest about the college placement scenario." }
-                      ].map((rev, idx) => (
-                        <Card key={idx} className="p-6 border-border/40 hover:border-primary/20 transition-all">
+                      {reviews.length === 0 ? (
+                        <p className="text-sm text-muted font-medium">No reviews yet.</p>
+                      ) : reviews.map((rev, idx) => (
+                        <Card key={rev._id || idx} className="p-6 border-border/40 hover:border-primary/20 transition-all">
                           <div className="flex justify-between items-start mb-2">
-                            <div className="font-black text-fg text-sm">{rev.u}</div>
+                            <div className="font-black text-fg text-sm">{rev.student?.name || "Student"}</div>
                             <div className="flex text-warning gap-0.5">
-                              {[1,2,3,4,5].map(i => <svg key={i} width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
+                              {[1,2,3,4,5].map(i => (
+                                <svg key={i} width="10" height="10" fill={i <= rev.rating ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                              ))}
                             </div>
                           </div>
-                          <p className="text-sm text-muted font-medium italic">"{rev.t}"</p>
+                          {rev.comment && <p className="text-sm text-muted font-medium italic">"{rev.comment}"</p>}
                         </Card>
                       ))}
                     </div>
@@ -261,8 +274,8 @@ function Profile() {
                           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-surface2 text-muted">
                             <StatIcon type="calendar" />
                           </div>
-                          <h4 className="font-black text-fg uppercase tracking-widest">Fully Booked</h4>
-                          <p className="text-xs text-muted mt-2 font-bold uppercase tracking-wider">No slots available right now. Check back later!</p>
+                          <h4 className="font-black text-fg uppercase tracking-widest">No availability right now</h4>
+                          <p className="text-xs text-muted mt-2 font-bold uppercase tracking-wider">No availability right now — check back soon!</p>
                           <Button variant="secondary" className="mt-8 rounded-full w-full" onClick={() => navigate("/explore")}>Explore Others</Button>
                         </Card>
                       )}
