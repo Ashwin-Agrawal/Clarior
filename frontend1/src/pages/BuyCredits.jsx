@@ -165,6 +165,7 @@ function BuyCredits() {
               <Button
                 onClick={() => handlePayment("single")}
                 loading={loadingPlan === "single"}
+                disabled={loadingPlan !== ""}
                 className="mt-10 w-full rounded-2xl"
                 size="lg"
                 variant="secondary"
@@ -174,7 +175,7 @@ function BuyCredits() {
             </Card>
 
             {/* Growth Pack */}
-            <Card className="relative flex flex-col p-8 md:p-10 border-primary/30 bg-surface shadow-lift animate-fade-up delay-200 ring-4 ring-primary/5">
+            <Card className="relative flex flex-col p-8 md:p-10 border-primary/30 bg-surface shadow-lift animate-fade-up delay-200 ring-4 ring-primary/5" style={{ overflow: 'visible' }}>
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-soft">
                 Most Popular
               </div>
@@ -213,6 +214,7 @@ function BuyCredits() {
               <Button
                 onClick={() => handlePayment("bundle")}
                 loading={loadingPlan === "bundle"}
+                disabled={loadingPlan !== ""}
                 className="mt-10 w-full rounded-2xl shadow-lift"
                 size="lg"
                 variant="primary"
@@ -240,13 +242,14 @@ function BuyCredits() {
           </div>
 
           {/* Trust Banner */}
-          <section className="mt-20 rounded-[40px] overflow-hidden relative h-[400px] border border-border/50 shadow-lift animate-fade-up delay-400">
+          <section className="mt-20 rounded-[40px] overflow-hidden relative h-[380px] border border-border/50 shadow-lift animate-fade-up delay-400">
             <img
               alt="Students collaborating"
               className="absolute inset-0 w-full h-full object-cover"
               src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=80"
             />
-            <div className="absolute inset-0 bg-surface flex items-center">
+            <div className="absolute inset-0 bg-gradient-to-r from-surface via-surface/85 to-transparent" />
+            <div className="absolute inset-0 flex items-center">
               <div className="px-8 md:px-16 max-w-xl">
                 <h2 className="heading-display text-3xl md:text-4xl font-extrabold tracking-tight text-fg leading-tight">
                   Accelerate your <br /> career goals.

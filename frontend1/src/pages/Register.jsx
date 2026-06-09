@@ -47,6 +47,7 @@ function Register() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
   const currentYear = new Date().getFullYear();
 
   const handleRegister = async () => {
@@ -56,7 +57,8 @@ function Register() {
       if (form.password.length < 8) { setError("Password must be at least 8 characters."); return; }
       setLoading(true);
       await api.post("/auth/register", { ...form, role: "student" });
-      navigate("/login");
+      setSuccess(true);
+      setTimeout(() => navigate("/login"), 1800);
     } catch (err) {
       const msg = err?.response?.data?.message;
       const ve = err?.response?.data?.errors;
@@ -70,7 +72,7 @@ function Register() {
   return (
     <div className="min-h-screen flex">
       {/* Branding panel */}
-      <div className="hidden lg:flex lg:w-[46%] flex-col justify-between relative overflow-hidden bg-[#0f2851] p-12">
+      <div className="hidden lg:flex lg:w-[46%] flex-col justify-between relative overflow-hidden bg-primary p-12">
         <div className="relative flex items-center gap-3">
           <Logo size="footer" />
           <span className="text-white font-extrabold text-2xl" style={{ fontFamily: "'Playfair Display', serif" }}>Clarior</span>
@@ -105,6 +107,14 @@ function Register() {
             <h1 className="text-3xl font-extrabold tracking-tight text-fg">Create your account</h1>
             <p className="text-muted mt-2 text-sm">Start your mentorship journey in seconds.</p>
           </div>
+          {success && (
+            <div className="mb-5 flex items-center gap-3 text-sm text-success bg-success/8 border border-success/25 rounded-xl px-4 py-3 animate-scale-in">
+              <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20" className="flex-shrink-0">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              Account created! Redirecting to login...
+            </div>
+          )}
           {error && (
             <div className="mb-5 flex items-center gap-2.5 text-sm text-danger bg-danger/8 border border-danger/25 rounded-xl px-4 py-3 animate-scale-in">
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" className="flex-shrink-0">

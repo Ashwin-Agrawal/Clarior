@@ -181,17 +181,19 @@ function Dashboard() {
   const { upcoming, past } = useMemo(() => {
     const now = currentTime;
     const list = Array.isArray(bookings) ? bookings : [];
+    const sortedPast = [...list.filter((b) => {
+      if (b.status === "cancelled" || b.status === "completed") return true;
+      const time = new Date(b.startTime || b.date || 0).getTime();
+      return isNaN(time) ? false : time < now;
+    })].sort((a, b) => new Date(b.startTime || b.date || 0) - new Date(a.startTime || a.date || 0));
+
     return {
       upcoming: list.filter((b) => {
         if (b.status === "cancelled" || b.status === "completed") return false;
         const time = new Date(b.startTime || b.date || 0).getTime();
         return isNaN(time) ? true : time >= now;
       }),
-      past: list.filter((b) => {
-        if (b.status === "cancelled" || b.status === "completed") return true;
-        const time = new Date(b.startTime || b.date || 0).getTime();
-        return isNaN(time) ? false : time < now;
-      }),
+      past: sortedPast,
     };
   }, [bookings, currentTime]);
 
@@ -349,7 +351,7 @@ function Dashboard() {
               <SessionList
                 items={upcoming.slice(0, 5)}
                 userRole={user?.role}
-                actionLabel="Join Call"
+                actionLabel="View Session"
                 emptyTitle="All quiet for now"
                 emptyDescription={user?.role === "student" ? "Book a session to see it here." : "Waiting for students to book."}
               />
@@ -379,14 +381,14 @@ function Dashboard() {
               <h3 className="heading-display text-lg font-extrabold text-fg mb-4">Request Withdrawal</h3>
               <div className="space-y-4">
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold text-sm">₹</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold text-sm select-none">₹</span>
                   <input
                     type="number"
                     min="1"
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
                     placeholder="Enter amount"
-                    className="w-full rounded-2xl border border-border bg-surface2 pl-8 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition"
+                    className="w-full rounded-2xl border border-border bg-surface2 pl-10 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition"
                   />
                 </div>
                 <Button
@@ -413,8 +415,10 @@ function Dashboard() {
                   slots.slice(0, 3).map((slot) => (
                     <div key={slot._id} className="flex items-center justify-between p-3 rounded-2xl bg-surface2 border border-border/50">
                       <div>
-                        <div className="text-xs font-bold text-fg">{slot.date}</div>
-                        <div className="text-[10px] text-muted">{slot.startTime} - {slot.endTime}</div>
+                        <div className="text-xs font-bold text-fg">
+                          {new Date(slot.date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
+                        </div>
+                        <div className="text-[10px] text-muted">{slot.startTime || slot.time}</div>
                       </div>
                       <span className="h-2 w-2 rounded-full bg-success shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                     </div>

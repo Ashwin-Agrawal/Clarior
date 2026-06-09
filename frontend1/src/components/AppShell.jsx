@@ -148,8 +148,9 @@ function AppShell({ title, subtitle, children }) {
             <Link to="/" className="text-xs text-muted px-3 py-1.5 rounded-full border border-border hover:bg-surface2">Home</Link>
             <button
               onClick={handleLogout}
-              className="text-xs text-muted px-3 py-1.5 rounded-full border border-border hover:bg-surface2"
+              className="flex items-center gap-1.5 text-xs text-muted px-3 py-1.5 rounded-full border border-border hover:bg-surface2"
             >
+              <IconLogout />
               Logout
             </button>
           </div>
@@ -168,9 +169,6 @@ function AppShell({ title, subtitle, children }) {
                     <Link to="/" className="inline-flex rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium text-fg transition hover:bg-surface2">
                       Home
                     </Link>
-                    <Link to="/mentor-guidelines" className="inline-flex rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium text-fg transition hover:bg-surface2">
-                      Guidelines
-                    </Link>
                   </div>
                 </div>
               </div>
@@ -179,7 +177,7 @@ function AppShell({ title, subtitle, children }) {
           </SiteContainer>
         </div>
 
-        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface px-3 py-2 shadow-lift  lg:hidden" aria-label="Primary">
+        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/90 backdrop-blur-md px-3 py-2 shadow-lift lg:hidden" aria-label="Primary">
           <div className="mx-auto grid max-w-md gap-1" style={{ gridTemplateColumns: `repeat(${Math.min(nav.length, 4)}, minmax(0, 1fr))` }}>
             {nav.slice(0, 4).map((item) => {
               const active = location.pathname === item.to;

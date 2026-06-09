@@ -67,6 +67,8 @@ function Profile() {
   const [bookingSlot, setBookingSlot] = useState(null);
   const bookingPanelRef = useRef(null);
 
+  useSEO({ title: mentor?.name ? `${mentor.name} — Senior Profile` : 'Senior Profile', description: mentor ? `Book a 25-minute 1:1 session with ${mentor.name} from ${mentor.college || 'top college'} on Clarior.` : 'Find and book verified seniors on Clarior.' });
+
   const load = async () => {
     try {
       setError(""); setLoading(true);
@@ -134,16 +136,16 @@ function Profile() {
             <div className="animate-fade-up">
               {/* Hero Banner Area */}
               <div className="relative pt-10">
-                <div className={`relative h-[440px] md:h-[540px] w-full rounded-[48px] overflow-hidden bg-gradient-to-br ${gradient} shadow-2xl group`}>
-                  <div className="absolute inset-0 bg-black/10" />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2),transparent_70%)] animate-pulse" />
+                <div className={`relative h-[300px] md:h-[380px] w-full rounded-[48px] overflow-hidden bg-gradient-to-br ${gradient} shadow-2xl group`}>
+                  <div className="absolute inset-0 bg-black/20" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.15),transparent_70%)]" />
                   
-                  <div className="absolute inset-0 p-8 md:p-16 flex flex-col items-center justify-center text-center">
-                    <div className="flex flex-col items-center gap-6 md:gap-10">
-                      <div className="flex h-32 w-32 md:h-48 md:w-48 flex-shrink-0 items-center justify-center rounded-[40px] bg-[#2563eb] border border-[#3b82f6] text-white text-5xl md:text-7xl font-black shadow-2xl animate-float group-hover:scale-105 transition-transform duration-700">
+                  <div className="absolute inset-0 p-8 md:p-12 flex flex-col items-center justify-center text-center">
+                    <div className="flex flex-col items-center gap-4 md:gap-6">
+                      <div className="flex h-20 w-20 md:h-28 md:w-28 flex-shrink-0 items-center justify-center rounded-[28px] bg-white/20 backdrop-blur-sm border border-white/30 text-white text-3xl md:text-5xl font-black shadow-2xl">
                         {initials}
                       </div>
-                      <div className="space-y-6">
+                      <div className="space-y-3">
                         <div className="flex items-center justify-center gap-2">
                           {mentor.isVerified && (
                             <span className="inline-flex items-center gap-1.5 rounded-full bg-white text-primary px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.2em] shadow-xl">
@@ -152,10 +154,10 @@ function Profile() {
                             </span>
                           )}
                         </div>
-                        <h1 className="heading-display text-6xl md:text-[100px] font-black text-white tracking-tighter leading-[0.85]">
+                        <h1 className="heading-display text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tighter leading-tight max-w-2xl">
                           {mentor.name}
                         </h1>
-                        <p className="text-white/90 text-2xl md:text-3xl font-medium tracking-tight">
+                        <p className="text-white/90 text-base md:text-xl font-medium tracking-tight">
                           {mentor.college || "Top College"}{mentor.branch ? ` · ${mentor.branch}` : ""}
                         </p>
                       </div>
@@ -186,46 +188,33 @@ function Profile() {
               <div className="mt-16 grid lg:grid-cols-[1.8fr,1.2fr] gap-12">
                 <div className="space-y-12">
                   <section>
-                    <h2 className="heading-display text-2xl font-black text-fg uppercase tracking-widest mb-6">About Me</h2>
-                    <Card className="p-10 border-border/50 bg-surface ">
+                    <h2 className="text-xl font-black text-fg mb-6">About</h2>
+                    <Card className="p-8 border-border/50 bg-surface">
                       <StarRow rating={mentor.rating} reviews={mentor.numReviews} />
-                      <p className="mt-8 text-fg/90 text-lg leading-relaxed font-medium">
+                      <p className="mt-6 text-fg/90 text-base leading-relaxed">
                         {mentor.bio || "Hello! I'm here to help you navigate the complex world of college admissions and career planning. Whether you're worried about which branch to pick or how to prepare for placements, I've got you covered with honest, firsthand experience."}
                       </p>
-                      <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {[
-                          "Doubt solving for branch selection",
-                          "Placement & internship roadmap",
-                          "College life & cultural insights",
-                          "Resume & profile building"
-                        ].map(f => (
-                          <div key={f} className="flex items-center gap-3 text-sm font-bold text-fg/70">
-                            <span className="h-2 w-2 rounded-full bg-primary" />
-                            {f}
-                          </div>
-                        ))}
-                      </div>
                     </Card>
                   </section>
 
                   <section>
-                    <h2 className="heading-display text-2xl font-black text-fg uppercase tracking-widest mb-6">Recent Reviews</h2>
+                    <h2 className="text-xl font-black text-fg mb-6">Recent Reviews</h2>
                     <div className="space-y-4">
                       {reviews.length === 0 ? (
-                        <p className="text-sm text-muted font-medium">No reviews yet.</p>
+                        <p className="text-sm text-muted font-medium">No reviews yet — be the first to book!</p>
                       ) : reviews.map((rev, idx) => (
                         <Card key={rev._id || idx} className="p-6 border-border/40 hover:border-primary/20 transition-all">
                           <div className="flex justify-between items-start mb-2">
                             <div className="font-black text-fg text-sm">{rev.student?.name || "Student"}</div>
                             <div className="flex text-warning gap-0.5">
                               {[1,2,3,4,5].map(i => (
-                                <svg key={i} width="10" height="10" fill={i <= rev.rating ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <svg key={i} width="12" height="12" fill={i <= rev.rating ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                                 </svg>
                               ))}
                             </div>
                           </div>
-                          {rev.comment && <p className="text-sm text-muted font-medium italic">"{rev.comment}"</p>}
+                          {rev.comment && <p className="text-sm text-muted italic">"{rev.comment}"</p>}
                         </Card>
                       ))}
                     </div>
@@ -235,7 +224,7 @@ function Profile() {
                 {/* Booking Sidebar */}
                 <div className="space-y-8">
                   <div ref={bookingPanelRef} id="booking-panel" className="sticky top-24 scroll-mt-28">
-                    <h2 className="heading-display text-2xl font-black text-fg uppercase tracking-widest mb-6">Choose a Slot</h2>
+                    <h2 className="text-xl font-black text-fg mb-6">Choose a Slot</h2>
                     
                     {bookingMsg.text && (
                       <div className={`mb-6 p-4 rounded-3xl text-sm font-black animate-scale-in border ${
@@ -281,13 +270,13 @@ function Profile() {
                       )}
                     </div>
 
-                    <Card className="mt-8 p-6 bg-surface2/50 border-border/40">
-                      <div className="flex items-center gap-3 text-primary">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        <span className="text-[11px] font-black uppercase tracking-[0.15em]">Money Back Guarantee</span>
+                    <Card className="mt-8 p-6 bg-primary/5 border-primary/15">
+                      <div className="flex items-center gap-3 text-primary mb-3">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span className="text-xs font-black uppercase tracking-[0.15em]">Money Back Guarantee</span>
                       </div>
-                      <p className="text-[10px] text-muted font-bold mt-2 uppercase leading-relaxed tracking-wider">
-                        Not satisfied with your session? Contact support within 24h for a full credit refund.
+                      <p className="text-xs text-muted leading-relaxed">
+                        Not satisfied with your session? Contact support within 24 hours for a full credit refund.
                       </p>
                     </Card>
                   </div>
@@ -300,11 +289,11 @@ function Profile() {
 
       {/* Sticky Mobile Booking Bar */}
       {!loading && mentor && slots.length > 0 && (
-        <div className="fixed bottom-0 left-0 w-full p-4 bg-surface  border-t border-border z-[60] md:hidden animate-slide-down">
+        <div className="fixed bottom-0 left-0 w-full p-4 bg-surface border-t border-border z-[60] md:hidden animate-slide-down">
           <div className="flex items-center justify-between gap-4">
             <div>
               <div className="text-[10px] font-black uppercase text-muted tracking-widest">Next available</div>
-              <div className="text-sm font-black text-fg">{new Date(slots[0].date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} • {slots[0].time}</div>
+              <div className="text-sm font-black text-fg">{new Date(slots[0].date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} • {slots[0].time || slots[0].startTime}</div>
             </div>
             <Button size="lg" className="rounded-2xl px-10 shadow-hero" onClick={() => bookingPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
               Book ₹69

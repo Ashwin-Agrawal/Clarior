@@ -48,7 +48,7 @@ function Login() {
   return (
     <div className="min-h-screen flex">
       {/* ── Left Panel — Branding ─────────────────────────────── */}
-      <div className="hidden lg:flex lg:w-[48%] xl:w-[44%] flex-col justify-between relative overflow-hidden bg-[#1a3a8f] p-12">
+      <div className="hidden lg:flex lg:w-[48%] xl:w-[44%] flex-col justify-between relative overflow-hidden bg-primary p-12">
 
         {/* Logo */}
         <div className="relative flex items-center gap-3">
@@ -109,8 +109,8 @@ function Login() {
 
         <div className="w-full max-w-md animate-fade-up">
           <div className="mb-8">
-            <h1 className="text-3xl font-extrabold tracking-tight text-fg">Welcome back</h1>
-            <p className="text-muted mt-2 text-sm">Login to manage your sessions and bookings.</p>
+            <h1 className="text-3xl font-extrabold tracking-tight text-fg">Good to see you again 👋</h1>
+            <p className="text-muted mt-2 text-sm">Your clarity journey continues here.</p>
           </div>
 
           {error && (

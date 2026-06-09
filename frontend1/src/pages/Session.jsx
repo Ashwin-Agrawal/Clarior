@@ -81,6 +81,8 @@ function Session() {
   const [meetLinkLoading, setMeetLinkLoading] = useState(false);
   const [meetLinkMsg, setMeetLinkMsg] = useState("");
 
+  const [actionError, setActionError] = useState("");
+
   const [prevBookingMeetLink, setPrevBookingMeetLink] = useState(null);
 
   useEffect(() => {
@@ -123,24 +125,27 @@ function Session() {
   }, [booking]);
 
   const startCall = async () => {
+    setActionError("");
     try {
       const res = await api.patch(`/bookings/start/${bookingId}`);
       setBooking((b) => (b ? { ...b, isCallStarted: true, actualStartTime: res.data.startTime } : b));
-    } catch (e) { alert(e?.response?.data?.message || "Error starting call"); }
+    } catch (e) { setActionError(e?.response?.data?.message || "Error starting call"); }
   };
 
   const seniorComplete = async () => {
+    setActionError("");
     try {
       await api.patch(`/bookings/senior-complete/${bookingId}`);
       setBooking((b) => (b ? { ...b, isSeniorMarkedDone: true } : b));
-    } catch (e) { alert(e?.response?.data?.message || "Error marking done"); }
+    } catch (e) { setActionError(e?.response?.data?.message || "Error marking done"); }
   };
 
   const studentConfirm = async () => {
+    setActionError("");
     try {
       await api.patch(`/bookings/student-confirm/${bookingId}`);
       setBooking((b) => (b ? { ...b, isStudentConfirmed: true, status: "completed" } : b));
-    } catch (e) { alert(e?.response?.data?.message || "Error confirming"); }
+    } catch (e) { setActionError(e?.response?.data?.message || "Error confirming"); }
   };
 
   const submitReview = async () => {
@@ -182,12 +187,22 @@ function Session() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-muted mb-1">Session Status</div>
-                  <div className="text-3xl font-black text-fg uppercase tracking-tight">{booking.status}</div>
+                  <div className={`text-3xl font-black uppercase tracking-tight ${
+                    booking.status === 'confirmed' ? 'text-success' :
+                    booking.status === 'completed' ? 'text-primary' :
+                    'text-fg'
+                  }`}>
+                    {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                  </div>
                 </div>
-                <div className={`h-12 w-12 rounded-2xl flex items-center justify-center text-xl shadow-soft ${
+                <div className={`h-12 w-12 rounded-2xl flex items-center justify-center shadow-soft ${
                   booking.status === "confirmed" ? "bg-success/10 text-success" : "bg-primary/10 text-primary"
                 }`}>
-                  {booking.status === "confirmed" ? "⚡" : "✅"}
+                  {booking.status === "confirmed" ? (
+                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                  ) : (
+                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" /></svg>
+                  )}
                 </div>
               </div>
 
@@ -243,6 +258,11 @@ function Session() {
                 {user?.role === "student" && booking.isSeniorMarkedDone && !booking.isStudentConfirmed && (
                   <Button onClick={studentConfirm} size="lg" className="rounded-2xl flex-1 sm:flex-none">Confirm Completion</Button>
                 )}
+                {actionError && (
+                  <div className="w-full rounded-xl border border-danger/30 bg-danger/5 px-4 py-3 text-sm text-danger animate-scale-in">
+                    {actionError}
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-wrap gap-4 pt-4 border-t border-border/50">
@@ -271,13 +291,24 @@ function Session() {
 
               <div className="space-y-6 max-w-xl">
                 <div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-muted mb-3">Rating</div>
-                  <div className="flex gap-2">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-muted mb-3">Your Rating</div>
+                  <div className="flex gap-1.5">
                     {[1, 2, 3, 4, 5].map((r) => (
-                      <button key={r} onClick={() => setRating(r)} className={`h-12 w-12 rounded-2xl flex items-center justify-center text-lg font-bold transition-all ${
-                        rating === r ? "bg-primary text-white shadow-lift scale-110" : "bg-surface2 text-muted hover:bg-border"
-                      }`}>
-                        {r}
+                      <button
+                        key={r}
+                        onClick={() => setRating(r)}
+                        className="transition-transform hover:scale-110 focus:outline-none"
+                        aria-label={`${r} star${r !== 1 ? 's' : ''}`}
+                      >
+                        <svg
+                          width="32" height="32"
+                          fill={rating >= r ? "#f59e0b" : "none"}
+                          stroke="#f59e0b"
+                          strokeWidth="1.5"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
                       </button>
                     ))}
                   </div>

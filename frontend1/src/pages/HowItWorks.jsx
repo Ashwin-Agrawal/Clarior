@@ -47,14 +47,17 @@ function Step({ number, icon, title, desc, last = false }) {
 }
 
 function HowItWorks() {
+  useSEO({ title: 'How It Works', description: 'Learn how Clarior connects students with verified seniors for 1:1 guidance sessions at ₹69.' });
+
   return (
     <>
       <Navbar />
 
       {/* Hero */}
-      <div className="relative overflow-hidden bg-[#1a3a8f] py-16">
+      <div className="relative overflow-hidden bg-primary py-16">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(255,255,255,0.08),transparent_60%)]" />
         <div className="relative max-w-5xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#2563eb] border border-[#3b82f6] px-4 py-1.5 text-xs font-semibold text-white mb-4">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/25 px-4 py-1.5 text-xs font-semibold text-white mb-4">
             How it works
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>
@@ -138,15 +141,17 @@ function HowItWorks() {
 
         {/* Bottom CTA */}
         <div className="mt-10 flex flex-wrap justify-center gap-4 animate-fade-up delay-400">
-          <Link to="/explore">
-            <button className="rounded-full bg-primary text-primaryFg px-8 py-3.5 text-base font-bold hover:shadow-lift hover:-translate-y-0.5 transition-all shadow-soft">
-              Find a senior now →
-            </button>
+          <Link
+            to="/explore"
+            className="rounded-full bg-primary text-primaryFg px-8 py-3.5 text-base font-bold hover:shadow-lift hover:-translate-y-0.5 transition-all shadow-soft"
+          >
+            Find a senior now →
           </Link>
-          <Link to="/become-senior">
-            <button className="rounded-full border border-border bg-surface text-fg px-8 py-3.5 text-base font-semibold hover:bg-surface2 hover:-translate-y-0.5 transition-all">
-              Become a Senior
-            </button>
+          <Link
+            to="/become-senior"
+            className="rounded-full border border-border bg-surface text-fg px-8 py-3.5 text-base font-semibold hover:bg-surface2 hover:-translate-y-0.5 transition-all"
+          >
+            Become a Senior
           </Link>
         </div>
       </div>

@@ -45,6 +45,8 @@ function LineIcon({ name, className = "h-5 w-5" }) {
 function Home() {
   const [scrolled, setScrolled] = useState(0);
 
+  useSEO({ title: "Home", description: "Talk to verified seniors from top Indian colleges for ₹69. Get clarity on college, branch, placements and more." });
+
   useEffect(() => {
     const handleScroll = () => {
       const progress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
@@ -74,7 +76,7 @@ function Home() {
                   Trusted by 5000+ students
                 </div>
                 
-                <h1 className="heading-display text-6xl md:text-[100px] font-black text-fg leading-[0.9] tracking-tighter animate-fade-up">
+                <h1 className="heading-display text-5xl sm:text-6xl md:text-8xl lg:text-[100px] font-black text-fg leading-[0.92] tracking-tighter animate-fade-up">
                   Stop guessing <br />
                   <span className="gradient-text">Ask someone inside.</span>
                 </h1>
@@ -242,20 +244,29 @@ function Home() {
         {/* CTA Section */}
         <section className="py-24">
           <SiteContainer>
-            <div className="relative rounded-3xl overflow-hidden bg-slate-950 p-8 md:p-20 text-center">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.2),transparent_70%)]" />
+            <div className="relative rounded-3xl overflow-hidden p-8 md:p-20 text-center" style={{ background: 'rgb(var(--fg))' }}>
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(96,165,250,0.18),transparent_65%)]" />
               <div className="relative z-10 space-y-8">
-                <h2 className="heading-display text-4xl md:text-7xl font-black text-white leading-tight">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(255,255,255,0.8)' }}>
+                  <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+                  5000+ students already inside
+                </div>
+                <h2 className="heading-display text-4xl md:text-7xl font-black leading-tight" style={{ color: 'rgb(var(--bg))' }}>
                   Stop overthinking. <br /> Start <span className="gradient-text">connecting.</span>
                 </h2>
-                <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+                <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: 'rgba(var(--bg), 0.65)' }}>
                   Join the platform where real conversations lead to real careers. Your future self will thank you.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                   <Link to="/register">
-                    <Button size="xl" className="rounded-full px-12 bg-white text-slate-950 hover:bg-slate-100 shadow-lift group">
+                    <Button size="xl" className="rounded-full px-12 shadow-lift group" style={{ background: 'rgb(var(--bg))', color: 'rgb(var(--fg))' }}>
                       Get Started Now
                       <svg className="ml-2 group-hover:translate-x-1 transition-transform" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                    </Button>
+                  </Link>
+                  <Link to="/explore">
+                    <Button variant="secondary" size="xl" className="rounded-full px-12" style={{ borderColor: 'rgba(255,255,255,0.25)', color: 'rgb(var(--bg))', background: 'rgba(255,255,255,0.12)' }}>
+                      Explore Seniors
                     </Button>
                   </Link>
                 </div>

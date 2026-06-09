@@ -103,10 +103,15 @@ function MentorCard({ mentor }) {
               {mentor.domain}
             </span>
           )}
+          {mentor.year && (
+            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-surface2 border border-border text-muted">
+              {mentor.year}{['th','st','nd','rd'][mentor.year <= 3 && mentor.year !== 0 ? mentor.year : 0] || 'th'} year
+            </span>
+          )}
         </div>
 
         {/* Bio */}
-        <p className="mt-3 text-sm text-muted line-clamp-3 leading-6 min-h-[72px]">
+        <p className="mt-3 text-sm text-muted line-clamp-2 leading-6 min-h-[48px]">
           {mentor.bio || "Experienced senior ready to guide you through your academic journey with personalized advice and real-world insights."}
         </p>
 
@@ -135,7 +140,7 @@ function MentorCard({ mentor }) {
         <div className="mt-6">
           <Button
             onClick={(e) => { e.stopPropagation(); navigate(`/profile/${mentor._id}`); }}
-            className="w-full rounded-2xl font-black uppercase tracking-widest text-xs py-4"
+            className="w-full rounded-2xl font-bold text-sm py-3.5"
           >
             View Profile
             <ArrowRightIcon />

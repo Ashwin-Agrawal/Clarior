@@ -20,6 +20,8 @@ function SearchIcon({ className = "h-5 w-5" }) {
 }
 
 function Explore() {
+  useSEO({ title: 'Explore Seniors', description: 'Browse and book verified seniors from top Indian colleges for ₹69. Get clarity on college, branch, and career decisions.' });
+
   const [seniors, setSeniors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -143,10 +145,10 @@ function Explore() {
                 <button
                   key={d}
                   onClick={() => setCourse(d)}
-                  className={`px-5 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                  className={`px-5 py-2.5 rounded-full text-xs font-bold tracking-wide transition-all ${
                     course === d 
                       ? "bg-primary text-white shadow-hero" 
-                      : "bg-surface  border border-border text-muted hover:border-primary/40 hover:text-primary"
+                      : "bg-surface border border-border text-muted hover:border-primary/40 hover:text-primary"
                   }`}
                 >
                   {d}
@@ -160,14 +162,13 @@ function Explore() {
         <SiteContainer className="pb-32">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-8 animate-fade-in">
             <h2 className="text-sm font-black text-muted uppercase tracking-[0.2em]">
-              Showing {filtered.length} mentors
+              {loading ? 'Loading seniors…' : `Showing ${filtered.length} senior${filtered.length !== 1 ? 's' : ''}`}
             </h2>
-            {hasFilters && (
+            {hasFilters && !loading && (
               <p className="text-sm text-muted">
                 Filtered by <span className="font-semibold text-fg">{course}</span>{branch !== "All" ? <> · <span className="font-semibold text-fg">{branch}</span></> : null}{search.trim() ? <> · <span className="font-semibold text-fg">"{search.trim()}"</span></> : null}
               </p>
             )}
-            {loading && <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" />}
           </div>
 
           {error && (
@@ -188,11 +189,14 @@ function Explore() {
             </div>
           ) : (
             <div className="py-32 text-center animate-fade-in">
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-surface2 text-muted">
-                <SearchIcon className="h-8 w-8" />
+              <div className="relative mx-auto mb-8 flex h-24 w-24 items-center justify-center">
+                <div className="absolute inset-0 rounded-3xl bg-primary/10 animate-pulse" />
+                <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-surface border border-border shadow-soft text-primary">
+                  <SearchIcon className="h-10 w-10" />
+                </div>
               </div>
               <h3 className="text-2xl font-black text-fg">No seniors found</h3>
-              <p className="text-muted mt-2 max-w-sm mx-auto">Try adjusting your search terms or filters to find more results.</p>
+              <p className="text-muted mt-3 max-w-sm mx-auto leading-relaxed">Try adjusting your search or filters — or browse all seniors below.</p>
               <Button variant="primary" className="mt-8 rounded-full px-10" onClick={clearFilters}>
                 See All Seniors
               </Button>
