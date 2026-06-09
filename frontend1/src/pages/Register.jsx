@@ -72,7 +72,7 @@ function Register() {
   return (
     <div className="min-h-screen flex">
       {/* Branding panel */}
-      <div className="hidden lg:flex lg:w-[46%] flex-col justify-between relative overflow-hidden bg-primary p-12">
+      <div className="hidden lg:flex lg:w-[46%] flex-col justify-between relative overflow-hidden bg-[#0f2851] p-12">
         <div className="relative flex items-center gap-3">
           <Logo size="footer" />
           <span className="text-white font-extrabold text-2xl" style={{ fontFamily: "'Playfair Display', serif" }}>Clarior</span>

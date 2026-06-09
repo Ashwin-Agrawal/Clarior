@@ -244,28 +244,28 @@ function Home() {
         {/* CTA Section */}
         <section className="py-24">
           <SiteContainer>
-            <div className="relative rounded-3xl overflow-hidden p-8 md:p-20 text-center" style={{ background: 'rgb(var(--fg))' }}>
+            <div className="relative rounded-3xl overflow-hidden p-8 md:p-20 text-center" style={{ background: '#0e1b2c' }}>
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(96,165,250,0.18),transparent_65%)]" />
               <div className="relative z-10 space-y-8">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(255,255,255,0.8)' }}>
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(255,255,255,0.75)' }}>
                   <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
                   5000+ students already inside
                 </div>
-                <h2 className="heading-display text-4xl md:text-7xl font-black leading-tight" style={{ color: 'rgb(var(--bg))' }}>
+                <h2 className="heading-display text-4xl md:text-7xl font-black leading-tight text-white">
                   Stop overthinking. <br /> Start <span className="gradient-text">connecting.</span>
                 </h2>
-                <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: 'rgba(var(--bg), 0.65)' }}>
+                <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
                   Join the platform where real conversations lead to real careers. Your future self will thank you.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                   <Link to="/register">
-                    <Button size="xl" className="rounded-full px-12 shadow-lift group" style={{ background: 'rgb(var(--bg))', color: 'rgb(var(--fg))' }}>
+                    <Button size="xl" className="rounded-full px-12 shadow-lift group bg-white text-slate-900 hover:bg-slate-100">
                       Get Started Now
                       <svg className="ml-2 group-hover:translate-x-1 transition-transform" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                     </Button>
                   </Link>
                   <Link to="/explore">
-                    <Button variant="secondary" size="xl" className="rounded-full px-12" style={{ borderColor: 'rgba(255,255,255,0.25)', color: 'rgb(var(--bg))', background: 'rgba(255,255,255,0.12)' }}>
+                    <Button size="xl" className="rounded-full px-12 border border-white/25 text-white bg-white/10 hover:bg-white/20">
                       Explore Seniors
                     </Button>
                   </Link>

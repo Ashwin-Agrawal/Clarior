@@ -48,7 +48,7 @@ function Login() {
   return (
     <div className="min-h-screen flex">
       {/* ── Left Panel — Branding ─────────────────────────────── */}
-      <div className="hidden lg:flex lg:w-[48%] xl:w-[44%] flex-col justify-between relative overflow-hidden bg-primary p-12">
+      <div className="hidden lg:flex lg:w-[48%] xl:w-[44%] flex-col justify-between relative overflow-hidden bg-[#1a3a8f] p-12">
 
         {/* Logo */}
         <div className="relative flex items-center gap-3">
