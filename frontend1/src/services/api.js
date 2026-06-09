@@ -1,7 +1,28 @@
 import axios from "axios";
 
-const apiBaseUrl =
-  (import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "/api" : "https://clarior-backend.onrender.com/api")).replace(/\/$/, "");
+const getApiBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  const isLocalhost =
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1" ||
+      window.location.hostname.startsWith("192.168."));
+
+  if (import.meta.env.DEV) {
+    return "/api";
+  }
+
+  if (isLocalhost) {
+    return "http://localhost:3002/api";
+  }
+
+  return "https://clarior-backend.onrender.com/api";
+};
+
+const apiBaseUrl = getApiBaseUrl().replace(/\/$/, "");
 
 const api = axios.create({
   baseURL: apiBaseUrl,
