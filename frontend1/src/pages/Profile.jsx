@@ -9,6 +9,7 @@ import Skeleton from "../components/ui/Skeleton";
 import Footer from "../components/Footer";
 import SiteContainer from "../components/layout/SiteContainer";
 import useSEO from "../hooks/useSEO";
+import { useToast } from "../context/ToastContext";
 
 function getGradient(domain = "", name = "") {
   const domainLower = domain?.toLowerCase() || "";
@@ -91,12 +92,12 @@ function Profile() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { showSuccess, showError } = useToast();
   const [mentor, setMentor] = useState(null);
   const [slots, setSlots] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [bookingMsg, setBookingMsg] = useState({ type: "", text: "" });
   const [bookingSlot, setBookingSlot] = useState(null);
   const bookingPanelRef = useRef(null);
 
@@ -148,14 +149,17 @@ function Profile() {
 
   const handleBooking = async (slotId) => {
     try {
-      setBookingMsg({ type: "", text: "" });
       setBookingSlot(slotId);
       if (!user) return navigate("/login");
       if (user.callCredits === 0) return navigate("/buy-credits");
       await api.post("/bookings", { slotId });
-      setBookingMsg({ type: "success", text: "Session booked! Find joining links in your dashboard." });
+      showSuccess("Session booked! Find joining links in your dashboard.");
       setSlots(prev => prev.filter(s => s._id !== slotId));
-    } catch (err) { setBookingMsg({ type: "error", text: err?.response?.data?.message || "Booking failed" }); } finally { setBookingSlot(null); }
+    } catch (err) {
+      showError(err?.response?.data?.message || "Booking failed");
+    } finally {
+      setBookingSlot(null);
+    }
   };
 
   const gradient = getGradient(mentor?.domain, mentor?.name || "");
@@ -169,10 +173,31 @@ function Profile() {
         
         <SiteContainer className="max-w-6xl relative">
           {loading && (
-            <div className="space-y-6 pt-12 animate-fade-in">
-              <Skeleton className="h-[300px] rounded-[48px]" />
-              <div className="grid grid-cols-3 gap-6"><Skeleton className="h-32 rounded-3xl" /><Skeleton className="h-32 rounded-3xl" /><Skeleton className="h-32 rounded-3xl" /></div>
-              <Skeleton className="h-64 rounded-3xl" />
+            <div className="space-y-8 pt-10 animate-pulse">
+              {/* Banner Skeleton */}
+              <div className="h-32 md:h-48 w-full bg-muted/15 rounded-3xl md:rounded-[40px]" />
+              
+              {/* Profile Block Skeleton */}
+              <div className="flex flex-col md:flex-row items-center md:items-end gap-6 px-4 md:px-8 -mt-12 md:-mt-16">
+                <div className="h-24 w-24 md:h-32 md:w-32 rounded-[32px] bg-muted/20 border-4 border-surface" />
+                <div className="flex-1 space-y-3 pb-1 w-full text-center md:text-left">
+                  <div className="h-6 w-1/3 bg-muted/20 rounded-full mx-auto md:mx-0" />
+                  <div className="h-4 w-1/2 bg-muted/20 rounded-full mx-auto md:mx-0" />
+                </div>
+              </div>
+
+              {/* Stats Skeleton */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 px-2 md:px-8">
+                {[1,2,3,4].map(i => (
+                  <div key={i} className="h-24 rounded-2xl bg-muted/10 border border-border/50" />
+                ))}
+              </div>
+
+              {/* Main Content Split Skeleton */}
+              <div className="grid lg:grid-cols-[1.8fr,1.2fr] gap-12 mt-12">
+                <div className="h-64 rounded-3xl bg-muted/10" />
+                <div className="h-64 rounded-3xl bg-muted/10" />
+              </div>
             </div>
           )}
 
@@ -190,56 +215,58 @@ function Profile() {
             <div className="animate-fade-up">
               {/* Hero Banner Area */}
               <div className="relative pt-10">
-                <div className={`relative h-[300px] md:h-[380px] w-full rounded-[48px] overflow-hidden bg-gradient-to-br ${gradient} shadow-2xl group`}>
-                  <div className="absolute inset-0 bg-black/20" />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.15),transparent_70%)]" />
+                <div className={`relative h-32 md:h-48 w-full rounded-3xl md:rounded-[40px] overflow-hidden bg-gradient-to-br ${gradient} shadow-lg group`}>
+                  <div className="absolute inset-0 bg-black/10" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.15),transparent_60%)]" />
+                </div>
+
+                {/* Profile Avatar & Info Block */}
+                <div className="flex flex-col md:flex-row items-center md:items-end gap-6 px-4 md:px-8 -mt-12 md:-mt-16 relative z-10">
+                  <div className="flex h-24 w-24 md:h-32 md:w-32 flex-shrink-0 items-center justify-center rounded-[32px] bg-surface border-4 border-surface shadow-xl text-primary text-3xl md:text-5xl font-black">
+                    {initials}
+                  </div>
                   
-                  <div className="absolute inset-0 p-8 md:p-12 flex flex-col items-center justify-center text-center">
-                    <div className="flex flex-col items-center gap-4 md:gap-6">
-                      <div className="flex h-20 w-20 md:h-28 md:w-28 flex-shrink-0 items-center justify-center rounded-[28px] bg-white/30 backdrop-blur-sm border border-white/40 text-white text-3xl md:text-5xl font-black shadow-2xl">
-                        {initials}
-                      </div>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-center gap-2">
-                          {mentor.isVerified && (
-                            <span className="inline-flex items-center gap-1.5 rounded-full bg-white text-primary px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.2em] shadow-xl">
-                              <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                              Verified Senior
-                            </span>
-                          )}
-                        </div>
-                        <h1 className="heading-display text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tighter leading-tight max-w-2xl">
-                          {mentor.name}
-                        </h1>
-                        <p className="text-white/90 text-base md:text-xl font-medium tracking-tight">
-                          {mentor.college || "Top College"}{mentor.branch ? ` · ${mentor.branch}` : ""}
-                        </p>
-                      </div>
+                  <div className="flex-1 text-center md:text-left space-y-2 pb-1">
+                    <div className="flex flex-col md:flex-row md:items-center gap-2 justify-center md:justify-start">
+                      <h1 className="heading-display text-2xl md:text-4xl font-black text-fg tracking-tight leading-none">
+                        {mentor.name}
+                      </h1>
+                      {mentor.isVerified && (
+                        <span className="inline-flex self-center md:self-start items-center gap-1 rounded-full bg-primary/10 text-primary px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider">
+                          <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                          Verified
+                        </span>
+                      )}
                     </div>
+                    <p className="text-muted text-sm md:text-base font-semibold">
+                      {mentor.college || "Top College"}{mentor.branch ? ` · ${mentor.branch}` : ""}
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* Stats Bar */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 -mt-16 relative z-10 px-4 md:px-20">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8 px-2 md:px-8">
                 {[
                   { label: "Sessions", value: mentor.sessionsCompleted || 0, icon: "sessions" },
                   { label: "Rating", value: typeof mentor.rating === "number" ? `${mentor.rating.toFixed(1)} / 5` : "New", icon: "rating" },
                   { label: "Experience", value: mentor.year ? `${mentor.year}th Year` : "Senior", icon: "experience" },
                   { label: "Response", value: "< 24h", icon: "response" },
                 ].map(stat => (
-                  <Card key={stat.label} className="p-6 md:p-8 text-center bg-surface  shadow-hero border-white/50 dark:border-white/5 rounded-3xl">
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Card key={stat.label} className="p-5 flex items-center gap-4 bg-surface border border-border/50 rounded-2xl hover:shadow-soft transition-all">
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                       <StatIcon type={stat.icon} />
                     </div>
-                    <div className="text-2xl md:text-4xl font-black text-fg tracking-tighter">{stat.value}</div>
-                    <div className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mt-2">{stat.label}</div>
+                    <div>
+                      <div className="text-[9px] font-black text-muted uppercase tracking-widest leading-none">{stat.label}</div>
+                      <div className="text-lg font-black text-fg mt-1 leading-none">{stat.value}</div>
+                    </div>
                   </Card>
                 ))}
               </div>
 
               {/* Main Content Split */}
-              <div className="mt-16 grid lg:grid-cols-[1.8fr,1.2fr] gap-12">
+              <div className="mt-12 grid lg:grid-cols-[1.8fr,1.2fr] gap-12">
                 <div className="space-y-12">
                   <section>
                     <h2 className="text-xl font-black text-fg mb-6">About</h2>
@@ -307,14 +334,6 @@ function Profile() {
                 <div className="space-y-8">
                   <div ref={bookingPanelRef} id="booking-panel" className="sticky top-24 scroll-mt-28">
                     <h2 className="text-xl font-black text-fg mb-6">Choose a Slot</h2>
-                    
-                    {bookingMsg.text && (
-                      <div className={`mb-6 p-4 rounded-3xl text-sm font-black animate-scale-in border ${
-                        bookingMsg.type === "success" ? "bg-success/5 border-success/20 text-success" : "bg-danger/5 border-danger/20 text-danger"
-                      }`}>
-                        {bookingMsg.text}
-                      </div>
-                    )}
 
                     <div className="space-y-4">
                       {days.length > 0 ? (
@@ -332,7 +351,7 @@ function Profile() {
                                 }`}
                               >
                                 <div className="text-[9px] font-black uppercase tracking-wider opacity-70">
-                                  {day.split(" ")[0]}
+                                  {day.split(" ")[0].replace(",", "")}
                                 </div>
                                 <div className="text-xs font-black mt-0.5">
                                   {day.split(" ").slice(1).join(" ")}
@@ -379,7 +398,7 @@ function Profile() {
                             variant="primary" 
                             className="mt-6 rounded-2xl w-full"
                             onClick={() => {
-                              setBookingMsg({ type: "success", text: "Interest noted! We'll notify you as soon as this senior adds new slots." });
+                              showSuccess("Interest noted! We'll notify you as soon as this senior adds new slots.");
                             }}
                           >
                             🔔 Notify me when slots open
