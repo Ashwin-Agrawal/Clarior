@@ -175,11 +175,11 @@ function Profile() {
           {loading && (
             <div className="space-y-8 pt-10 animate-pulse">
               {/* Banner Skeleton */}
-              <div className="h-32 md:h-48 w-full bg-muted/15 rounded-3xl md:rounded-[40px]" />
+              <div className="h-36 md:h-56 w-full bg-muted/15 rounded-3xl md:rounded-[40px]" />
               
               {/* Profile Block Skeleton */}
-              <div className="flex flex-col md:flex-row items-center md:items-end gap-6 px-4 md:px-8 -mt-12 md:-mt-16">
-                <div className="h-24 w-24 md:h-32 md:w-32 rounded-[32px] bg-muted/20 border-4 border-surface" />
+              <div className="flex flex-col md:flex-row items-center md:items-end gap-6 px-4 md:px-8 -mt-12 md:-mt-24">
+                <div className="h-28 w-28 md:h-36 md:w-36 rounded-full bg-muted/20 border-[6px] border-surface" />
                 <div className="flex-1 space-y-3 pb-1 w-full text-center md:text-left">
                   <div className="h-6 w-1/3 bg-muted/20 rounded-full mx-auto md:mx-0" />
                   <div className="h-4 w-1/2 bg-muted/20 rounded-full mx-auto md:mx-0" />
@@ -187,7 +187,7 @@ function Profile() {
               </div>
 
               {/* Stats Skeleton */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 px-2 md:px-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 md:mt-16 px-2 md:px-8">
                 {[1,2,3,4].map(i => (
                   <div key={i} className="h-24 rounded-2xl bg-muted/10 border border-border/50" />
                 ))}
@@ -215,30 +215,30 @@ function Profile() {
             <div className="animate-fade-up">
               {/* Hero Banner Area */}
               <div className="relative pt-10">
-                <div className={`relative h-32 md:h-48 w-full rounded-3xl md:rounded-[40px] overflow-hidden bg-gradient-to-br ${gradient} shadow-lg group`}>
+                <div className={`relative h-36 md:h-56 w-full rounded-3xl md:rounded-[40px] overflow-hidden bg-gradient-to-br ${gradient} shadow-lg group`}>
                   <div className="absolute inset-0 bg-black/10" />
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.15),transparent_60%)]" />
                 </div>
 
                 {/* Profile Avatar & Info Block */}
-                <div className="flex flex-col md:flex-row items-center md:items-end gap-6 px-4 md:px-8 -mt-12 md:-mt-16 relative z-10">
-                  <div className="flex h-24 w-24 md:h-32 md:w-32 flex-shrink-0 items-center justify-center rounded-[32px] bg-surface border-4 border-surface shadow-xl text-primary text-3xl md:text-5xl font-black">
+                <div className="flex flex-col md:flex-row items-center md:items-end gap-6 px-6 md:px-12 -mt-16 md:-mt-24 relative z-10">
+                  <div className="flex h-28 w-28 md:h-36 md:w-36 flex-shrink-0 items-center justify-center rounded-full bg-surface border-[6px] border-[var(--surface)] shadow-xl text-primary text-3xl md:text-5xl font-black">
                     {initials}
                   </div>
                   
-                  <div className="flex-1 text-center md:text-left space-y-2 pb-1">
-                    <div className="flex flex-col md:flex-row md:items-center gap-2 justify-center md:justify-start">
-                      <h1 className="heading-display text-2xl md:text-4xl font-black text-fg tracking-tight leading-none">
+                  <div className="flex-1 text-center md:text-left space-y-3 pb-2">
+                    <div className="flex flex-col md:flex-row md:items-center gap-3 justify-center md:justify-start">
+                      <h1 className="heading-display text-3xl md:text-5xl font-black text-fg tracking-tight leading-normal">
                         {mentor.name}
                       </h1>
                       {mentor.isVerified && (
-                        <span className="inline-flex self-center md:self-start items-center gap-1 rounded-full bg-primary/10 text-primary px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider">
+                        <span className="inline-flex self-center items-center gap-1.5 rounded-full bg-success/10 text-success border border-success/20 px-3 py-1 text-[10px] font-black uppercase tracking-wider select-none">
                           <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                           Verified
                         </span>
                       )}
                     </div>
-                    <p className="text-muted text-sm md:text-base font-semibold">
+                    <p className="text-muted text-sm md:text-lg font-semibold">
                       {mentor.college || "Top College"}{mentor.branch ? ` · ${mentor.branch}` : ""}
                     </p>
                   </div>
@@ -246,7 +246,7 @@ function Profile() {
               </div>
 
               {/* Stats Bar */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8 px-2 md:px-8">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12 md:mt-16 px-2 md:px-8">
                 {[
                   { label: "Sessions", value: mentor.sessionsCompleted || 0, icon: "sessions" },
                   { label: "Rating", value: typeof mentor.rating === "number" ? `${mentor.rating.toFixed(1)} / 5` : "New", icon: "rating" },
