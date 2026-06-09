@@ -72,7 +72,10 @@ function Register() {
   return (
     <div className="min-h-screen flex">
       {/* Branding panel */}
-      <div className="hidden lg:flex lg:w-[46%] flex-col justify-between relative overflow-hidden bg-[#0f2851] p-12">
+      <div className="hidden lg:flex lg:w-[46%] flex-col justify-between relative overflow-hidden bg-[radial-gradient(ellipse_at_bottom_left,#2563eb,#0f2851)] p-12">
+        {/* Background grid */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
+        
         <div className="relative flex items-center gap-3">
           <Logo size="footer" />
           <span className="text-white font-extrabold text-2xl" style={{ fontFamily: "'Playfair Display', serif" }}>Clarior</span>
@@ -86,7 +89,7 @@ function Register() {
           </p>
           <div className="grid grid-cols-2 gap-4 mt-8">
             {[["500+","Active seniors"],["₹69","Starting price"],["25min","Per session"],["4.9★","Avg. rating"]].map(([v, l]) => (
-              <div key={l} className="rounded-2xl bg-[#1a3a8f] border border-[#2563eb] p-4 text-center">
+              <div key={l} className="rounded-2xl bg-[#2563eb]/30 border border-[#3b82f6]/40 backdrop-blur-sm p-4 text-center">
                 <div className="text-2xl font-extrabold text-white">{v}</div>
                 <div className="text-blue-200 text-xs mt-1">{l}</div>
               </div>
@@ -104,7 +107,7 @@ function Register() {
         </div>
         <div className="w-full max-w-md animate-fade-up">
           <div className="mb-8">
-            <h1 className="text-3xl font-extrabold tracking-tight text-fg">Create your account</h1>
+            <h1 className="text-3xl font-extrabold tracking-tight text-fg">Register as Student</h1>
             <p className="text-muted mt-2 text-sm">Start your mentorship journey in seconds.</p>
           </div>
           {success && (

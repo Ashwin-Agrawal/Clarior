@@ -6,6 +6,7 @@ import Button from "../components/ui/Button";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import useSEO from "../hooks/useSEO";
+import { useToast } from "../context/ToastContext";
 
 function formatDateTime(value) {
   if (!value) return "—";
@@ -57,64 +58,76 @@ function SessionList({ items, userRole, actionLabel, emptyTitle, emptyDescriptio
 
   return (
     <div className="mt-6 space-y-4">
-      {items.map((booking, idx) => (
-        <div
-          key={booking._id}
-          className="group flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-border bg-surface p-5 shadow-soft hover:shadow-lift hover:border-primary/20 transition-all duration-200 animate-fade-up"
-          style={{ animationDelay: `${idx * 100}ms` }}
-        >
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="text-lg font-bold text-fg group-hover:text-primary transition-colors">
-                {userRole === "student"
-                  ? booking?.senior?.name || "Senior"
-                  : booking?.student?.name || "Student"}
+      {items.map((booking, idx) => {
+        const startTime = new Date(booking.startTime || booking.date || 0).getTime();
+        const isToday = new Date().toDateString() === new Date(startTime).toDateString();
+        
+        let borderClass = "border-l-4 border-l-muted/30";
+        if (booking.status === "confirmed") {
+          borderClass = isToday ? "border-l-4 border-l-success" : "border-l-4 border-l-primary";
+        }
+
+        return (
+          <div
+            key={booking._id}
+            className={`group flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-border bg-surface p-5 shadow-soft hover:shadow-lift hover:border-primary/20 transition-all duration-200 animate-fade-up ${borderClass}`}
+            style={{ animationDelay: `${idx * 100}ms` }}
+          >
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="text-lg font-bold text-fg group-hover:text-primary transition-colors">
+                  {userRole === "student"
+                    ? booking?.senior?.name || "Senior"
+                    : booking?.student?.name || "Student"}
+                </div>
+                <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
+                  booking.status === "confirmed" ? "bg-success/10 text-success border border-success/20" :
+                  booking.status === "completed" ? "bg-primary/10 text-primary border border-primary/20" :
+                  booking.status === "cancelled" ? "bg-danger/10 text-danger border border-danger/20" :
+                  "bg-muted/10 text-muted border border-muted/20"
+                }`}>
+                  {booking.status}
+                </span>
               </div>
-              <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
-                booking.status === "confirmed" ? "bg-success/10 text-success border border-success/20" :
-                booking.status === "completed" ? "bg-primary/10 text-primary border border-primary/20" :
-                booking.status === "cancelled" ? "bg-danger/10 text-danger border border-danger/20" :
-                "bg-muted/10 text-muted border border-muted/20"
-              }`}>
-                {booking.status}
-              </span>
+
+              <div className="mt-3 grid gap-4 text-xs text-muted md:grid-cols-2 lg:grid-cols-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-surface2 flex items-center justify-center text-muted">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-muted/60 uppercase tracking-widest text-[9px]">Date & Time</div>
+                    <div className="text-fg font-medium">{formatDateTime(booking.startTime)}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-surface2 flex items-center justify-center text-muted">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-muted/60 uppercase tracking-widest text-[9px]">Duration</div>
+                    <div className="text-fg font-medium">25-minute call</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="mt-3 grid gap-4 text-xs text-muted md:grid-cols-2 lg:grid-cols-3">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-surface2 flex items-center justify-center text-muted">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                </div>
-                <div>
-                  <div className="font-semibold text-muted/60 uppercase tracking-widest text-[9px]">Date & Time</div>
-                  <div className="text-fg font-medium">{formatDateTime(booking.startTime)}</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-surface2 flex items-center justify-center text-muted">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                </div>
-                <div>
-                  <div className="font-semibold text-muted/60 uppercase tracking-widest text-[9px]">Duration</div>
-                  <div className="text-fg font-medium">25-minute call</div>
-                </div>
-              </div>
-            </div>
+            <Link to={`/session/${booking._id}`} className="w-full sm:w-auto">
+              <Button 
+                variant={booking.status === "completed" || booking.status === "cancelled" ? "secondary" : "primary"} 
+                className="w-full sm:w-auto rounded-2xl"
+              >
+                {actionLabel}
+              </Button>
+            </Link>
           </div>
-
-          <Link to={`/session/${booking._id}`} className="w-full sm:w-auto">
-            <Button variant={actionLabel === "View details" ? "secondary" : "primary"} className="w-full sm:w-auto rounded-2xl">
-              {actionLabel}
-            </Button>
-          </Link>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
 
-async function loadDashboardData({ user, setMsg, setDataLoading, setBookings, setSlots }) {
-  setMsg("");
+async function loadDashboardData({ user, showError, setDataLoading, setBookings, setSlots }) {
   setDataLoading(true);
 
   try {
@@ -128,7 +141,9 @@ async function loadDashboardData({ user, setMsg, setDataLoading, setBookings, se
       setSlots([]);
     }
   } catch (err) {
-    setMsg(err?.response?.data?.message || "Failed to load dashboard data");
+    if (showError) {
+      showError(err?.response?.data?.message || "Failed to load dashboard data");
+    }
   } finally {
     setDataLoading(false);
   }
@@ -137,7 +152,7 @@ async function loadDashboardData({ user, setMsg, setDataLoading, setBookings, se
 function Dashboard() {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
-  const [msg, setMsg] = useState("");
+  const { showSuccess, showError } = useToast();
   const [loading, setLoading] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [bookings, setBookings] = useState([]);
@@ -147,30 +162,40 @@ function Dashboard() {
 
   const handleWithdraw = async () => {
     try {
-      setMsg("");
       const amount = Number(withdrawAmount);
-      if (!amount || amount <= 0) {
-        setMsg("Enter a valid withdraw amount.");
+      if (!amount || amount < 50) {
+        showError("Enter a valid amount (minimum ₹50).");
         return;
       }
       setLoading(true);
       await api.post("/withdraw/request", { amount });
-      setMsg("Withdraw request sent.");
+      showSuccess("Withdraw request sent successfully.");
       setWithdrawAmount("");
+      // Refresh to update balances
+      refresh();
     } catch (err) {
-      setMsg(err?.response?.data?.message || "Withdraw request failed");
+      showError(err?.response?.data?.message || "Withdraw request failed");
     } finally {
       setLoading(false);
     }
   };
 
   const refresh = async () => {
-    await loadDashboardData({ user, setMsg, setDataLoading, setBookings, setSlots });
+    await loadDashboardData({ user, showError, setDataLoading, setBookings, setSlots });
   };
 
   useEffect(() => {
     if (!user) return;
-    loadDashboardData({ user, setMsg, setDataLoading, setBookings, setSlots });
+    loadDashboardData({ user, showError, setDataLoading, setBookings, setSlots });
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    const interval = setInterval(() => {
+      // Silent refresh
+      loadDashboardData({ user, showError: null, setDataLoading: () => {}, setBookings, setSlots });
+    }, 60000);
+    return () => clearInterval(interval);
   }, [user]);
 
   useEffect(() => {
@@ -209,12 +234,24 @@ function Dashboard() {
     navigate("/");
   };
 
+  const { walletBorder, walletTint } = useMemo(() => {
+    if (user?.role === "student") {
+      const credits = user.callCredits ?? 0;
+      if (credits === 0) {
+        return { walletBorder: "border-l-danger", walletTint: "bg-danger/10 text-danger" };
+      } else if (credits === 1) {
+        return { walletBorder: "border-l-warning", walletTint: "bg-warning/10 text-warning" };
+      }
+    }
+    return { walletBorder: "border-l-success", walletTint: "bg-success/10 text-success" };
+  }, [user]);
+
   return (
     <AppShell title="Dashboard">
       <div className="space-y-8 pb-10">
         {/* Welcome Header */}
         <section className="relative overflow-hidden rounded-[32px] border border-border bg-surface p-8 shadow-card animate-fade-up">
-          <div className="absolute right-0 top-0 h-40 w-40 rounded-full blur-3xl bg-primary/5 -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute right-0 top-0 h-40 w-40 rounded-full blur-3xl bg-primary/8 dark:bg-primary/5 -translate-y-1/2 translate-x-1/2 pointer-events-none" />
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between relative z-10">
             <div className="flex items-center gap-6">
               <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-[28px] bg-gradient-to-br from-primary to-accent text-3xl font-extrabold text-white shadow-lift">
@@ -232,6 +269,18 @@ function Dashboard() {
                     ? "Your senior portal is ready. Track your earnings and manage your availability below."
                     : "Ready to get some clarity? Book a session or manage your upcoming calls here."}
                 </p>
+                {user?.role === "senior" && (
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <div className="rounded-2xl border border-border bg-surface-2/30 backdrop-blur px-4 py-2 shadow-sm bg-surface2/40">
+                      <div className="text-[9px] font-black text-muted uppercase tracking-wider">Available Balance</div>
+                      <div className="text-base font-black text-success mt-0.5">₹{user?.availableBalance ?? 0}</div>
+                    </div>
+                    <div className="rounded-2xl border border-border bg-surface-2/30 backdrop-blur px-4 py-2 shadow-sm bg-surface2/40">
+                      <div className="text-[9px] font-black text-muted uppercase tracking-wider">Pending Earnings</div>
+                      <div className="text-base font-black text-fg mt-0.5">₹{user?.pendingEarnings ?? 0}</div>
+                    </div>
+                  </div>
+                )}
                 {isUnverifiedSenior && (
                   <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-amber-700">
                     <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
@@ -288,7 +337,7 @@ function Dashboard() {
           </Card>
 
           {/* Wallet/Credits Card */}
-          <Card className="p-6 border-l-4 border-l-success animate-fade-up delay-200">
+          <Card className={`p-6 border-l-4 ${walletBorder} animate-fade-up delay-200`}>
             <div className="flex items-start justify-between">
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-widest text-muted">
@@ -298,7 +347,7 @@ function Dashboard() {
                   {user?.role === "senior" ? `₹${user?.availableBalance ?? 0}` : user?.callCredits ?? 0}
                 </div>
               </div>
-              <StatIcon tint="bg-success/10 text-success">
+              <StatIcon tint={walletTint}>
                 <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M16 14h2"/></svg>
               </StatIcon>
             </div>
@@ -384,12 +433,15 @@ function Dashboard() {
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold text-sm select-none">₹</span>
                   <input
                     type="number"
-                    min="1"
+                    min="50"
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
-                    placeholder="Enter amount"
-                    className="w-full rounded-2xl border border-border bg-surface2 pl-10 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition"
+                    placeholder="Enter amount (min ₹50)"
+                    className="w-full rounded-2xl border border-border bg-surface2 pl-10 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition animate-fade-in"
                   />
+                </div>
+                <div className="text-[10px] font-black text-muted uppercase tracking-widest mt-[-8px] pl-1 select-none">
+                  Minimum withdrawal amount is ₹50
                 </div>
                 <Button
                   onClick={handleWithdraw}
@@ -400,7 +452,6 @@ function Dashboard() {
                 >
                   {user?.isVerified ? "Submit Request" : "Locked (Verify first)"}
                 </Button>
-                {msg && <p className="text-[10px] text-center font-bold uppercase tracking-wider text-primary">{msg}</p>}
               </div>
             </Card>
 

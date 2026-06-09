@@ -17,6 +17,15 @@ function formatDateTime(d) {
   }).format(dt);
 }
 
+function formatTimeOnly(d) {
+  if (!d) return "—";
+  const dt = new Date(d);
+  if (isNaN(dt.getTime())) return "—";
+  return new Intl.DateTimeFormat("en-IN", {
+    hour: "2-digit", minute: "2-digit"
+  }).format(dt);
+}
+
 async function loadBookings({ setError, setLoading, setBookings }) {
   setError("");
   setLoading(true);
@@ -32,14 +41,15 @@ async function loadBookings({ setError, setLoading, setBookings }) {
 
 function MyBookings() {
   useSEO({
-    title: "MyBookings",
-    description: "Clarior MyBookings page"
+    title: "My Sessions",
+    description: "Manage and join your 1:1 mentorship calls on Clarior."
   });
 
   const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [actionError, setActionError] = useState("");
 
   const sorted = useMemo(() => {
     return [...bookings].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
@@ -59,23 +69,32 @@ function MyBookings() {
 
   const startCall = async (bookingId) => {
     try {
+      setActionError("");
       const res = await api.patch(`/bookings/start/${bookingId}`);
       patchBooking(bookingId, { isCallStarted: true, actualStartTime: res.data.startTime });
-    } catch (e) { alert(e?.response?.data?.message || "Error starting call"); }
+    } catch (e) {
+      setActionError(e?.response?.data?.message || "Error starting call");
+    }
   };
 
   const seniorComplete = async (bookingId) => {
     try {
+      setActionError("");
       await api.patch(`/bookings/senior-complete/${bookingId}`);
       patchBooking(bookingId, { isSeniorMarkedDone: true });
-    } catch (e) { alert(e?.response?.data?.message || "Error marking done"); }
+    } catch (e) {
+      setActionError(e?.response?.data?.message || "Error marking done");
+    }
   };
 
   const studentConfirm = async (bookingId) => {
     try {
+      setActionError("");
       await api.patch(`/bookings/student-confirm/${bookingId}`);
       patchBooking(bookingId, { isStudentConfirmed: true, status: "completed" });
-    } catch (e) { alert(e?.response?.data?.message || "Error confirming"); }
+    } catch (e) {
+      setActionError(e?.response?.data?.message || "Error confirming");
+    }
   };
 
   return (
@@ -86,9 +105,16 @@ function MyBookings() {
         </Button>
       </div>
 
+      {actionError && (
+        <div className="mb-6 rounded-2xl border border-danger/30 bg-danger/5 px-6 py-4 text-sm text-danger animate-scale-in flex justify-between items-center">
+          <span>{actionError}</span>
+          <button onClick={() => setActionError("")} className="font-bold text-xs uppercase hover:underline">Dismiss</button>
+        </div>
+      )}
+
       {loading && (
         <div className="grid gap-4">
-          {[1,2,3].map(i => <Skeleton key={i} className="h-40 rounded-3xl" />)}
+          {[1,2,3].map(i => <Skeleton.Session key={i} />)}
         </div>
       )}
 
@@ -120,13 +146,27 @@ function MyBookings() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                     <div className="space-y-1">
                       <div className="text-muted font-bold uppercase tracking-widest text-[9px]">Scheduled Time</div>
-                      <div className="text-fg font-medium">{formatDateTime(b.startTime)} → {formatDateTime(b.endTime).split(',')[1]}</div>
+                      <div className="text-fg font-medium">{formatDateTime(b.startTime)} → {formatTimeOnly(b.endTime)}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted font-bold uppercase tracking-widest text-[9px]">Meet Link</div>
-                      <div className="text-primary font-bold truncate">
-                        {b.meetLink ? <a href={b.meetLink} target="_blank" rel="noreferrer" className="hover:underline">{b.meetLink}</a> : "—"}
-                      </div>
+                      <div className="text-muted font-bold uppercase tracking-widest text-[9px] mb-1">Meet Link</div>
+                      {b.meetLink ? (
+                        <div className="truncate">
+                          <a 
+                            href={b.meetLink} 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-bold hover:bg-primary/20 transition-all"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
+                            Open Meet
+                          </a>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted font-semibold italic">Generated soon</span>
+                      )}
                     </div>
                   </div>
 

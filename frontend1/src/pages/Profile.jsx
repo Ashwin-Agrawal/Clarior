@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
@@ -10,11 +10,44 @@ import Footer from "../components/Footer";
 import SiteContainer from "../components/layout/SiteContainer";
 import useSEO from "../hooks/useSEO";
 
-function getGradient(name = "") {
+function getGradient(domain = "", name = "") {
+  const domainLower = domain?.toLowerCase() || "";
+  if (domainLower.includes("engineering") || domainLower.includes("tech")) {
+    return "from-blue-600 to-indigo-700";
+  }
+  if (domainLower.includes("medical") || domainLower.includes("science")) {
+    return "from-emerald-600 to-teal-700";
+  }
+  if (domainLower.includes("commerce") || domainLower.includes("finance")) {
+    return "from-amber-500 to-orange-600";
+  }
+  if (domainLower.includes("arts") || domainLower.includes("humanities")) {
+    return "from-pink-600 to-rose-700";
+  }
+  if (domainLower.includes("law")) {
+    return "from-violet-600 to-purple-700";
+  }
   const g = ["from-violet-600 to-indigo-600","from-rose-600 to-pink-600","from-teal-600 to-emerald-600","from-amber-600 to-orange-600","from-blue-600 to-cyan-600","from-fuchsia-600 to-purple-600"];
   let h = 0;
   for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
   return g[Math.abs(h) % g.length];
+}
+
+function formatReviewDate(dateStr) {
+  if (!dateStr) return "recently";
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffTime = Math.abs(now - date);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  if (diffDays <= 1) return "today";
+  if (diffDays === 2) return "yesterday";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays < 30) {
+    const weeks = Math.floor(diffDays / 7);
+    return `${weeks} week${weeks !== 1 ? 's' : ''} ago`;
+  }
+  const months = Math.floor(diffDays / 30);
+  return `${months} month${months !== 1 ? 's' : ''} ago`;
 }
 
 function StarRow({ rating, reviews }) {
@@ -67,6 +100,27 @@ function Profile() {
   const [bookingSlot, setBookingSlot] = useState(null);
   const bookingPanelRef = useRef(null);
 
+  const slotsByDay = useMemo(() => {
+    const groups = {};
+    slots.forEach(slot => {
+      const dateStr = new Date(slot.date).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
+      if (!groups[dateStr]) groups[dateStr] = [];
+      groups[dateStr].push(slot);
+    });
+    return groups;
+  }, [slots]);
+
+  const days = useMemo(() => Object.keys(slotsByDay), [slotsByDay]);
+  const [activeDay, setActiveDay] = useState(null);
+
+  useEffect(() => {
+    if (days.length > 0) {
+      setActiveDay(days[0]);
+    } else {
+      setActiveDay(null);
+    }
+  }, [days]);
+
   useSEO({ title: mentor?.name ? `${mentor.name} — Senior Profile` : 'Senior Profile', description: mentor ? `Book a 25-minute 1:1 session with ${mentor.name} from ${mentor.college || 'top college'} on Clarior.` : 'Find and book verified seniors on Clarior.' });
 
   const load = async () => {
@@ -104,7 +158,7 @@ function Profile() {
     } catch (err) { setBookingMsg({ type: "error", text: err?.response?.data?.message || "Booking failed" }); } finally { setBookingSlot(null); }
   };
 
-  const gradient = getGradient(mentor?.name || "");
+  const gradient = getGradient(mentor?.domain, mentor?.name || "");
   const initials = mentor?.name?.trim().split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase() || "?";
 
   return (
@@ -142,7 +196,7 @@ function Profile() {
                   
                   <div className="absolute inset-0 p-8 md:p-12 flex flex-col items-center justify-center text-center">
                     <div className="flex flex-col items-center gap-4 md:gap-6">
-                      <div className="flex h-20 w-20 md:h-28 md:w-28 flex-shrink-0 items-center justify-center rounded-[28px] bg-white/20 backdrop-blur-sm border border-white/30 text-white text-3xl md:text-5xl font-black shadow-2xl">
+                      <div className="flex h-20 w-20 md:h-28 md:w-28 flex-shrink-0 items-center justify-center rounded-[28px] bg-white/30 backdrop-blur-sm border border-white/40 text-white text-3xl md:text-5xl font-black shadow-2xl">
                         {initials}
                       </div>
                       <div className="space-y-3">
@@ -194,6 +248,25 @@ function Profile() {
                       <p className="mt-6 text-fg/90 text-base leading-relaxed">
                         {mentor.bio || "Hello! I'm here to help you navigate the complex world of college admissions and career planning. Whether you're worried about which branch to pick or how to prepare for placements, I've got you covered with honest, firsthand experience."}
                       </p>
+                      
+                      <div className="mt-8 pt-6 border-t border-border/60 grid grid-cols-2 sm:grid-cols-4 gap-6">
+                        <div>
+                          <div className="text-[10px] font-black text-muted uppercase tracking-widest">Domain</div>
+                          <div className="mt-1 text-sm font-black text-primary">{mentor.domain || "General"}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-black text-muted uppercase tracking-widest">Year of Study</div>
+                          <div className="mt-1 text-sm font-black text-fg">{mentor.year ? `${mentor.year}th Year` : "N/A"}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-black text-muted uppercase tracking-widest">Sessions Guided</div>
+                          <div className="mt-1 text-sm font-black text-fg">{mentor.sessionsCompleted || 0} calls</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-black text-muted uppercase tracking-widest">College</div>
+                          <div className="mt-1 text-sm font-black text-fg truncate">{mentor.college || "N/A"}</div>
+                        </div>
+                      </div>
                     </Card>
                   </section>
 
@@ -201,11 +274,20 @@ function Profile() {
                     <h2 className="text-xl font-black text-fg mb-6">Recent Reviews</h2>
                     <div className="space-y-4">
                       {reviews.length === 0 ? (
-                        <p className="text-sm text-muted font-medium">No reviews yet — be the first to book!</p>
+                        <Card className="p-8 text-center border-dashed border-2 bg-surface/50">
+                          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/5 text-primary text-xl">
+                            ⭐
+                          </div>
+                          <p className="text-sm text-fg font-black">No reviews yet</p>
+                          <p className="text-xs text-muted mt-1 font-semibold">Be the first to review after your slot!</p>
+                        </Card>
                       ) : reviews.map((rev, idx) => (
                         <Card key={rev._id || idx} className="p-6 border-border/40 hover:border-primary/20 transition-all">
                           <div className="flex justify-between items-start mb-2">
-                            <div className="font-black text-fg text-sm">{rev.student?.name || "Student"}</div>
+                            <div>
+                              <div className="font-black text-fg text-sm">{rev.student?.name || "Student"}</div>
+                              <div className="text-[10px] text-muted font-bold mt-0.5">{formatReviewDate(rev.createdAt)}</div>
+                            </div>
                             <div className="flex text-warning gap-0.5">
                               {[1,2,3,4,5].map(i => (
                                 <svg key={i} width="12" height="12" fill={i <= rev.rating ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -235,37 +317,76 @@ function Profile() {
                     )}
 
                     <div className="space-y-4">
-                      {slots.length > 0 ? (
-                        slots.map((slot) => (
-                          <Card key={slot._id} className="group p-6 flex justify-between items-center gap-4 hover:border-primary/40 hover:shadow-soft transition-all cursor-pointer" onClick={() => handleBooking(slot._id)}>
-                            <div>
-                              <div className="text-[10px] font-black uppercase tracking-[0.2em] text-muted mb-2 group-hover:text-primary transition-colors">Available</div>
-                              <div className="font-black text-fg text-lg">
-                                {new Date(slot.date).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })}
-                              </div>
-                              <div className="mt-1 flex items-center gap-1.5 text-sm font-bold text-muted">
-                                <StatIcon type="clock" />
-                                {slot.time || slot.startTime}
-                              </div>
-                            </div>
-                            <Button
-                              onClick={(e) => { e.stopPropagation(); handleBooking(slot._id); }}
-                              loading={bookingSlot === slot._id}
-                              size="lg"
-                              className="rounded-2xl shadow-soft"
-                            >
-                              ₹69
-                            </Button>
-                          </Card>
-                        ))
+                      {days.length > 0 ? (
+                        <>
+                          {/* Calendar Week Strip */}
+                          <div className="flex gap-2 overflow-x-auto pb-3 -mx-2 px-2 scrollbar-hide">
+                            {days.map((day) => (
+                              <button
+                                key={day}
+                                onClick={() => setActiveDay(day)}
+                                className={`flex-shrink-0 px-4 py-3 rounded-2xl border text-center transition-all cursor-pointer ${
+                                  activeDay === day
+                                    ? "bg-primary border-primary text-white shadow-md"
+                                    : "bg-surface border-border text-muted hover:border-primary/40 hover:text-fg"
+                                }`}
+                              >
+                                <div className="text-[9px] font-black uppercase tracking-wider opacity-70">
+                                  {day.split(" ")[0]}
+                                </div>
+                                <div className="text-xs font-black mt-0.5">
+                                  {day.split(" ").slice(1).join(" ")}
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+
+                          {/* Slots for Active Day */}
+                          <div className="space-y-3 mt-4">
+                            {(slotsByDay[activeDay] || []).map((slot) => (
+                              <Card 
+                                key={slot._id} 
+                                className="group p-5 flex justify-between items-center gap-4 hover:border-primary/40 hover:shadow-soft transition-all cursor-pointer bg-surface"
+                                onClick={() => handleBooking(slot._id)}
+                              >
+                                <div>
+                                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-success mb-1">Available</div>
+                                  <div className="mt-1 flex items-center gap-1.5 text-sm font-bold text-fg">
+                                    <StatIcon type="clock" />
+                                    {slot.time || slot.startTime}
+                                  </div>
+                                </div>
+                                <Button
+                                  onClick={(e) => { e.stopPropagation(); handleBooking(slot._id); }}
+                                  loading={bookingSlot === slot._id}
+                                  size="md"
+                                  className="rounded-xl px-6"
+                                >
+                                  Book ₹69
+                                </Button>
+                              </Card>
+                            ))}
+                          </div>
+                        </>
                       ) : (
-                        <Card className="p-12 text-center border-dashed">
-                          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-surface2 text-muted">
+                        <Card className="p-8 text-center border-dashed border-2 bg-surface">
+                          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-danger/5 text-danger">
                             <StatIcon type="calendar" />
                           </div>
-                          <h4 className="font-black text-fg uppercase tracking-widest">No availability right now</h4>
+                          <h4 className="font-black text-fg text-sm uppercase tracking-widest">Fully Booked</h4>
                           <p className="text-xs text-muted mt-2 font-bold uppercase tracking-wider">No availability right now — check back soon!</p>
-                          <Button variant="secondary" className="mt-8 rounded-full w-full" onClick={() => navigate("/explore")}>Explore Others</Button>
+                          <Button 
+                            variant="primary" 
+                            className="mt-6 rounded-2xl w-full"
+                            onClick={() => {
+                              setBookingMsg({ type: "success", text: "Interest noted! We'll notify you as soon as this senior adds new slots." });
+                            }}
+                          >
+                            🔔 Notify me when slots open
+                          </Button>
+                          <Button variant="secondary" className="mt-2 rounded-2xl w-full" onClick={() => navigate("/explore")}>
+                            Explore Others
+                          </Button>
                         </Card>
                       )}
                     </div>

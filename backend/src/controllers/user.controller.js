@@ -43,10 +43,28 @@ exports.getAllSeniors = async (req, res) => {
       "name college branch domain bio rating numReviews isVerified year linkedin sessionsCompleted"
     );
 
+    const Slot = require("../models/Slots");
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    const seniorsWithSlots = await Promise.all(
+      seniors.map(async (s) => {
+        const count = await Slot.countDocuments({
+          senior: s._id,
+          isBooked: false,
+          date: { $gte: now }
+        });
+        return {
+          ...s.toObject(),
+          activeSlotsCount: count
+        };
+      })
+    );
+
     res.status(200).json({
       success: true,
-      count: seniors.length,
-      seniors,
+      count: seniorsWithSlots.length,
+      seniors: seniorsWithSlots,
     });
   } catch (error) {
     res.status(500).json({
@@ -175,7 +193,22 @@ exports.getSeniorById = async (req, res) => {
       "name college branch domain bio rating numReviews isVerified year linkedin sessionsCompleted"
     );
     if (!senior) return res.status(404).json({ message: "Senior not found" });
-    return res.json({ senior });
+
+    const Slot = require("../models/Slots");
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const count = await Slot.countDocuments({
+      senior: senior._id,
+      isBooked: false,
+      date: { $gte: now }
+    });
+
+    const seniorObj = {
+      ...senior.toObject(),
+      activeSlotsCount: count
+    };
+
+    return res.json({ senior: seniorObj });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

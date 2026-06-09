@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
@@ -62,6 +62,15 @@ function Navbar() {
   const location = useLocation();
   const [dark, toggleDark] = useDarkMode();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleLogout = async () => {
     try { await api.get("/auth/logout"); } catch {
@@ -74,9 +83,9 @@ function Navbar() {
   const filteredItems = navItems.filter(item => item.to !== "/bookings" || user);
 
   return (
-    <div className="sticky top-0 z-50 w-full">
+    <div className={cx("sticky top-0 z-50 w-full transition-all duration-300", scrolled ? "bg-bg/60 backdrop-blur-lg border-b border-border/40 py-1.5" : "bg-transparent py-3")}>
       {/* Desktop floating pill navbar */}
-      <SiteContainer className="py-3">
+      <SiteContainer>
         <div className="mx-auto flex w-full max-w-[960px] items-center gap-2 rounded-2xl border border-border bg-surface px-3 py-2.5 shadow-[0_8px_32px_rgba(15,23,42,0.10)]  sm:rounded-full sm:px-4">
           {/* Logo + Brand */}
           <button

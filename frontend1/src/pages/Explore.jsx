@@ -71,7 +71,10 @@ function Explore() {
       <main className="bg-bg min-h-screen">
         {/* Header Section */}
         <section className="relative pt-20 pb-16 overflow-hidden">
-          <div className="absolute inset-0 pointer-events-none opacity-40" style={{ background: "var(--hero-gradient)" }} />
+          <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
+          <div className="absolute inset-0 pointer-events-none opacity-50" style={{ background: "var(--hero-gradient)" }} />
+          <div className="absolute top-1/4 left-1/4 h-80 w-80 rounded-full bg-primary/5 blur-3xl animate-float-slow pointer-events-none" />
+          <div className="absolute bottom-1/4 right-1/4 h-64 w-64 rounded-full bg-accent/5 blur-3xl animate-float pointer-events-none" />
           <SiteContainer className="relative">
             <div className="max-w-4xl mx-auto text-center animate-fade-up">
               <h1 className="heading-display text-4xl md:text-7xl font-black text-fg tracking-tight leading-[1.1]">
@@ -84,9 +87,9 @@ function Explore() {
 
             {/* Search & Filter Bar */}
             <div className="mt-12 max-w-5xl mx-auto space-y-4 animate-fade-up delay-100">
-              <div className="rounded-[32px] border border-border bg-surface p-3 shadow-card ">
-                <div className="flex flex-col gap-3 md:flex-row md:items-center">
-                  <div className="relative flex-1 group">
+              <div className="rounded-[32px] border border-border bg-surface p-3 shadow-card">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <div className="relative md:col-span-5 lg:col-span-6 group">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors">
                       <SearchIcon className="h-6 w-6" />
                     </span>
@@ -99,36 +102,36 @@ function Explore() {
                     />
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="relative min-w-[160px]">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:col-span-7 lg:col-span-6">
+                    <div className="relative">
                       <select
-                        className="w-full h-14 px-4 rounded-2xl border border-border bg-surface outline-none focus:ring-4 focus:ring-primary/10 transition-all text-sm font-bold appearance-none cursor-pointer"
+                        className="w-full h-14 px-4 pr-8 rounded-2xl border border-border bg-surface outline-none focus:ring-4 focus:ring-primary/10 transition-all text-sm font-bold appearance-none cursor-pointer"
                         value={course}
                         onChange={(e) => setCourse(e.target.value)}
                       >
                         {DOMAINS.map(d => <option key={d} value={d}>{d === "All" ? "All Courses" : d}</option>)}
                       </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
                         <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
                       </div>
                     </div>
 
-                    <div className="relative min-w-[160px]">
+                    <div className="relative">
                       <select
-                        className="w-full h-14 px-4 rounded-2xl border border-border bg-surface outline-none focus:ring-4 focus:ring-primary/10 transition-all text-sm font-bold appearance-none cursor-pointer"
+                        className="w-full h-14 px-4 pr-8 rounded-2xl border border-border bg-surface outline-none focus:ring-4 focus:ring-primary/10 transition-all text-sm font-bold appearance-none cursor-pointer"
                         value={branch}
                         onChange={(e) => setBranch(e.target.value)}
                       >
                         {branches.map(b => <option key={b} value={b}>{b === "All" ? "All Branches" : b}</option>)}
                       </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
                         <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
                       </div>
                     </div>
 
                     <Button
                       variant="secondary"
-                      className="h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-xs"
+                      className="h-14 w-full rounded-2xl font-black uppercase tracking-widest text-xs"
                       disabled={!hasFilters}
                       onClick={clearFilters}
                     >
@@ -179,7 +182,7 @@ function Explore() {
 
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1,2,3,4,5,6].map(i => <Skeleton key={i} className="h-80 rounded-2xl" />)}
+              {[1,2,3,4,5,6].map(i => <Skeleton.MentorCard key={i} />)}
             </div>
           ) : filtered.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

@@ -18,13 +18,27 @@ function getAvatarGradient(name = "") {
 function StarRating({ rating }) {
   const num = typeof rating === "number" ? rating : null;
   if (!num) return <span className="text-xs font-semibold text-muted bg-surface2 px-2 py-0.5 rounded-full border border-border">New</span>;
+  
+  const roundedRating = Math.round(num);
   return (
-    <span className="inline-flex items-center gap-1 text-sm font-bold text-fg">
-      <svg width="14" height="14" fill="#f59e0b" viewBox="0 0 24 24">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-      </svg>
-      {num.toFixed(1)}
-    </span>
+    <div className="flex flex-col items-end gap-0.5">
+      <div className="flex gap-0.5 text-warning">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <svg 
+            key={star} 
+            width="10" 
+            height="10" 
+            fill={star <= roundedRating ? "#f59e0b" : "rgba(var(--muted), 0.3)"} 
+            viewBox="0 0 24 24"
+          >
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        ))}
+      </div>
+      <span className="text-[10px] font-black text-fg leading-none mt-0.5">
+        {num.toFixed(1)} Rating
+      </span>
+    </div>
   );
 }
 
@@ -62,10 +76,14 @@ function MentorCard({ mentor }) {
           navigate(`/profile/${mentor._id}`);
         }
       }}
-      className="group relative rounded-[32px] border border-border bg-surface  shadow-card hover:shadow-2xl hover:-translate-y-2 hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 cursor-pointer overflow-hidden"
+      className={`group relative rounded-[32px] border bg-surface shadow-card hover:shadow-2xl hover:-translate-y-2 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 cursor-pointer overflow-hidden ${
+        mentor.isVerified 
+          ? "border-primary/30 bg-gradient-to-br from-surface to-primary/2 hover:border-primary" 
+          : "border-border hover:border-primary/40"
+      }`}
     >
       {/* Top accent stripe */}
-      <div className={`h-1 w-full bg-gradient-to-r ${gradient}`} />
+      <div className={`h-1.5 w-full bg-gradient-to-r ${mentor.isVerified ? "from-primary via-accent to-primary" : gradient}`} />
 
       <div className="p-5">
         {/* Header row */}
@@ -92,12 +110,21 @@ function MentorCard({ mentor }) {
         <div className="mt-3 flex flex-wrap gap-1.5">
           {mentor.isVerified && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/10 border border-success/25 text-success text-xs font-semibold">
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
               Verified
             </span>
           )}
+          {mentor.activeSlotsCount === 0 ? (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger/10 border border-danger/25 text-danger text-xs font-semibold">
+              No Slots Available
+            </span>
+          ) : typeof mentor.activeSlotsCount === "number" ? (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/25 text-primary text-xs font-semibold">
+              {mentor.activeSlotsCount} slot{mentor.activeSlotsCount !== 1 ? 's' : ''} available
+            </span>
+          ) : null}
           {mentor.domain && mentor.domain !== "Other" && (
             <span className={`px-2 py-0.5 rounded-full text-xs font-semibold border ${tagClass}`}>
               {mentor.domain}
@@ -131,8 +158,8 @@ function MentorCard({ mentor }) {
               25 min
             </span>
           </div>
-          <span className="text-xs font-bold text-primary bg-primary/10 rounded-full px-2.5 py-1">
-            from ₹69
+          <span className="text-xs font-black text-primary bg-primary/10 border border-primary/20 rounded-full px-3 py-1 shadow-sm">
+            ₹69 / session
           </span>
         </div>
 

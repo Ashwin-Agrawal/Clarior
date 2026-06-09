@@ -189,14 +189,54 @@ exports.getSlotsBySenior = async (req, res) => {
       return res.status(400).json({ message: "Invalid senior ID" });
     }
 
-    const slots = await Slot.find({
-      senior: id,
-      isBooked: false,
-    }).sort({ date: 1 });
+    let query = { senior: id };
+
+    // Check if request is from the senior themselves (to return booked/past slots as well)
+    const jwt = require("jsonwebtoken");
+    const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
+    let isRequestingSelf = false;
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (decoded.id === id) {
+          isRequestingSelf = true;
+        }
+      } catch (err) {}
+    }
+
+    if (!isRequestingSelf) {
+      query.isBooked = false;
+    }
+
+    const slots = await Slot.find(query).sort({ date: 1 }).lean();
+
+    let resultSlots = slots;
+    if (isRequestingSelf) {
+      const Booking = require("../models/Booking");
+      resultSlots = await Promise.all(
+        slots.map(async (slot) => {
+          if (slot.isBooked) {
+            const booking = await Booking.findOne({ slot: slot._id })
+              .populate("student", "name email")
+              .lean();
+            return {
+              ...slot,
+              booking: booking ? {
+                _id: booking._id,
+                studentName: booking.student?.name || "Student",
+                studentEmail: booking.student?.email || "",
+                meetLink: booking.meetLink || ""
+              } : null
+            };
+          }
+          return slot;
+        })
+      );
+    }
 
     res.json({
       success: true,
-      slots,
+      slots: resultSlots,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -33,13 +33,13 @@ function NavItem({ to, label, icon, active }) {
       className={cx(
         "flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-medium transition-all duration-150",
         active
-          ? "bg-primary/10 text-primary"
+          ? "bg-primary/20 text-primary shadow-sm"
           : "text-muted hover:bg-surface2 hover:text-fg"
       )}
     >
       <span className={cx(
         "flex h-8 w-8 items-center justify-center rounded-xl transition-colors flex-shrink-0",
-        active ? "bg-primary/15 text-primary" : "bg-surface2 text-muted"
+        active ? "bg-primary/25 text-primary" : "bg-surface2 text-muted"
       )}>
         {icon}
       </span>
@@ -85,7 +85,7 @@ function AppShell({ title, subtitle, children }) {
       {/* ── Sidebar ───────────────────────────────────────── */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border/70 lg:bg-surface lg:">
         {/* Top gradient accent */}
-        <div className="h-1 w-full bg-primary" />
+        <div className="h-[5px] w-full bg-primary" />
 
         <div className="flex h-full flex-col justify-between px-4 py-5">
           {/* Logo */}
@@ -119,9 +119,16 @@ function AppShell({ title, subtitle, children }) {
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary text-xs font-bold uppercase tracking-wide text-white shadow-soft">
                 {initials}
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <div className="truncate text-sm font-semibold text-fg">{user?.name}</div>
-                <div className="mt-0.5 text-xs capitalize text-muted">{user?.role}</div>
+                <div className="flex items-center justify-between gap-1.5 mt-0.5">
+                  <span className="text-xs capitalize text-muted">{user?.role}</span>
+                  {user?.role === "student" && (
+                    <span className="text-[10px] font-black text-success bg-success/10 border border-success/25 rounded-md px-1.5 py-0.5 uppercase tracking-wide">
+                      {user?.callCredits ?? 0} Cr
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
             <button

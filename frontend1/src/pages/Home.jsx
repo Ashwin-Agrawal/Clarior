@@ -18,10 +18,12 @@ const stats = [
 ];
 
 const colleges = [
-  { name: "IIT Delhi", logo: iitDelhiLogo },
-  { name: "IIT Bombay", logo: iitBomabay },
-  { name: "BITS Pilani", logo: bitsLogo },
-  { name: "DTU Delhi", logo: dtuLogo },
+  { name: "IIT Delhi", logo: iitDelhiLogo, isImage: true },
+  { name: "IIT Bombay", logo: iitBomabay, isImage: true },
+  { name: "BITS Pilani", logo: bitsLogo, isImage: true },
+  { name: "DTU Delhi", logo: dtuLogo, isImage: true },
+  { name: "NSUT Delhi", logo: "NS", isImage: false },
+  { name: "IIIT Delhi", logo: "3D", isImage: false },
 ];
 
 function LineIcon({ name, className = "h-5 w-5" }) {
@@ -44,16 +46,24 @@ function LineIcon({ name, className = "h-5 w-5" }) {
 
 function Home() {
   const [scrolled, setScrolled] = useState(0);
+  const [pulseLoading, setPulseLoading] = useState(true);
 
   useSEO({ title: "Home", description: "Talk to verified seniors from top Indian colleges for ₹69. Get clarity on college, branch, placements and more." });
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setPulseLoading(false);
+    }, 1500);
+
     const handleScroll = () => {
       const progress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
       setScrolled(Math.min(progress, 1));
     };
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   return (
@@ -61,14 +71,21 @@ function Home() {
       <Navbar />
       <main className="bg-bg overflow-x-hidden">
         {/* Progress Bar */}
-        <div className="fixed top-0 left-0 w-full h-1 z-[60] pointer-events-none">
-          <div className="h-full bg-primary origin-left transition-transform duration-150" style={{ transform: `scaleX(${scrolled})` }} />
+        <div className="fixed top-0 left-0 w-full h-[3px] z-[60] pointer-events-none">
+          <div 
+            className={`h-full bg-primary origin-left ${pulseLoading ? "animate-pulse-width bg-gradient-to-r from-primary via-accent to-primary" : "transition-transform duration-150"}`} 
+            style={{ 
+              transform: pulseLoading ? 'scaleX(1)' : `scaleX(${scrolled})`,
+              width: pulseLoading ? '100%' : 'auto'
+            }} 
+          />
         </div>
 
         {/* Hero Section */}
         <section className="relative pt-28 pb-32 md:pt-40 md:pb-48 overflow-hidden">
 
-          <div className="absolute inset-0 pointer-events-none opacity-40" style={{ background: "var(--hero-gradient)" }} />
+          <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none" />
+          <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--hero-gradient)" }} />
           <SiteContainer className="relative">
               <div className="text-center max-w-4xl mx-auto">
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-surface px-4 py-2 text-[11px] font-black text-primary uppercase tracking-[0.18em] mb-8 animate-fade-in shadow-sm  mx-auto">
@@ -99,9 +116,9 @@ function Home() {
                   </Link>
                 </div>
 
-                <div className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-5xl mx-auto animate-fade-up delay-300">
+                <div className="mt-20 flex flex-nowrap overflow-x-auto pb-6 -mx-4 px-4 scrollbar-hide sm:overflow-visible sm:pb-0 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 gap-8 max-w-5xl mx-auto animate-fade-up delay-300">
                   {stats.map((s) => (
-                    <div key={s.label} className="glass rounded-[40px] p-8 flex flex-col items-center text-center shadow-hero transition-all hover:scale-[1.05] group">
+                    <div key={s.label} className="glass rounded-[40px] p-8 flex flex-col items-center text-center shadow-hero transition-all hover:scale-[1.05] group min-w-[260px] sm:min-w-0 flex-shrink-0 flex-grow">
                       <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-3xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
                         <LineIcon name={s.icon} className="h-8 w-8" />
                       </div>
@@ -116,20 +133,32 @@ function Home() {
 
         {/* Trust/Colleges Section */}
         <section className="py-32 relative overflow-hidden">
-
           <SiteContainer>
-            <div className="glass p-12 md:p-20 rounded-[64px] border border-white/20 shadow-2xl">
-              <h2 className="text-[12px] font-black uppercase tracking-[0.5em] text-muted mb-16 text-center">Seniors from top institutions</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-24 items-center justify-items-center">
+            <div className="glass p-12 md:p-20 rounded-[64px] border border-white/20 shadow-2xl bg-gradient-to-br from-primary/3 to-accent/3 relative">
+              <div className="absolute -inset-10 bg-gradient-to-tr from-primary/5 to-accent/5 rounded-[64px] blur-3xl pointer-events-none opacity-60" />
+              <h2 className="relative z-10 text-[12px] font-black uppercase tracking-[0.5em] text-muted mb-16 text-center">Seniors from top institutions</h2>
+              <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8 md:gap-12 items-center justify-items-center">
                 {colleges.map(c => (
                   <div key={c.name} className="flex flex-col items-center gap-6 group cursor-default">
-                    <div className="relative">
+                    <div className="relative flex items-center justify-center h-16 md:h-20 w-16 md:w-20">
                       <div className="absolute -inset-8 bg-primary/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                      <img src={c.logo} alt={c.name} className="h-16 md:h-20 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-125 group-hover:-rotate-3" />
+                      {c.isImage ? (
+                        <img src={c.logo} alt={c.name} className="h-16 md:h-20 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-125 group-hover:-rotate-3" />
+                      ) : (
+                        <div className="h-16 w-16 md:h-20 md:w-20 rounded-2xl bg-surface/50 border border-border flex items-center justify-center text-primary font-black text-xl tracking-tight grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-125 group-hover:-rotate-3 shadow-sm">
+                          {c.logo}
+                        </div>
+                      )}
                     </div>
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-muted/60 group-hover:text-primary transition-colors duration-300">{c.name}</span>
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-muted/60 group-hover:text-primary transition-colors duration-300 text-center">{c.name}</span>
                   </div>
                 ))}
+              </div>
+              <div className="mt-16 text-center relative z-10">
+                <Link to="/explore" className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-primary hover:text-accent transition-colors duration-300">
+                  View all colleges
+                  <LineIcon name="arrow" className="h-4 w-4" />
+                </Link>
               </div>
             </div>
           </SiteContainer>
@@ -167,7 +196,7 @@ function Home() {
               </div>
 
               <div className="relative">
-
+                <div className="absolute -inset-4 bg-gradient-to-tr from-primary/10 to-accent/20 rounded-[48px] blur-3xl pointer-events-none opacity-80 animate-pulse" />
                 <Card className="relative p-8 border-border/50 bg-surface  overflow-hidden shadow-hero hover:shadow-lift transition-all duration-500 hover:scale-[1.02]">
                   <div className="flex items-center gap-4 mb-8">
                     <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold">JD</div>
@@ -200,8 +229,9 @@ function Home() {
         </section>
 
         {/* Pricing Section */}
-        <section id="pricing" className="scroll-mt-28 py-24 bg-surface border-y border-border/50">
-          <SiteContainer>
+        <section id="pricing" className="scroll-mt-28 py-24 bg-gradient-to-b from-bg to-surface2 relative overflow-hidden">
+          <div className="absolute inset-0 bg-grid-pattern opacity-30 pointer-events-none" />
+          <SiteContainer className="relative">
             <div className="mx-auto max-w-3xl text-center">
               <div className="text-[10px] font-black uppercase tracking-[0.25em] text-primary">Simple pricing</div>
               <h2 className="mt-4 heading-display text-4xl md:text-6xl font-black text-fg tracking-tight">
@@ -213,8 +243,32 @@ function Home() {
             </div>
             <div className="mx-auto mt-12 grid max-w-4xl gap-6 md:grid-cols-2">
               {[
-                { label: "Single Pass", price: "₹69", note: "1 credit", cta: "Start with one call", variant: "secondary" },
-                { label: "Growth Pack", price: "₹189", note: "3 credits", cta: "Compare colleges", variant: "primary" },
+                { 
+                  label: "Single Pass", 
+                  price: "₹69", 
+                  note: "1 credit", 
+                  cta: "Start with one call", 
+                  variant: "secondary",
+                  features: [
+                    "25-minute focused 1:1 session", 
+                    "Verified senior profiles", 
+                    "Direct Google Meet connection",
+                    "Ask anything about college life"
+                  ] 
+                },
+                { 
+                  label: "Growth Pack", 
+                  price: "₹189", 
+                  note: "3 credits", 
+                  cta: "Compare colleges", 
+                  variant: "primary",
+                  features: [
+                    "3 separate 25-minute sessions", 
+                    "Save 9% overall compared to single pass", 
+                    "Compare multiple branches/colleges",
+                    "Priority customer & booking support"
+                  ] 
+                },
               ].map((plan) => (
                 <Card key={plan.label} className={`p-8 ${plan.variant === "primary" ? "border-primary/30 shadow-lift ring-4 ring-primary/5" : ""}`}>
                   <div className="text-xs font-black uppercase tracking-[0.2em] text-muted">{plan.label}</div>
@@ -223,7 +277,7 @@ function Home() {
                     <span className="font-semibold text-muted">/ {plan.note}</span>
                   </div>
                   <div className="mt-6 space-y-3">
-                    {["25-minute focused session", "Verified senior profiles", "Google Meet booking flow"].map((item) => (
+                    {plan.features.map((item) => (
                       <div key={item} className="flex items-center gap-3 text-sm font-semibold text-fg">
                         <span className="flex h-5 w-5 items-center justify-center rounded-full bg-success/10 text-success">
                           <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="m5 13 4 4L19 7" /></svg>
