@@ -137,7 +137,7 @@ function Navbar() {
               <button
                 type="button"
                 onClick={() => navigate("/dashboard")}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-xs font-bold uppercase tracking-wide text-white shadow-soft hover:shadow-lift transition-all hover:-translate-y-0.5"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-primary/20 bg-gradient-to-br from-primary/15 via-accent/15 to-primary/10 text-xs font-bold uppercase tracking-wide text-primary shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lift"
                 title="Open dashboard"
               >
                 {user.name?.trim()?.[0] || "C"}

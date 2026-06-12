@@ -25,8 +25,7 @@ exports.getAllUsers = async (req, res) => {
 exports.getPendingSeniors = async (req, res) => {
   try {
     const seniors = await User.find({
-      role: "senior",
-      isVerified: false,
+      applicationStatus: "pending",
     }).select("-password");
 
     res.json({
@@ -58,13 +57,6 @@ exports.verifySenior = async (req, res) => {
       });
     }
 
-    if (user.role !== "senior") {
-      return res.status(400).json({
-        success: false,
-        message: "User is not a senior",
-      });
-    }
-
     if (user.isVerified) {
       return res.status(400).json({
         success: false,
@@ -72,7 +64,16 @@ exports.verifySenior = async (req, res) => {
       });
     }
 
+    if (user.applicationStatus !== "pending") {
+      return res.status(400).json({
+        success: false,
+        message: "No pending senior application found",
+      });
+    }
+
+    user.role = "senior";
     user.isVerified = true;
+    user.applicationStatus = "approved";
     await user.save();
 
     const userObj = user.toObject();

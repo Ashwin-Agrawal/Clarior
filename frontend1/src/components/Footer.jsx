@@ -10,12 +10,12 @@ function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12">
           {/* Brand Column */}
           <div className="col-span-2 lg:col-span-2">
-            <div className="flex items-center gap-3">
+            <Link to="/" className="flex items-center gap-3 transition hover:opacity-90">
               <Logo size="footer" />
               <span className="brand-text font-extrabold text-2xl tracking-wide" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Clarior
               </span>
-            </div>
+            </Link>
             <p className="mt-6 text-sm text-muted leading-relaxed max-w-xs">
               Talk to verified seniors from top Indian colleges. Get real clarity, honest advice, and personalized guidance for your academic journey.
             </p>

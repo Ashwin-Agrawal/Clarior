@@ -6,12 +6,17 @@ const authorizeRoles = require("../middleware/role.middleware");
 
 const {
   getAllSeniors,
+  applySenior,
   updateProfile,
   updateUpi,
   getMe,
   getSeniorById,
   updateVerificationDetails,
 } = require("../controllers/user.controller");
+
+// 🧑‍🏫 APPLY FOR SENIOR ROLE
+router.post("/apply-senior", authMiddleware, applySenior);
+router.post("/become-senior", authMiddleware, applySenior);
 
 // ✏️ PROFILE
 router.patch("/profile", authMiddleware, updateProfile);

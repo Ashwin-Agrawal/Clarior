@@ -42,8 +42,22 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/mentor-guidelines" element={<MentorGuidelines />} />
-        <Route path="/become-mentor" element={<BecomeMentor />} />
-        <Route path="/become-senior" element={<BecomeMentor />} />
+        <Route
+          path="/become-mentor"
+          element={
+            <ProtectedRoute>
+              <BecomeMentor />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/become-senior"
+          element={
+            <ProtectedRoute>
+              <BecomeMentor />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />

@@ -28,18 +28,18 @@ function Step({ number, icon, title, desc, last = false }) {
   return (
     <div className="flex gap-4">
       <div className="flex flex-col items-center">
-        <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white text-sm font-extrabold shadow-soft">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-accent text-sm font-extrabold text-primaryFg shadow-soft">
           {number}
         </div>
-        {!last && <div className="mt-2 w-0.5 flex-1 bg-gradient-to-b from-primary/40 to-transparent min-h-[32px]" />}
+        {!last && <div className="mt-2 w-0.5 flex-1 min-h-8 bg-linear-to-b from-primary/40 to-transparent" />}
       </div>
-      <div className="pb-8 flex-1">
-        <div className="rounded-2xl border border-border bg-surface p-5 shadow-soft hover:shadow-lift hover:border-primary/20 transition-all duration-200">
-          <div className="flex items-center gap-2.5 mb-2">
+      <div className="flex-1 pb-8">
+        <div className="rounded-2xl border border-border/70 bg-surface/95 p-5 shadow-soft transition-smooth hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-lift">
+          <div className="mb-2 flex items-center gap-2.5">
             <span className="text-xl">{icon}</span>
-            <h3 className="font-bold text-fg text-base">{title}</h3>
+            <h3 className="text-base font-bold text-fg">{title}</h3>
           </div>
-          <p className="text-sm text-muted leading-6">{desc}</p>
+          <p className="text-sm leading-6 text-muted">{desc}</p>
         </div>
       </div>
     </div>
@@ -54,22 +54,23 @@ function HowItWorks() {
       <Navbar />
 
       {/* Hero */}
-      <div className="relative overflow-hidden bg-primary py-16">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(255,255,255,0.08),transparent_60%)]" />
-        <div className="relative max-w-5xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/25 px-4 py-1.5 text-xs font-semibold text-white mb-4">
+      <div className="relative overflow-hidden bg-linear-to-br from-primary via-primary/95 to-accent py-16 sm:py-20">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(255,255,255,0.16),transparent_60%)]" />
+        <div className="absolute inset-0 bg-grid-pattern opacity-20" />
+        <div className="relative mx-auto max-w-5xl px-6 text-center">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-primaryFg/90 backdrop-blur-sm">
             How it works
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>
+          <h1 className="text-balance text-4xl font-extrabold tracking-tight text-primaryFg sm:text-5xl" style={{ fontFamily: "'Outfit', sans-serif" }}>
             Simple, transparent, and session-first.
           </h1>
-          <p className="mt-4 text-blue-100 text-lg max-w-2xl mx-auto leading-7">
+          <p className="mx-auto mt-4 max-w-2xl text-lg leading-7 text-primaryFg/90">
             A clear guided flow for both students and seniors — built on trust, quality, and accountability.
           </p>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-14">
+      <div className="mx-auto max-w-5xl px-6 py-14 sm:py-16">
         {/* Two column: students | seniors */}
         <div className="grid gap-12 lg:grid-cols-2">
           {/* For Students */}
@@ -114,26 +115,26 @@ function HowItWorks() {
         </div>
 
         {/* Trust & Quality Policy */}
-        <div className="mt-10 rounded-3xl border border-border bg-surface p-8 shadow-soft animate-fade-up delay-300">
-          <div className="text-center mb-8">
+        <div className="section-shell mt-10 rounded-3xl p-8 animate-fade-up delay-300">
+          <div className="mb-8 text-center">
             <h2 className="text-2xl font-extrabold tracking-tight text-fg" style={{ fontFamily: "'Outfit', sans-serif" }}>
               Trust & Quality Policy
             </h2>
-            <p className="text-muted mt-2 text-sm max-w-2xl mx-auto">
+            <p className="mx-auto mt-2 max-w-2xl text-sm text-muted">
               Clarior is built on honesty. Here's how we keep the platform trustworthy for everyone.
             </p>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {policies.map(p => (
-              <div key={p.title} className="rounded-2xl bg-surface2/80 border border-border p-5 text-center">
-                <div className="text-3xl mb-3">{p.icon}</div>
-                <h3 className="font-bold text-fg text-sm">{p.title}</h3>
-                <p className="text-xs text-muted mt-2 leading-5">{p.desc}</p>
+              <div key={p.title} className="surface-muted rounded-2xl p-5 text-center shadow-soft">
+                <div className="mb-3 text-3xl">{p.icon}</div>
+                <h3 className="text-sm font-bold text-fg">{p.title}</h3>
+                <p className="mt-2 text-xs leading-5 text-muted">{p.desc}</p>
               </div>
             ))}
           </div>
           <div className="mt-6 text-center">
-            <Link to="/mentor-guidelines" className="text-primary font-semibold text-sm hover:underline">
+            <Link to="/mentor-guidelines" className="text-sm font-semibold text-primary transition hover:underline">
               Read full senior guidelines →
             </Link>
           </div>
@@ -143,13 +144,13 @@ function HowItWorks() {
         <div className="mt-10 flex flex-wrap justify-center gap-4 animate-fade-up delay-400">
           <Link
             to="/explore"
-            className="rounded-full bg-primary text-primaryFg px-8 py-3.5 text-base font-bold hover:shadow-lift hover:-translate-y-0.5 transition-all shadow-soft"
+            className="rounded-full bg-primary px-8 py-3.5 text-base font-bold text-primaryFg shadow-soft transition-smooth hover:-translate-y-0.5 hover:shadow-lift"
           >
             Find a senior now →
           </Link>
           <Link
             to="/become-senior"
-            className="rounded-full border border-border bg-surface text-fg px-8 py-3.5 text-base font-semibold hover:bg-surface2 hover:-translate-y-0.5 transition-all"
+            className="rounded-full border border-border bg-surface px-8 py-3.5 text-base font-semibold text-fg transition-smooth hover:-translate-y-0.5 hover:bg-surface2 hover:shadow-soft"
           >
             Become a Senior
           </Link>

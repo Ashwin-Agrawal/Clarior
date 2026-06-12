@@ -53,12 +53,12 @@ function Login() {
           <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
   
           {/* Logo */}
-          <div className="relative flex items-center gap-3">
+          <Link to="/" className="relative flex items-center gap-3 transition hover:opacity-90">
             <Logo size="footer" />
             <span className="text-white font-brand font-extrabold text-2xl tracking-wide" style={{ fontFamily: "'Playfair Display', serif" }}>
               Clarior
             </span>
-          </div>
+          </Link>
   
           {/* Center copy */}
           <div className="relative space-y-6">
@@ -104,10 +104,10 @@ function Login() {
         {/* ── Right Panel — Form ────────────────────────────────── */}
         <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 bg-bg min-h-screen">
           {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-2.5 mb-8">
+          <Link to="/" className="lg:hidden flex items-center gap-2.5 mb-8 transition hover:opacity-90">
             <Logo size="navbar" />
             <span className="font-extrabold text-xl text-fg" style={{ fontFamily: "'Playfair Display', serif" }}>Clarior</span>
-          </div>
+          </Link>
   
           <div className="w-full max-w-md animate-fade-up">
             <div className="mb-8">

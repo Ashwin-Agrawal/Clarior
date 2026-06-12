@@ -17,6 +17,21 @@ const stats = [
   { label: "Success Stories", value: "1.2k", icon: "spark" },
 ];
 
+const motivationTips = [
+  {
+    title: "A ₹69 call can save you lakhs.",
+    text: "One honest conversation can prevent a costly mistake in college choices, branches, or placements.",
+  },
+  {
+    title: "The best advice is often one call away.",
+    text: "Get clarity from someone who already walked the path you’re on right now.",
+  },
+  {
+    title: "Don’t guess when you can ask a senior.",
+    text: "Real guidance beats random internet opinions when the stakes are high.",
+  },
+];
+
 const colleges = [
   { name: "IIT Delhi", logo: iitDelhiLogo, isImage: true },
   { name: "IIT Bombay", logo: iitBomabay, isImage: true },
@@ -47,6 +62,7 @@ function LineIcon({ name, className = "h-5 w-5" }) {
 function Home() {
   const [scrolled, setScrolled] = useState(0);
   const [pulseLoading, setPulseLoading] = useState(true);
+  const [activeTip, setActiveTip] = useState(0);
 
   useSEO({ title: "Home", description: "Talk to verified seniors from top Indian colleges for ₹69. Get clarity on college, branch, placements and more." });
 
@@ -55,6 +71,10 @@ function Home() {
       setPulseLoading(false);
     }, 1500);
 
+    const tipTimer = window.setInterval(() => {
+      setActiveTip((prev) => (prev + 1) % motivationTips.length);
+    }, 4200);
+
     const handleScroll = () => {
       const progress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
       setScrolled(Math.min(progress, 1));
@@ -62,6 +82,7 @@ function Home() {
     window.addEventListener("scroll", handleScroll);
     return () => {
       clearTimeout(timer);
+      window.clearInterval(tipTimer);
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
@@ -82,70 +103,106 @@ function Home() {
         </div>
 
         {/* Hero Section */}
-        <section className="relative pt-28 pb-32 md:pt-40 md:pb-48 overflow-hidden">
+        <section className="relative pt-20 pb-24 md:pt-28 md:pb-30 overflow-hidden">
 
           <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none" />
-          <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--hero-gradient)" }} />
+          <div className="absolute inset-0 pointer-events-none opacity-80" style={{ background: "var(--hero-gradient)" }} />
+          <div className="absolute left-8 top-14 h-28 w-28 rounded-full bg-primary/15 blur-3xl hero-orb" />
+          <div className="absolute right-10 top-24 h-40 w-40 rounded-full bg-accent/15 blur-3xl hero-orb-delayed" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
           <SiteContainer className="relative">
               <div className="text-center max-w-4xl mx-auto">
-                <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-surface px-4 py-2 text-[11px] font-black text-primary uppercase tracking-[0.18em] mb-8 animate-fade-in shadow-sm  mx-auto">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-surface/90 px-4 py-2 text-[11px] font-black text-primary uppercase tracking-[0.18em] mb-6 animate-fade-in shadow-[0_10px_35px_rgba(37,99,235,0.12)] mx-auto backdrop-blur">
                   <span className="h-2 w-2 rounded-full bg-success shadow-[0_0_0_4px_rgba(16,185,129,0.14)]" />
                   Trusted by 5000+ students
                 </div>
                 
-                <h1 className="heading-display text-5xl sm:text-6xl md:text-8xl lg:text-[100px] font-black text-fg leading-[0.92] tracking-tighter animate-fade-up">
+                <h1 className="heading-display text-4xl sm:text-5xl md:text-7xl lg:text-[92px] font-black text-fg leading-[0.9] tracking-tighter animate-fade-up">
                   Stop guessing <br />
-                  <span className="gradient-text">Ask someone inside.</span>
+                  <span className="gradient-text inline-block">Ask someone inside.</span>
                 </h1>
                 
-                <p className="mt-10 text-2xl md:text-3xl text-muted max-w-4xl mx-auto leading-tight animate-fade-up delay-100 font-medium tracking-tight">
+                <p className="mt-6 text-xl md:text-2xl text-muted max-w-4xl mx-auto leading-tight animate-fade-up delay-100 font-medium tracking-tight">
                   1:1 calls with verified seniors for <span className="text-primary font-black underline underline-offset-8 decoration-primary/20">₹69</span>.
                 </p>
 
-                <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 animate-fade-up delay-200">
+                <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up delay-200">
                   <Link to="/explore">
-                    <Button size="xl" className="w-full sm:w-auto rounded-full px-12 shadow-hero group">
-                      Explore Seniors
-                      <LineIcon name="arrow" className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    <Button size="xl" className="relative w-full sm:w-auto overflow-hidden rounded-full px-10 shadow-[0_18px_45px_rgba(37,99,235,0.24)] group hover:-translate-y-1 transition-transform">
+                      <span className="relative z-10 flex items-center gap-2">
+                        Explore Seniors
+                        <LineIcon name="arrow" className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                      </span>
+                      <span className="absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.3)_50%,transparent_100%)] translate-x-[-180%] group-hover:translate-x-[180%] transition-transform duration-700" />
                     </Button>
                   </Link>
-                  <Link to="/how-it-works">
-                    <Button variant="secondary" size="xl" className="w-full sm:w-auto rounded-full px-12">
-                      See how it works
+                  <Link to="/become-mentor">
+                    <Button variant="secondary" size="xl" className="w-full sm:w-auto rounded-full px-10 hover:-translate-y-1 transition-transform shadow-[0_12px_30px_rgba(15,23,42,0.08)]">
+                      Become a Senior
                     </Button>
                   </Link>
                 </div>
 
-                <div className="mt-20 flex flex-nowrap overflow-x-auto pb-6 -mx-4 px-4 scrollbar-hide sm:overflow-visible sm:pb-0 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 gap-8 max-w-5xl mx-auto animate-fade-up delay-300">
-                  {stats.map((s) => (
-                    <div key={s.label} className="glass rounded-[40px] p-8 flex flex-col items-center text-center shadow-hero transition-all hover:scale-[1.05] group min-w-[260px] sm:min-w-0 flex-shrink-0 flex-grow">
-                      <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-3xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
-                        <LineIcon name={s.icon} className="h-8 w-8" />
+                <div className="mt-8 flex flex-nowrap overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide sm:overflow-visible sm:pb-0 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 gap-4 max-w-5xl mx-auto animate-fade-up delay-300">
+                  {stats.map((s, index) => (
+                    <div key={s.label} className="group relative min-w-[220px] flex-shrink-0 flex-grow overflow-hidden rounded-[28px] border border-border/70 bg-gradient-to-br from-surface via-surface/90 to-primary/5 p-5 text-center shadow-[0_20px_70px_-30px_rgba(37,99,235,0.28)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_90px_-35px_rgba(37,99,235,0.32)] sm:min-w-0" style={{ animationDelay: `${index * 100}ms` }}>
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.12),transparent_60%)] opacity-80 transition-opacity duration-500 group-hover:opacity-100" />
+                      <div className="relative z-10">
+                        <div className="mb-4 mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-500 group-hover:bg-primary group-hover:text-white">
+                          <LineIcon name={s.icon} className="h-7 w-7" />
+                        </div>
+                        <div className="text-3xl md:text-4xl font-black text-fg tracking-tighter">{s.value}</div>
+                        <div className="mt-2 text-[11px] font-black uppercase tracking-[0.28em] text-muted">{s.label}</div>
                       </div>
-                      <div className="text-4xl md:text-5xl font-black text-fg tracking-tighter">{s.value}</div>
-                      <div className="mt-3 text-[12px] font-black text-muted uppercase tracking-[0.3em]">{s.label}</div>
                     </div>
                   ))}
+                </div>
+
+                <div className="mt-5 mx-auto max-w-4xl animate-fade-up delay-400">
+                  <div className="rounded-[24px] border border-primary/10 bg-surface/85 p-4 shadow-[0_20px_60px_-26px_rgba(37,99,235,0.24)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1">
+                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                      <div>
+                        <div className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Why students book</div>
+                        <div className="mt-1 text-sm text-muted">Short, honest guidance that feels worth way more than ₹69.</div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {motivationTips.map((_, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            aria-label={`Show tip ${index + 1}`}
+                            onClick={() => setActiveTip(index)}
+                            className={`h-2.5 rounded-full transition-all ${activeTip === index ? "w-7 bg-primary" : "w-2.5 bg-primary/30"}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-3 rounded-[20px] bg-gradient-to-br from-primary/8 via-surface to-accent/8 p-4 md:p-5 shadow-inner">
+                      <div className="text-base md:text-lg font-black text-fg">{motivationTips[activeTip].title}</div>
+                      <div className="mt-2 text-sm md:text-[15px] text-muted leading-relaxed">{motivationTips[activeTip].text}</div>
+                    </div>
+                  </div>
                 </div>
               </div>
           </SiteContainer>
         </section>
 
         {/* Trust/Colleges Section */}
-        <section className="py-32 relative overflow-hidden">
+        <section className="pt-8 pb-16 relative overflow-hidden">
           <SiteContainer>
-            <div className="glass p-12 md:p-20 rounded-[64px] border border-white/20 shadow-2xl bg-gradient-to-br from-primary/3 to-accent/3 relative">
+            <div className="relative overflow-hidden rounded-[40px] border border-white/20 bg-gradient-to-br from-primary/4 via-surface to-accent/4 p-6 shadow-[0_25px_90px_-35px_rgba(37,99,235,0.32)] animate-fade-up md:p-10">
               <div className="absolute -inset-10 bg-gradient-to-tr from-primary/5 to-accent/5 rounded-[64px] blur-3xl pointer-events-none opacity-60" />
-              <h2 className="relative z-10 text-[12px] font-black uppercase tracking-[0.5em] text-muted mb-16 text-center">Seniors from top institutions</h2>
-              <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8 md:gap-12 items-center justify-items-center">
+              <h2 className="relative z-10 text-[12px] font-black uppercase tracking-[0.5em] text-muted mb-8 text-center">Featuring colleges</h2>
+              <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 md:gap-8 items-center justify-items-center">
                 {colleges.map(c => (
-                  <div key={c.name} className="flex flex-col items-center gap-6 group cursor-default">
-                    <div className="relative flex items-center justify-center h-16 md:h-20 w-16 md:w-20">
+                  <div key={c.name} className="flex flex-col items-center gap-4 group cursor-default rounded-2xl px-2 py-3 transition-transform duration-500 hover:-translate-y-1">
+                    <div className="relative flex items-center justify-center h-14 md:h-16 w-14 md:w-16">
                       <div className="absolute -inset-8 bg-primary/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                       {c.isImage ? (
-                        <img src={c.logo} alt={c.name} className="h-16 md:h-20 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-125 group-hover:-rotate-3" />
+                        <img src={c.logo} alt={c.name} className="h-14 md:h-16 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-125 group-hover:-rotate-3" />
                       ) : (
-                        <div className="h-16 w-16 md:h-20 md:w-20 rounded-2xl bg-surface/50 border border-border flex items-center justify-center text-primary font-black text-xl tracking-tight grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-125 group-hover:-rotate-3 shadow-sm">
+                        <div className="h-14 w-14 md:h-16 md:w-16 rounded-2xl bg-surface/50 border border-border flex items-center justify-center text-primary font-black text-xl tracking-tight grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-125 group-hover:-rotate-3 shadow-sm">
                           {c.logo}
                         </div>
                       )}
@@ -154,7 +211,7 @@ function Home() {
                   </div>
                 ))}
               </div>
-              <div className="mt-16 text-center relative z-10">
+              <div className="mt-8 text-center relative z-10">
                 <Link to="/explore" className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-primary hover:text-accent transition-colors duration-300">
                   View all colleges
                   <LineIcon name="arrow" className="h-4 w-4" />
@@ -298,28 +355,29 @@ function Home() {
         {/* CTA Section */}
         <section className="py-24">
           <SiteContainer>
-            <div className="relative rounded-3xl overflow-hidden p-8 md:p-20 text-center" style={{ background: '#0e1b2c' }}>
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(96,165,250,0.18),transparent_65%)]" />
+            <div className="relative overflow-hidden rounded-3xl border border-border/70 bg-surface/95 p-8 text-center shadow-soft md:p-20">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(37,99,235,0.10),transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,rgba(96,165,250,0.18),transparent_65%)]" />
+              <div className="absolute inset-0 opacity-70" style={{ background: "var(--hero-gradient)" }} />
               <div className="relative z-10 space-y-8">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface2/80 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-primary shadow-sm">
                   <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
                   5000+ students already inside
                 </div>
-                <h2 className="heading-display text-4xl md:text-7xl font-black leading-tight text-white">
+                <h2 className="heading-display text-4xl font-black leading-tight text-fg md:text-7xl">
                   Stop overthinking. <br /> Start <span className="gradient-text">connecting.</span>
                 </h2>
-                <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                <p className="mx-auto max-w-2xl text-lg leading-relaxed text-muted md:text-xl">
                   Join the platform where real conversations lead to real careers. Your future self will thank you.
                 </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
                   <Link to="/register">
-                    <Button size="xl" className="rounded-full px-12 shadow-lift group bg-white text-slate-900 hover:bg-slate-100">
+                    <Button size="xl" className="rounded-full px-12 shadow-lift group">
                       Get Started Now
-                      <svg className="ml-2 group-hover:translate-x-1 transition-transform" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                      <svg className="ml-2 transition-transform group-hover:translate-x-1" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                     </Button>
                   </Link>
                   <Link to="/explore">
-                    <Button size="xl" className="rounded-full px-12 border border-white/25 text-white bg-white/10 hover:bg-white/20">
+                    <Button variant="secondary" size="xl" className="rounded-full px-12">
                       Explore Seniors
                     </Button>
                   </Link>

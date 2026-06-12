@@ -74,6 +74,69 @@ exports.getAllSeniors = async (req, res) => {
   }
 };
 
+// 🧑‍🏫 APPLY FOR SENIOR ROLE
+exports.applySenior = async (req, res) => {
+  try {
+    const { phone, college, domain, branch, year, cgpa, bio, linkedin } = req.body;
+
+    if (!phone || !college || !branch) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone, college, and branch are required",
+      });
+    }
+
+    const normalizedPhone = String(phone).replace(/\s+/g, "").trim();
+    if (!/^\+?\d{10,15}$/.test(normalizedPhone)) {
+      return res.status(400).json({
+        success: false,
+        message: "Enter a valid phone number",
+      });
+    }
+
+    if (linkedin && !/^https?:\/\//.test(linkedin)) {
+      return res.status(400).json({
+        success: false,
+        message: "Enter a valid LinkedIn URL",
+      });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (user.role === "senior" && user.isVerified) {
+      return res.status(400).json({ success: false, message: "You are already a verified senior" });
+    }
+
+    if (user.applicationStatus === "pending") {
+      return res.status(400).json({ success: false, message: "Your senior application is already under review" });
+    }
+
+    user.phone = normalizedPhone;
+    user.college = String(college).trim();
+    user.domain = domain ? String(domain).trim() : user.domain;
+    user.branch = String(branch).trim();
+    user.bio = bio ? String(bio).trim() : user.bio;
+    user.linkedin = linkedin ? String(linkedin).trim() : user.linkedin;
+    user.year = year !== undefined && year !== "" ? Number(year) : user.year;
+    user.cgpa = cgpa !== undefined && cgpa !== "" ? Number(cgpa) : user.cgpa;
+    user.isVerified = false;
+    user.applicationStatus = "pending";
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Application submitted successfully",
+      user: await User.findById(req.user.id).select("-password"),
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // ✏️ UPDATE PROFILE
 exports.updateProfile = async (req, res) => {
   try {

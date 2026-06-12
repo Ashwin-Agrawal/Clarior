@@ -76,10 +76,10 @@ function Register() {
         {/* Background grid */}
         <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
         
-        <div className="relative flex items-center gap-3">
+        <Link to="/" className="relative flex items-center gap-3 transition hover:opacity-90">
           <Logo size="footer" />
           <span className="text-white font-extrabold text-2xl" style={{ fontFamily: "'Playfair Display', serif" }}>Clarior</span>
-        </div>
+        </Link>
         <div className="relative space-y-6">
           <h2 className="text-4xl font-extrabold text-white leading-tight tracking-tight">
             Join thousands of students getting real clarity.
@@ -101,10 +101,10 @@ function Register() {
 
       {/* Form panel */}
       <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 bg-bg">
-        <div className="lg:hidden flex items-center gap-2.5 mb-8">
+        <Link to="/" className="lg:hidden flex items-center gap-2.5 mb-8 transition hover:opacity-90">
           <Logo size="navbar" />
           <span className="font-extrabold text-xl text-fg" style={{ fontFamily: "'Playfair Display', serif" }}>Clarior</span>
-        </div>
+        </Link>
         <div className="w-full max-w-md animate-fade-up">
           <div className="mb-8">
             <h1 className="text-3xl font-extrabold tracking-tight text-fg">Register as Student</h1>

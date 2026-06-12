@@ -1,6 +1,52 @@
 const Slot = require("../models/Slots");
 const mongoose = require("mongoose");
 
+const parseTimeToMinutes = (time) => {
+  const match = time.match(/^(\d{1,2}):(\d{2})(?:-(\d{1,2}):(\d{2}))?$/);
+  if (!match) return null;
+
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+
+  if (hour > 23 || minute > 59) return null;
+
+  return hour * 60 + minute;
+};
+
+const validateSlotDateTime = (dateValue, timeValue) => {
+  const slotDate = new Date(dateValue);
+  if (isNaN(slotDate.getTime())) {
+    return { valid: false, message: "Invalid date format" };
+  }
+
+  const now = new Date();
+  const todayStart = new Date(now);
+  todayStart.setHours(0, 0, 0, 0);
+
+  const normalizedSlotDate = new Date(slotDate);
+  normalizedSlotDate.setHours(0, 0, 0, 0);
+
+  if (normalizedSlotDate < todayStart) {
+    return { valid: false, message: "Slot date must be today or in the future" };
+  }
+
+  if (normalizedSlotDate.getTime() === todayStart.getTime()) {
+    const startMinutes = parseTimeToMinutes(timeValue);
+    if (startMinutes === null) {
+      return { valid: false, message: "Invalid time format (use HH:MM or HH:MM-HH:MM)" };
+    }
+
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    if (startMinutes <= currentMinutes) {
+      return { valid: false, message: "Slot time must be in the future for today" };
+    }
+  }
+
+  return { valid: true, slotDate };
+};
+
+exports.validateSlotDateTime = validateSlotDateTime;
+
 // 👨‍🏫 Create single slot
 exports.createSlot = async (req, res) => {
   try {
@@ -11,22 +57,6 @@ exports.createSlot = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Date and time are required",
-      });
-    }
-
-    // 🔒 Validate date format and ensure it's in the future
-    const slotDate = new Date(date);
-    if (isNaN(slotDate.getTime())) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid date format",
-      });
-    }
-
-    if (slotDate < new Date()) {
-      return res.status(400).json({
-        success: false,
-        message: "Slot date must be in the future",
       });
     }
 
@@ -45,8 +75,16 @@ exports.createSlot = async (req, res) => {
       });
     }
 
+    const dateValidation = validateSlotDateTime(date, time);
+    if (!dateValidation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: dateValidation.message,
+      });
+    }
+
     // Fix 6a: Use Date object for duplicate check to avoid type mismatch
-    const dateObj = new Date(date);
+    const dateObj = dateValidation.slotDate;
     const existing = await Slot.findOne({
       senior: req.user.id,
       date: dateObj,
@@ -97,19 +135,16 @@ exports.createSlots = async (req, res) => {
         return res.status(400).json({ success: false, message: "Each slot must have date and time" });
       }
 
-      const slotDate = new Date(date);
-      if (isNaN(slotDate.getTime())) {
-        return res.status(400).json({ success: false, message: `Invalid date format: ${date}` });
-      }
-
-      if (slotDate < new Date()) {
-        return res.status(400).json({ success: false, message: `Slot date must be in the future: ${date}` });
-      }
-
       if (!/^\d{1,2}:\d{2}(-\d{1,2}:\d{2})?$/.test(time)) {
         return res.status(400).json({ success: false, message: `Invalid time format: ${time}` });
       }
 
+      const dateValidation = validateSlotDateTime(date, time);
+      if (!dateValidation.valid) {
+        return res.status(400).json({ success: false, message: `${dateValidation.message}: ${date}` });
+      }
+
+      const slotDate = dateValidation.slotDate;
       const exists = await Slot.findOne({
         senior: req.user.id,
         date: slotDate,

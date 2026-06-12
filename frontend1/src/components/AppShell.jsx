@@ -92,7 +92,7 @@ function AppShell({ title, subtitle, children }) {
           <div>
             <button
               type="button"
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/")}
               className="flex items-center gap-2.5 rounded-2xl px-2 py-1.5 hover:bg-surface2 transition w-full text-left"
             >
               <Logo size="sidebar" />
@@ -116,7 +116,7 @@ function AppShell({ title, subtitle, children }) {
           {/* User card + logout */}
           <div className="rounded-2xl border border-border bg-surface2/80 p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary text-xs font-bold uppercase tracking-wide text-white shadow-soft">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-gradient-to-br from-primary/15 via-accent/15 to-primary/10 text-xs font-bold uppercase tracking-wide text-primary shadow-sm">
                 {initials}
               </div>
               <div className="min-w-0 flex-1">
@@ -147,7 +147,7 @@ function AppShell({ title, subtitle, children }) {
       <main className="min-h-screen lg:pl-64">
         {/* Mobile header */}
         <div className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-surface  px-4 py-3 lg:hidden">
-          <button onClick={() => navigate("/dashboard")} className="flex items-center gap-2">
+          <button onClick={() => navigate("/")} className="flex items-center gap-2">
             <Logo size="navbar" />
             <span className="font-extrabold text-base text-fg" style={{ fontFamily: "'Playfair Display', serif" }}>Clarior</span>
           </button>

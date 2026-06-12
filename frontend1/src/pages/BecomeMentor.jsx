@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -30,7 +30,7 @@ function BecomeMentor() {
     description: "Apply to become a senior mentor on Clarior. Help juniors and earn ₹52 per call."
   });
 
-  const { user, fetchUser } = useAuth();
+  const { user, fetchUser, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [form, setForm] = useState({ phone: "", college: "", domain: "", branch: "", year: "", cgpa: "", bio: "", linkedin: "" });
@@ -39,11 +39,23 @@ function BecomeMentor() {
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
 
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate("/login", { state: { from: location.pathname }, replace: true });
+    }
+  }, [authLoading, user, navigate, location.pathname]);
+
   const alreadyVerifiedMessage = user?.role === "senior" && user?.isVerified
     ? "You are already a verified senior."
     : "";
 
-  if (user?.role === 'senior' && !user?.isVerified) {
+  const isPendingReview = user?.applicationStatus === "pending" || (user?.role === "senior" && !user?.isVerified);
+
+  if (authLoading || !user) {
+    return null;
+  }
+
+  if (isPendingReview) {
     return (
       <AppShell title="Application Under Review">
         <div className="text-center py-20 animate-scale-in">
@@ -79,6 +91,10 @@ function BecomeMentor() {
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!user) return navigate("/login", { state: { from: location.pathname } });
+    if (user.applicationStatus === "pending") {
+      setError("Your senior application is already under review.");
+      return;
+    }
     if (!validate()) return;
     setError(""); setMessage(""); setLoading(true);
     try {
