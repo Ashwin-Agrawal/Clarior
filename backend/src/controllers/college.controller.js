@@ -32,17 +32,17 @@ exports.getAllColleges = async (req, res) => {
     const seniorCountMap = {};
 
     for (const s of verifiedSeniors) {
-      if (s.college) {
+      if (s.college && typeof s.college === "string") {
         const key = s.college.trim().toLowerCase();
         seniorCountMap[key] = (seniorCountMap[key] || 0) + 1;
       }
     }
 
     const collegesWithSeniors = colleges.map((c) => {
-      const key = c.name.trim().toLowerCase();
+      const key = (c.name && typeof c.name === "string") ? c.name.trim().toLowerCase() : "";
       return {
         ...c.toObject(),
-        seniorCount: seniorCountMap[key] || 0
+        seniorCount: key ? (seniorCountMap[key] || 0) : 0
       };
     });
 
