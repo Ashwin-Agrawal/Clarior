@@ -235,12 +235,12 @@ function Home() {
                 </p>
                 <div className="space-y-6">
                   {[
-                    { t: "Verified Identity", d: "We manually verify every senior's college ID and LinkedIn.", i: "shield" },
+                    { t: "Verified Identity", d: "We manually verify every senior's college ID.", i: "shield" },
                     { t: "Fixed Price Fairness", d: "Talk to any senior for the same transparent price of ₹69.", i: "gem" },
                     { t: "Live 1:1 Calls", d: "Get direct, face-to-face clarity on Google Meet.", i: "call" },
                   ].map(f => (
                     <div key={f.t} className="flex gap-4 group">
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-surface border border-border text-primary shadow-soft group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-surface border border-border text-primary shadow-soft group-hover:bg-primary group-hover:text-black transition-all duration-300">
                         <LineIcon name={f.i} />
                       </div>
                       <div>
