@@ -91,13 +91,14 @@ app.use((req, res, next) => {
   res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("X-XSS-Protection", "1; mode=block");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-  res.setHeader("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+  res.setHeader("Permissions-Policy", "geolocation=(), microphone=(self \"https://meet.jit.si\"), camera=(self \"https://meet.jit.si\")");
 
   // ✅ DYNAMIC CSP (Environment Aware)
   const connectSrc = [
     "'self'",
     "https://api.razorpay.com",
     "https://www.googleapis.com",
+    "https://accounts.google.com/gsi/",
     ...allowedOrigins
   ];
 
@@ -108,7 +109,7 @@ app.use((req, res, next) => {
 
   res.setHeader(
     "Content-Security-Policy",
-    `default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src ${connectSrc.join(" ")}; frame-src https://checkout.razorpay.com;`
+    `default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https:; font-src 'self'; connect-src ${connectSrc.join(" ")}; frame-src https://checkout.razorpay.com https://meet.jit.si https://accounts.google.com;`
   );
 
   next();

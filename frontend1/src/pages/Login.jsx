@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -25,6 +25,7 @@ function Login() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [googleClientId, setGoogleClientId] = useState("");
     const currentYear = new Date().getFullYear();
   
     const handleLogin = async () => {
@@ -40,6 +41,53 @@ function Login() {
         setLoading(false);
       }
     };
+
+    const handleGoogleLogin = async (response) => {
+      try {
+        setLoading(true);
+        setError("");
+        const res = await api.post("/auth/google", { idToken: response.credential });
+        setUser(res.data.user);
+        navigate("/dashboard", { replace: true });
+      } catch (err) {
+        setError(err?.response?.data?.message || "Google login failed.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    useEffect(() => {
+      const fetchConfig = async () => {
+        try {
+          const res = await api.get("/auth/google-config");
+          setGoogleClientId(res.data.clientId);
+        } catch (err) {
+          console.error("Failed to load Google config:", err);
+        }
+      };
+      fetchConfig();
+    }, []);
+
+    useEffect(() => {
+      if (!googleClientId) return;
+
+      const initGoogle = () => {
+        if (window.google) {
+          window.google.accounts.id.initialize({
+            client_id: googleClientId,
+            callback: handleGoogleLogin,
+          });
+          window.google.accounts.id.renderButton(
+            document.getElementById("google-signin-button"),
+            { theme: "outline", size: "large", width: 384 }
+          );
+        } else {
+          setTimeout(initGoogle, 100);
+        }
+      };
+
+      initGoogle();
+    }, [googleClientId]);
   
     const handleKeyDown = (e) => {
       if (e.key === "Enter") handleLogin();
@@ -180,6 +228,14 @@ function Login() {
             >
               Login
             </Button>
+
+            <div className="relative flex py-4 items-center">
+              <div className="flex-grow border-t border-border"></div>
+              <span className="flex-shrink mx-4 text-xs text-muted uppercase font-bold tracking-wider">or</span>
+              <div className="flex-grow border-t border-border"></div>
+            </div>
+
+            <div id="google-signin-button" className="w-full flex justify-center" />
   
             <p className="mt-5 text-center text-sm text-muted">
               Don't have an account?{" "}

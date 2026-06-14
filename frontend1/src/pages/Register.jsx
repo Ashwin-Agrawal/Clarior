@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { Logo } from "../components/layout/icons";
@@ -45,9 +46,11 @@ function PasswordStrength({ password }) {
 function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [googleClientId, setGoogleClientId] = useState("");
   const currentYear = new Date().getFullYear();
 
   const handleRegister = async () => {
@@ -65,6 +68,53 @@ function Register() {
       setError(ve?.length > 0 ? `${msg}: ${ve[0].msg}` : msg || "Registration failed.");
     } finally { setLoading(false); }
   };
+
+  const handleGoogleLogin = async (response) => {
+    try {
+      setLoading(true);
+      setError("");
+      const res = await api.post("/auth/google", { idToken: response.credential });
+      setUser(res.data.user);
+      navigate("/dashboard", { replace: true });
+    } catch (err) {
+      setError(err?.response?.data?.message || "Google signup failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const res = await api.get("/auth/google-config");
+        setGoogleClientId(res.data.clientId);
+      } catch (err) {
+        console.error("Failed to load Google config:", err);
+      }
+    };
+    fetchConfig();
+  }, []);
+
+  useEffect(() => {
+    if (!googleClientId) return;
+
+    const initGoogle = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: handleGoogleLogin,
+        });
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-signup-button"),
+          { theme: "outline", size: "large", width: 384 }
+        );
+      } else {
+        setTimeout(initGoogle, 100);
+      }
+    };
+
+    initGoogle();
+  }, [googleClientId]);
 
   const handleKeyDown = (e) => { if (e.key === "Enter") handleRegister(); };
   const update = (field) => (e) => setForm({ ...form, [field]: e.target.value });
@@ -140,6 +190,14 @@ function Register() {
           <Button id="reg-submit" onClick={handleRegister} loading={loading} className="mt-6 w-full" size="lg" iconRight={!loading && <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6-6 6 6-6 6" /></svg>}>
             Create account
           </Button>
+
+          <div className="relative flex py-4 items-center">
+            <div className="flex-grow border-t border-border"></div>
+            <span className="flex-shrink mx-4 text-xs text-muted uppercase font-bold tracking-wider">or</span>
+            <div className="flex-grow border-t border-border"></div>
+          </div>
+
+          <div id="google-signup-button" className="w-full flex justify-center" />
           <p className="mt-5 text-center text-sm text-muted">
             Already have an account?{" "}
             <Link to="/login" className="text-primary font-semibold hover:underline">Login</Link>

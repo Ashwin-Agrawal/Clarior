@@ -77,3 +77,81 @@ exports.logout = async (req, res) => {
     return sendError(res, error.message);
   }
 };
+
+// 🔐 GOOGLE CONFIG
+exports.googleConfig = async (req, res) => {
+  try {
+    return res.json({
+      success: true,
+      clientId: process.env.GOOGLE_CLIENT_ID,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// 🔐 GOOGLE LOGIN / REGISTER
+exports.googleLogin = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ success: false, message: "idToken is required" });
+    }
+
+    const { getOAuthClient } = require("../utils/googleClient");
+    let oauth2Client = getOAuthClient();
+    if (!oauth2Client) {
+      const { google } = require("googleapis");
+      oauth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID);
+    }
+
+    // Verify Google ID Token
+    const ticket = await oauth2Client.verifyIdToken({
+      idToken: idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name } = payload;
+
+    // Check if user already exists
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create a new user as a student (Option A)
+      const crypto = require("crypto");
+      const randomPassword = crypto.randomBytes(32).toString("hex");
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+      user = await User.create({
+        name,
+        email,
+        password: hashedPassword,
+        role: "student",
+        isVerified: true,
+        callCredits: 0,
+      });
+    }
+
+    // Generate JWT
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    // Set cookie
+    res.cookie("token", token, authCookieOptions);
+
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    return res.json({
+      success: true,
+      message: "Login successful",
+      user: userObj,
+    });
+  } catch (error) {
+    return res.status(400).json({ success: false, message: error.message });
+  }
+};
