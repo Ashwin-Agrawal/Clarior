@@ -256,10 +256,10 @@ function Home() {
                 <div className="absolute -inset-4 bg-gradient-to-tr from-primary/10 to-accent/20 rounded-[48px] blur-3xl pointer-events-none opacity-80 animate-pulse" />
                 <Card className="relative p-8 border-border/50 bg-surface  overflow-hidden shadow-hero hover:shadow-lift transition-all duration-500 hover:scale-[1.02]">
                   <div className="flex items-center gap-4 mb-8">
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold">JD</div>
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold">AA</div>
                     <div>
-                      <div className="font-bold text-fg">Arjun Mehra</div>
-                      <div className="text-[10px] font-bold text-muted uppercase tracking-widest">Senior at IIT Madras</div>
+                      <div className="font-bold text-fg">Ashwin Agrawal</div>
+                      <div className="text-[10px] font-bold text-muted uppercase tracking-widest">Senior at Newton School of Technology</div>
                     </div>
                   </div>
                   <div className="space-y-4">
@@ -271,7 +271,7 @@ function Home() {
                     </div>
                   </div>
                   <div className="mt-8 p-4 rounded-2xl bg-primary/5 border border-primary/10 text-sm italic text-fg/80 leading-relaxed">
-                    "I helped over 50 students choose the right branch last year. Clarior makes it so easy to connect with those who really need guidance."
+                    "I helped over 50 students choose the right college last year. Clarior makes it so easy to connect with those who really need guidance."
                   </div>
                   <div className="mt-6 flex justify-between items-center">
                     <div className="flex gap-1 text-warning">
@@ -317,7 +317,7 @@ function Home() {
                   label: "Growth Pack", 
                   price: "₹189", 
                   note: "3 credits", 
-                  cta: "Compare colleges", 
+                  cta: "Get growth pack", 
                   variant: "primary",
                   features: [
                     "3 separate 25-minute sessions", 
