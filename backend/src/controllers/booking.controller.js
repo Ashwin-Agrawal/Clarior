@@ -100,9 +100,9 @@ exports.markCompletedBySenior = async (req, res) => {
 
     const diff = (new Date() - booking.actualStartTime) / 1000;
 
-    if (diff < 1500) {
+    if (diff < 1200) {
       return res.status(400).json({
-        message: "25 minutes not completed",
+        message: "20 minutes not completed",
       });
     }
 

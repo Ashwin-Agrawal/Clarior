@@ -106,7 +106,7 @@ function Register() {
         });
         window.google.accounts.id.renderButton(
           document.getElementById("google-signup-button"),
-          { theme: "outline", size: "large", width: 384 }
+          { theme: "outline", size: "large", width: 384, text: "continue_with" }
         );
       } else {
         setTimeout(initGoogle, 100);
@@ -138,7 +138,7 @@ function Register() {
             One account. Access to verified seniors from IIT, AIIMS, BITS, and more — all for less than a coffee.
           </p>
           <div className="grid grid-cols-2 gap-4 mt-8">
-            {[["500+","Active seniors"],["₹69","Starting price"],["25min","Per session"],["4.9★","Avg. rating"]].map(([v, l]) => (
+            {[["500+","Active seniors"],["₹69","Starting price"],["20min","Per session"],["4.9★","Avg. rating"]].map(([v, l]) => (
               <div key={l} className="rounded-2xl bg-[#2563eb]/30 border border-[#3b82f6]/40 backdrop-blur-sm p-4 text-center">
                 <div className="text-2xl font-extrabold text-white">{v}</div>
                 <div className="text-blue-200 text-xs mt-1">{l}</div>

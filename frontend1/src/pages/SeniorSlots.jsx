@@ -103,7 +103,7 @@ function SeniorSlots() {
   };
 
   return (
-    <AppShell title="Availability" subtitle="Define when you're available to help students. Each slot is 25 minutes.">
+    <AppShell title="Availability" subtitle="Define when you're available to help students. Each slot is 20 minutes.">
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Creation Panel */}
         <div className="lg:col-span-1 space-y-6">

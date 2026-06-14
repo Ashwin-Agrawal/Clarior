@@ -106,7 +106,7 @@ function SessionList({ items, userRole, actionLabel, emptyTitle, emptyDescriptio
                   </div>
                   <div>
                     <div className="font-semibold text-muted/60 uppercase tracking-widest text-[9px]">Duration</div>
-                    <div className="text-fg font-medium">25-minute call</div>
+                    <div className="text-fg font-medium">20-minute call</div>
                   </div>
                 </div>
               </div>

@@ -36,7 +36,7 @@ function Terms() {
             <section className="space-y-3">
               <h2 className="text-xl font-bold">2. Student Accounts & Bookings</h2>
               <ul className="list-disc pl-6 text-muted text-sm space-y-1">
-                <li>Students buy credits to book 25-minute video calls with verified seniors.</li>
+                <li>Students buy credits to book 20-minute video calls with verified seniors.</li>
                 <li>One credit allows booking one session. Credits never expire and are non-transferable.</li>
                 <li>Refund Policy: If a session does not take place due to mentor absence or you are highly unsatisfied with the advice, you can request a credit refund within 24 hours of the scheduled time by contacting support.</li>
               </ul>

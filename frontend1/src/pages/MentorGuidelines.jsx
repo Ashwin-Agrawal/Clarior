@@ -54,7 +54,7 @@ function MentorGuidelines() {
           <section className="bg-surface border-border border rounded-2xl p-6 shadow-sm">
             <h2 className="text-xl font-semibold mb-3">Session Guidelines</h2>
             <h3 className="font-semibold mt-2">5. Session Duration</h3>
-            <p className="text-fg">Each session must be 25 minutes (±2 minutes).</p>
+            <p className="text-fg">Each session must be 20 minutes (±2 minutes).</p>
 
             <h3 className="font-semibold mt-4">6. Session Tracking</h3>
             <p className="text-fg">

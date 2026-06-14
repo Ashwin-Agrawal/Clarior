@@ -8,7 +8,7 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import useSEO from "../hooks/useSEO";
 
-const SESSION_SECONDS = 25 * 60;
+const SESSION_SECONDS = 20 * 60;
 
 async function loadSessionBooking({ bookingId, setError, setLoading, setBooking }) {
   setError("");
@@ -164,7 +164,7 @@ function Session() {
   };
 
   return (
-    <AppShell title="Session Room" subtitle="Manage your active session and track the 25-minute timer.">
+    <AppShell title="Session Room" subtitle="Manage your active session and track the 20-minute timer.">
       <div className="flex justify-between items-center mb-6">
         <Button variant="ghost" size="sm" onClick={() => navigate("/bookings")} className="rounded-xl">
           Back to sessions

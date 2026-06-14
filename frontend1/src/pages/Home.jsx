@@ -307,7 +307,7 @@ function Home() {
                   cta: "Start with one call", 
                   variant: "secondary",
                   features: [
-                    "25-minute focused 1:1 session", 
+                    "20-minute focused 1:1 session", 
                     "Verified senior profiles", 
                     "Direct Google Meet connection",
                     "Ask anything about college life"
@@ -320,7 +320,7 @@ function Home() {
                   cta: "Get growth pack", 
                   variant: "primary",
                   features: [
-                    "3 separate 25-minute sessions", 
+                    "3 separate 20-minute sessions", 
                     "Save 9% overall compared to single pass", 
                     "Compare multiple branches/colleges",
                     "Priority customer & booking support"

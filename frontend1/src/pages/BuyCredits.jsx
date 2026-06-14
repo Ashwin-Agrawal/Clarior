@@ -149,7 +149,7 @@ function BuyCredits() {
 
                 <ul className="space-y-4">
                   {[
-                    "1 focused 25-minute call",
+                    "1 focused 20-minute call",
                     "Direct senior access",
                     "Session timer tracking",
                     "Rate after session"

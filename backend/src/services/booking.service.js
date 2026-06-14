@@ -53,7 +53,7 @@ class BookingService {
         start.setUTCHours(h, m, 0, 0);
         start.setTime(start.getTime() - 5.5 * 60 * 60 * 1000);
       }
-      const end = new Date(start.getTime() + 25 * 60 * 1000);
+      const end = new Date(start.getTime() + 20 * 60 * 1000);
 
       const booking = await Booking.create(
         [

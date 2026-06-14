@@ -10,7 +10,7 @@ import useSEO from "../hooks/useSEO";
 const trustPoints = [
   "Verified seniors from top Indian colleges",
   "Honest, experience-based guidance only",
-  "25-minute focused sessions, timer-tracked",
+  "20-minute focused sessions, timer-tracked",
 ];
 
 function Login() {
@@ -79,7 +79,7 @@ function Login() {
           });
           window.google.accounts.id.renderButton(
             document.getElementById("google-signin-button"),
-            { theme: "outline", size: "large", width: 384 }
+            { theme: "outline", size: "large", width: 384, text: "continue_with" }
           );
         } else {
           setTimeout(initGoogle, 100);

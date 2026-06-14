@@ -5,9 +5,9 @@ import useSEO from "../hooks/useSEO";
 
 const studentSteps = [
   {  title: "Browse senior profiles", desc: "Filter by college, domain, and branch. Read bios, check ratings, and find a senior who's been exactly where you are." },
-  { title: "Pick a time slot", desc: "Book an open slot directly from the senior's profile. One credit = one 25-minute guided session." },
-  { title: "Confirm & start the session", desc: "When your session begins, confirm it on the platform to start the 25-minute timer." },
-  { title: "25-minute live call", desc: "Join the call, ask your questions, and get honest answers from someone who's been through it." },
+  { title: "Pick a time slot", desc: "Book an open slot directly from the senior's profile. One credit = one 20-minute guided session." },
+  { title: "Confirm & start the session", desc: "When your session begins, confirm it on the platform to start the 20-minute timer." },
+  { title: "20-minute live call", desc: "Join the call, ask your questions, and get honest answers from someone who's been through it." },
   { title: "Rate your experience", desc: "After the session, submit a review. Your rating keeps quality high for everyone." },
 ];
 
