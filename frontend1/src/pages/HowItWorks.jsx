@@ -4,18 +4,18 @@ import { Link } from "react-router-dom";
 import useSEO from "../hooks/useSEO";
 
 const studentSteps = [
-  { icon: "🔍", title: "Browse senior profiles", desc: "Filter by college, domain, and branch. Read bios, check ratings, and find a senior who's been exactly where you are." },
-  { icon: "📅", title: "Pick a time slot", desc: "Book an open slot directly from the senior's profile. One credit = one 25-minute guided session." },
-  { icon: "✅", title: "Confirm & start the session", desc: "When your session begins, confirm it on the platform to start the 25-minute timer." },
-  { icon: "⏱", title: "25-minute live call", desc: "Join the call, ask your questions, and get honest answers from someone who's been through it." },
-  { icon: "⭐", title: "Rate your experience", desc: "After the session, submit a review. Your rating keeps quality high for everyone." },
+  { icon: "", title: "Browse senior profiles", desc: "Filter by college, domain, and branch. Read bios, check ratings, and find a senior who's been exactly where you are." },
+  { icon: "", title: "Pick a time slot", desc: "Book an open slot directly from the senior's profile. One credit = one 25-minute guided session." },
+  { icon: "", title: "Confirm & start the session", desc: "When your session begins, confirm it on the platform to start the 25-minute timer." },
+  { icon: "", title: "25-minute live call", desc: "Join the call, ask your questions, and get honest answers from someone who's been through it." },
+  { icon: "", title: "Rate your experience", desc: "After the session, submit a review. Your rating keeps quality high for everyone." },
 ];
 
 const seniorSteps = [
-  { icon: "📝", title: "Apply and get verified", desc: "Submit your profile and college details. Our team reviews and approves verified seniors within 48 hours." },
-  { icon: "🗓", title: "Set your availability", desc: "Add open time slots whenever you're free. Students book directly from your profile." },
-  { icon: "💬", title: "Guide a student", desc: "Join the call and share your honest, experience-based perspective. No scripts, just real talk." },
-  { icon: "💰", title: "Earn per session", desc: "Earn ₹52 per completed session. Once you hit the payout threshold, request a withdrawal anytime." },
+  { icon: "", title: "Apply and get verified", desc: "Submit your profile and college details. Our team reviews and approves verified seniors within 48 hours." },
+  { icon: "", title: "Set your availability", desc: "Add open time slots whenever you're free. Students book directly from your profile." },
+  { icon: "", title: "Guide a student", desc: "Join the call and share your honest, experience-based perspective. No scripts, just real talk." },
+  { icon: "", title: "Earn per session", desc: "Earn ₹52 per completed session. Once you hit the payout threshold, request a withdrawal anytime." },
 ];
 
 const policies = [

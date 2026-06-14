@@ -176,9 +176,6 @@ function BuyCredits() {
 
             {/* Growth Pack */}
             <Card className="relative flex flex-col p-8 md:p-10 border-primary/30 bg-surface shadow-lift animate-fade-up delay-200 ring-4 ring-primary/5" style={{ overflow: 'visible' }}>
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-soft">
-                Most Popular
-              </div>
               
               <div className="flex-1">
                 <div className="flex items-center justify-between">
