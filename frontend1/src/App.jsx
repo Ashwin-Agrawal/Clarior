@@ -9,6 +9,7 @@ import Profile from "./pages/Profile";
 import BuyCredits from "./pages/BuyCredits";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import CollegeProfile from "./pages/CollegeProfile";
 
 // 🔥 NEW IMPORTS
 import Dashboard from "./pages/Dashboard";
@@ -37,6 +38,7 @@ function App() {
         {/* 🌍 PUBLIC ROUTES */}
         <Route path="/" element={<Home />} />
         <Route path="/explore" element={<Explore />} />
+        <Route path="/college/:id" element={<CollegeProfile />} />
         <Route path="/profile/:id" element={<Profile />} />
         <Route path="/buy-credits" element={<BuyCredits />} />
         <Route path="/login" element={<Login />} />

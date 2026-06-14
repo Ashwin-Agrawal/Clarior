@@ -1,14 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import api from "../services/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
+import CollegeCard from "../components/CollegeCard";
 import SiteContainer from "../components/layout/SiteContainer";
-import iitDelhiLogo from "../assets/iitdelhi.jpg";
-import iitBomabay from "../assets/iitbombay.png";
-import dtuLogo from "../assets/dtu.png";
-import bitsLogo from "../assets/bitapilani.jpg";
 import useSEO from "../hooks/useSEO";
 
 const stats = [
@@ -30,15 +28,6 @@ const motivationTips = [
     title: "Don’t guess when you can ask a senior.",
     text: "Real guidance beats random internet opinions when the stakes are high.",
   },
-];
-
-const colleges = [
-  { name: "IIT Delhi", logo: iitDelhiLogo, isImage: true },
-  { name: "IIT Bombay", logo: iitBomabay, isImage: true },
-  { name: "BITS Pilani", logo: bitsLogo, isImage: true },
-  { name: "DTU Delhi", logo: dtuLogo, isImage: true },
-  { name: "NSUT Delhi", logo: "NS", isImage: false },
-  { name: "IIIT Delhi", logo: "3D", isImage: false },
 ];
 
 function LineIcon({ name, className = "h-5 w-5" }) {
@@ -63,10 +52,27 @@ function Home() {
   const [scrolled, setScrolled] = useState(0);
   const [pulseLoading, setPulseLoading] = useState(true);
   const [activeTip, setActiveTip] = useState(0);
+  const [collegesList, setCollegesList] = useState([]);
+  const [collegesLoading, setCollegesLoading] = useState(true);
 
-  useSEO({ title: "Home", description: "Talk to verified seniors from top Indian colleges for ₹69. Get clarity on college, branch, placements and more." });
+  const carouselRef = useRef(null);
+
+  useSEO("Home", "Talk to verified seniors from top Indian colleges for ₹69. Get clarity on college, branch, placements and more.");
 
   useEffect(() => {
+    const fetchColleges = async () => {
+      try {
+        setCollegesLoading(true);
+        const res = await api.get("/colleges");
+        setCollegesList(res.data.colleges || []);
+      } catch (err) {
+        console.error("Failed to load colleges for carousel", err);
+      } finally {
+        setCollegesLoading(false);
+      }
+    };
+    fetchColleges();
+
     const timer = setTimeout(() => {
       setPulseLoading(false);
     }, 1500);
@@ -86,6 +92,17 @@ function Home() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  const handleCarouselScroll = (direction) => {
+    const container = carouselRef.current;
+    if (container) {
+      const scrollAmount = container.clientWidth * 0.8;
+      container.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
     <>
@@ -188,29 +205,54 @@ function Home() {
           </SiteContainer>
         </section>
 
-        {/* Trust/Colleges Section */}
+        {/* Trust/Colleges Section - Dynamic Sliding Carousel */}
         <section className="pt-8 pb-16 relative overflow-hidden">
           <SiteContainer>
             <div className="relative overflow-hidden rounded-[40px] border border-white/20 bg-gradient-to-br from-primary/4 via-surface to-accent/4 p-6 shadow-[0_25px_90px_-35px_rgba(37,99,235,0.32)] animate-fade-up md:p-10">
               <div className="absolute -inset-10 bg-gradient-to-tr from-primary/5 to-accent/5 rounded-[64px] blur-3xl pointer-events-none opacity-60" />
               <h2 className="relative z-10 text-[12px] font-black uppercase tracking-[0.5em] text-muted mb-8 text-center">Featuring colleges</h2>
-              <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 md:gap-8 items-center justify-items-center">
-                {colleges.map(c => (
-                  <div key={c.name} className="flex flex-col items-center gap-4 group cursor-default rounded-2xl px-2 py-3 transition-transform duration-500 hover:-translate-y-1">
-                    <div className="relative flex items-center justify-center h-14 md:h-16 w-14 md:w-16">
-                      <div className="absolute -inset-8 bg-primary/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                      {c.isImage ? (
-                        <img src={c.logo} alt={c.name} className="h-14 md:h-16 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-125 group-hover:-rotate-3" />
-                      ) : (
-                        <div className="h-14 w-14 md:h-16 md:w-16 rounded-2xl bg-surface/50 border border-border flex items-center justify-center text-primary font-black text-xl tracking-tight grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-125 group-hover:-rotate-3 shadow-sm">
-                          {c.logo}
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-muted/60 group-hover:text-primary transition-colors duration-300 text-center">{c.name}</span>
-                  </div>
-                ))}
+              
+              {/* Carousel Container */}
+              <div className="relative z-10 group/carousel px-4">
+                {/* Left Arrow Button */}
+                <button
+                  onClick={() => handleCarouselScroll("left")}
+                  className="absolute -left-2 top-1/2 -translate-y-1/2 z-20 h-11 w-11 rounded-full bg-surface/90 border border-border backdrop-blur-md flex items-center justify-center text-fg hover:bg-primary hover:text-white transition-all shadow-md opacity-0 md:group-hover/carousel:opacity-100 pointer-events-auto cursor-pointer"
+                  aria-label="Previous colleges"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+                </button>
+
+                {/* Horizontal Scroll Area */}
+                <div
+                  ref={carouselRef}
+                  className="flex gap-6 overflow-x-auto scroll-smooth scrollbar-hide py-4 px-2"
+                >
+                  {collegesLoading ? (
+                    [1, 2, 3, 4].map((i) => (
+                      <div key={i} className="w-[280px] sm:w-[320px] h-[340px] rounded-[28px] bg-surface2 animate-pulse flex-shrink-0" />
+                    ))
+                  ) : collegesList.length > 0 ? (
+                    collegesList.slice(0, 12).map((college, idx) => (
+                      <div key={college._id} className="w-[280px] sm:w-[320px] flex-shrink-0">
+                        <CollegeCard college={college} index={idx} />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center w-full py-8 text-muted font-semibold">No colleges available</div>
+                  )}
+                </div>
+
+                {/* Right Arrow Button */}
+                <button
+                  onClick={() => handleCarouselScroll("right")}
+                  className="absolute -right-2 top-1/2 -translate-y-1/2 z-20 h-11 w-11 rounded-full bg-surface/90 border border-border backdrop-blur-md flex items-center justify-center text-fg hover:bg-primary hover:text-white transition-all shadow-md opacity-0 md:group-hover/carousel:opacity-100 pointer-events-auto cursor-pointer"
+                  aria-label="Next colleges"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                </button>
               </div>
+
               <div className="mt-8 text-center relative z-10">
                 <Link to="/explore" className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-primary hover:text-accent transition-colors duration-300">
                   View all colleges

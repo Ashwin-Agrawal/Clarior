@@ -2,13 +2,11 @@ import { useEffect, useState, useMemo } from "react";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import MentorCard from "../components/MentorCard";
+import CollegeCard from "../components/CollegeCard";
 import Skeleton from "../components/ui/Skeleton";
 import Button from "../components/ui/Button";
 import SiteContainer from "../components/layout/SiteContainer";
 import useSEO from "../hooks/useSEO";
-
-const DOMAINS = ["All", "Engineering", "Medical", "Commerce", "Arts", "Law", "Other"];
 
 function SearchIcon({ className = "h-5 w-5" }) {
   return (
@@ -19,175 +17,209 @@ function SearchIcon({ className = "h-5 w-5" }) {
   );
 }
 
-function Explore() {
-  useSEO({ title: 'Explore Seniors', description: 'Browse and book verified seniors from top Indian colleges for ₹69. Get clarity on college, branch, and career decisions.' });
+const TYPES = ["All", "Government", "Private", "New-Gen"];
 
-  const [seniors, setSeniors] = useState([]);
+function Explore() {
+  useSEO(
+    "Explore Colleges",
+    "Browse top Indian colleges and connect with verified seniors studying there. Get clear guidance on admissions, branches, and career paths."
+  );
+
+  const [colleges, setColleges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [search, setSearch] = useState("");
-  const [course, setCourse] = useState("All");
-  const [branch, setBranch] = useState("All");
+  const [stateFilter, setStateFilter] = useState("All");
+  const [typeFilter, setTypeFilter] = useState("All");
 
   useEffect(() => {
-    const fetchSeniors = async () => {
+    const fetchColleges = async () => {
       try {
         setLoading(true);
         setError(false);
-        const res = await api.get("/users/seniors");
-        setSeniors(res.data.seniors || []);
+        const res = await api.get("/colleges");
+        setColleges(res.data.colleges || []);
       } catch (err) {
-        console.error("Failed to fetch seniors", err);
+        console.error("Failed to fetch colleges", err);
         setError(true);
-      } finally { setLoading(false); }
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchSeniors();
+    fetchColleges();
   }, []);
 
-  const branches = useMemo(() => {
-    const b = new Set(seniors.map(s => s.branch).filter(Boolean));
-    return ["All", ...Array.from(b).sort()];
-  }, [seniors]);
+  // Dynamically extract unique states list
+  const statesList = useMemo(() => {
+    const s = new Set(colleges.map((c) => c.state).filter(Boolean));
+    return ["All", ...Array.from(s).sort()];
+  }, [colleges]);
 
+  // Filtering
   const filtered = useMemo(() => {
-    return seniors.filter((s) => {
-      const matchSearch = !search.trim() || [s.name, s.college, s.branch, s.domain].filter(Boolean).join(" ").toLowerCase().includes(search.trim().toLowerCase());
-      const matchCourse = course === "All" || s.domain === course;
-      const matchBranch = branch === "All" || s.branch === branch;
-      return matchSearch && matchCourse && matchBranch;
+    return colleges.filter((c) => {
+      const matchSearch =
+        !search.trim() ||
+        [c.name, c.city]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(search.trim().toLowerCase());
+      const matchState = stateFilter === "All" || c.state === stateFilter;
+      const matchType = typeFilter === "All" || c.type === typeFilter;
+      return matchSearch && matchState && matchType;
     });
-  }, [seniors, search, course, branch]);
+  }, [colleges, search, stateFilter, typeFilter]);
 
-  const hasFilters = search.trim() || course !== "All" || branch !== "All";
+  const hasFilters = search.trim() || stateFilter !== "All" || typeFilter !== "All";
+
   const clearFilters = () => {
     setSearch("");
-    setCourse("All");
-    setBranch("All");
+    setStateFilter("All");
+    setTypeFilter("All");
   };
 
   return (
     <>
       <Navbar />
       <main className="bg-bg min-h-screen">
-        {/* Header Section */}
-        <section className="relative pt-20 pb-16 overflow-hidden">
+        {/* Premium Header Hero */}
+        <section className="relative pt-24 pb-12 overflow-hidden">
           <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
           <div className="absolute inset-0 pointer-events-none opacity-50" style={{ background: "var(--hero-gradient)" }} />
           <div className="absolute top-1/4 left-1/4 h-80 w-80 rounded-full bg-primary/5 blur-3xl animate-float-slow pointer-events-none" />
-          <div className="absolute bottom-1/4 right-1/4 h-64 w-64 rounded-full bg-accent/5 blur-3xl animate-float pointer-events-none" />
+          <div className="absolute bottom-1/4 right-1/4 h-64 w-64 rounded-full bg-accent/5 blur-3xl pointer-events-none" />
+
           <SiteContainer className="relative">
             <div className="max-w-4xl mx-auto text-center animate-fade-up">
               <h1 className="heading-display text-4xl md:text-7xl font-black text-fg tracking-tight leading-[1.1]">
-                Find your <span className="gradient-text">perfect mentor.</span>
+                Explore <span className="gradient-text">Colleges.</span>
               </h1>
-              <p className="mt-8 text-xl text-muted leading-relaxed font-medium max-w-2xl mx-auto">
-                Talk to seniors who've actually cleared the exams and colleges you're aiming for. No bias, just experience.
+              <p className="mt-6 text-lg md:text-xl text-muted leading-relaxed font-semibold max-w-2xl mx-auto">
+                Discover your dream college and talk to verified seniors. No bias, just experience.
               </p>
             </div>
 
-            {/* Search & Filter Bar */}
-            <div className="mt-12 max-w-5xl mx-auto space-y-4 animate-fade-up delay-100">
-              <div className="rounded-[32px] border border-border bg-surface p-3 shadow-card">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                  <div className="relative md:col-span-5 lg:col-span-6 group">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors">
-                      <SearchIcon className="h-6 w-6" />
-                    </span>
-                    <input
-                      type="text"
-                      placeholder="Search by name or college..."
-                      className="w-full h-14 pl-12 pr-4 rounded-2xl border border-border bg-surface outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-base font-bold"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:col-span-7 lg:col-span-6">
-                    <div className="relative">
-                      <select
-                        className="w-full h-14 px-4 pr-8 rounded-2xl border border-border bg-surface outline-none focus:ring-4 focus:ring-primary/10 transition-all text-sm font-bold appearance-none cursor-pointer"
-                        value={course}
-                        onChange={(e) => setCourse(e.target.value)}
-                      >
-                        {DOMAINS.map(d => <option key={d} value={d}>{d === "All" ? "All Courses" : d}</option>)}
-                      </select>
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
-                        <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
-                      </div>
-                    </div>
-
-                    <div className="relative">
-                      <select
-                        className="w-full h-14 px-4 pr-8 rounded-2xl border border-border bg-surface outline-none focus:ring-4 focus:ring-primary/10 transition-all text-sm font-bold appearance-none cursor-pointer"
-                        value={branch}
-                        onChange={(e) => setBranch(e.target.value)}
-                      >
-                        {branches.map(b => <option key={b} value={b}>{b === "All" ? "All Branches" : b}</option>)}
-                      </select>
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
-                        <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
-                      </div>
-                    </div>
-
-                    <Button
-                      variant="secondary"
-                      className="h-14 w-full rounded-2xl font-black uppercase tracking-widest text-xs"
-                      disabled={!hasFilters}
-                      onClick={clearFilters}
-                    >
-                      Reset
-                    </Button>
-                  </div>
-                </div>
+            {/* Premium Text Search Bar */}
+            <div className="mt-12 max-w-2xl mx-auto animate-fade-up delay-100">
+              <div className="relative group">
+                <span className="absolute left-5 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors">
+                  <SearchIcon className="h-6 w-6" />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search by college name or city..."
+                  className="w-full h-16 pl-14 pr-6 rounded-3xl border border-border/80 bg-surface/50 backdrop-blur-md outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-base sm:text-lg font-black text-fg shadow-card hover:border-primary/25"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
               </div>
             </div>
 
-            {/* Quick Filter Chips (Course) */}
-            <div className="mt-8 flex flex-wrap justify-center gap-2 animate-fade-up delay-200">
-              {DOMAINS.map(d => (
-                <button
-                  key={d}
-                  onClick={() => setCourse(d)}
-                  className={`px-5 py-2.5 rounded-full text-xs font-bold tracking-wide transition-all ${
-                    course === d 
-                      ? "bg-primary text-white shadow-hero" 
-                      : "bg-surface border border-border text-muted hover:border-primary/40 hover:text-primary"
-                  }`}
-                >
-                  {d}
-                </button>
-              ))}
+            {/* Premium Interactive Filters Hub (Pills Only, No Dropdowns) */}
+            <div className="mt-10 max-w-4xl mx-auto space-y-6 animate-fade-up delay-200">
+              
+              {/* Filter 1: College Type Pills */}
+              <div className="flex flex-col items-center gap-3">
+                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-muted">College Type</span>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {TYPES.map((type) => (
+                    <button
+                      key={type}
+                      onClick={() => setTypeFilter(type)}
+                      className={`px-6 py-2.5 rounded-full text-xs font-black tracking-wider transition-all duration-300 cursor-pointer uppercase ${
+                        typeFilter === type
+                          ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white border-transparent shadow-md shadow-blue-500/20 scale-[1.03]"
+                          : "bg-white border border-slate-200 text-slate-600 hover:border-blue-400 hover:text-blue-600 dark:bg-surface/50 dark:border-border/75 dark:text-muted dark:hover:text-primary"
+                      }`}
+                    >
+                      {type === "All" ? "All Types" : type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Filter 2: State Pills (Horizontal Scrollable) */}
+              <div className="flex flex-col items-center gap-3 w-full">
+                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-muted">Filter by State</span>
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide max-w-full py-2.5 px-4 justify-start sm:justify-center w-full">
+                  {statesList.map((state) => (
+                    <button
+                      key={state}
+                      onClick={() => setStateFilter(state)}
+                      className={`px-5 py-2.5 rounded-full text-xs font-black tracking-wider transition-all duration-300 cursor-pointer flex-shrink-0 uppercase ${
+                        stateFilter === state
+                          ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white border-transparent shadow-md shadow-blue-500/20 scale-[1.03]"
+                          : "bg-white border border-slate-200 text-slate-600 hover:border-blue-400 hover:text-blue-600 dark:bg-surface/50 dark:border-border/75 dark:text-muted dark:hover:text-primary"
+                      }`}
+                    >
+                      {state === "All" ? "All States" : state}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Reset Floating Trigger */}
+              {hasFilters && (
+                <div className="text-center pt-2">
+                  <button
+                    onClick={clearFilters}
+                    className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-danger/20 bg-danger/5 hover:bg-danger/10 text-danger text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-sm"
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+              )}
             </div>
           </SiteContainer>
         </section>
 
-        {/* Grid Section */}
+        {/* Results Directory */}
         <SiteContainer className="pb-32">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-8 animate-fade-in">
             <h2 className="text-sm font-black text-muted uppercase tracking-[0.2em]">
-              {loading ? 'Loading seniors…' : `Showing ${filtered.length} senior${filtered.length !== 1 ? 's' : ''}`}
+              {loading ? "Loading colleges…" : `Showing ${filtered.length} college${filtered.length !== 1 ? "s" : ""}`}
             </h2>
             {hasFilters && !loading && (
               <p className="text-sm text-muted">
-                Filtered by <span className="font-semibold text-fg">{course}</span>{branch !== "All" ? <> · <span className="font-semibold text-fg">{branch}</span></> : null}{search.trim() ? <> · <span className="font-semibold text-fg">"{search.trim()}"</span></> : null}
+                Filtered by{" "}
+                {typeFilter !== "All" && (
+                  <>
+                    <span className="font-semibold text-fg">{typeFilter}</span>
+                  </>
+                )}
+                {stateFilter !== "All" && (
+                  <>
+                    {typeFilter !== "All" ? " in " : ""}
+                    <span className="font-semibold text-fg">{stateFilter}</span>
+                  </>
+                )}
+                {search.trim() && (
+                  <>
+                    {typeFilter !== "All" || stateFilter !== "All" ? " matching " : ""}
+                    <span className="font-semibold text-fg">"{search.trim()}"</span>
+                  </>
+                )}
               </p>
             )}
           </div>
 
           {error && (
             <div className="text-center py-12 mb-8 bg-danger/5 rounded-2xl border border-danger/10">
-              <p className="text-danger font-bold">Failed to load mentors. Please refresh the page.</p>
+              <p className="text-danger font-bold">Failed to load colleges. Please refresh the page.</p>
             </div>
           )}
 
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1,2,3,4,5,6].map(i => <Skeleton.MentorCard key={i} />)}
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="h-[380px] rounded-[28px] bg-surface2 animate-pulse" />
+              ))}
             </div>
           ) : filtered.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filtered.map((mentor, idx) => (
-                <MentorCard key={mentor._id} mentor={mentor} index={idx} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in">
+              {filtered.map((college, idx) => (
+                <CollegeCard key={college._id} college={college} index={idx} />
               ))}
             </div>
           ) : (
@@ -198,10 +230,12 @@ function Explore() {
                   <SearchIcon className="h-10 w-10" />
                 </div>
               </div>
-              <h3 className="text-2xl font-black text-fg">No seniors found</h3>
-              <p className="text-muted mt-3 max-w-sm mx-auto leading-relaxed">Try adjusting your search or filters — or browse all seniors below.</p>
+              <h3 className="text-2xl font-black text-fg">No colleges found</h3>
+              <p className="text-muted mt-3 max-w-sm mx-auto leading-relaxed">
+                Try adjusting your search or location filters — or browse all colleges below.
+              </p>
               <Button variant="primary" className="mt-8 rounded-full px-10" onClick={clearFilters}>
-                See All Seniors
+                See All Colleges
               </Button>
             </div>
           )}

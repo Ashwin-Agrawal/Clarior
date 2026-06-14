@@ -10,7 +10,7 @@ function cx(...parts) { return parts.filter(Boolean).join(" "); }
 const navItems = [
   { to: "/#pricing",    label: "Pricing",     match: "/" },
   { to: "/how-it-works",label: "How It Works",match: "/how-it-works" },
-  { to: "/explore",     label: "Seniors",     match: "/explore" },
+  { to: "/explore",     label: "Colleges",     match: "/explore" },
   { to: "/bookings",    label: "Sessions",    match: "/bookings" },
 ];
 
