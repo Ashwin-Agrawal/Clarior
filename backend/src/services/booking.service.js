@@ -43,7 +43,16 @@ class BookingService {
       await user.save({ session });
 
       // 5. Create booking
-      const start = new Date(slot.dateTime || slot.date);
+      let start;
+      if (slot.dateTime) {
+        start = new Date(slot.dateTime);
+      } else {
+        start = new Date(slot.date);
+        const timePart = slot.time.split("-")[0];
+        const [h, m] = timePart.split(":").map(Number);
+        start.setUTCHours(h, m, 0, 0);
+        start.setTime(start.getTime() - 5.5 * 60 * 60 * 1000);
+      }
       const end = new Date(start.getTime() + 25 * 60 * 1000);
 
       const booking = await Booking.create(

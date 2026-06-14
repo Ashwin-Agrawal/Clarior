@@ -76,6 +76,7 @@ function Session() {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [reviewMsg, setReviewMsg] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   const [newMeetLink, setNewMeetLink] = useState("");
   const [meetLinkLoading, setMeetLinkLoading] = useState(false);
@@ -150,11 +151,16 @@ function Session() {
 
   const submitReview = async () => {
     setReviewMsg("");
+    setSubmittingReview(true);
     try {
       const seniorId = typeof booking.senior === "string" ? booking.senior : booking.senior?._id;
-      await api.post("/reviews", { seniorId, rating: Number(rating), comment });
+      await api.post("/reviews", { bookingId, seniorId, rating: Number(rating), comment });
       setReviewMsg("Review submitted.");
-    } catch (e) { setReviewMsg(e?.response?.data?.message || "Review failed"); }
+    } catch (e) {
+      setReviewMsg(e?.response?.data?.message || "Review failed");
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
   return (
@@ -326,7 +332,7 @@ function Session() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <Button onClick={submitReview} size="lg" className="rounded-2xl px-10">Submit Review</Button>
+                  <Button onClick={submitReview} loading={submittingReview} disabled={submittingReview} size="lg" className="rounded-2xl px-10">Submit Review</Button>
                   {reviewMsg && <span className="text-sm font-bold text-success animate-scale-in">{reviewMsg}</span>}
                 </div>
               </div>

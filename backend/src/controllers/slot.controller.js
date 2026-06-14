@@ -14,29 +14,44 @@ const parseTimeToMinutes = (time) => {
 };
 
 const validateSlotDateTime = (dateValue, timeValue) => {
-  const slotDate = new Date(dateValue);
+  if (!dateValue || typeof dateValue !== "string") {
+    return { valid: false, message: "Invalid date format" };
+  }
+
+  const dateParts = dateValue.split("-").map(Number);
+  if (dateParts.length !== 3 || dateParts.some(isNaN)) {
+    return { valid: false, message: "Invalid date format" };
+  }
+
+  const [year, month, day] = dateParts;
+  const slotDate = new Date(Date.UTC(year, month - 1, day));
   if (isNaN(slotDate.getTime())) {
     return { valid: false, message: "Invalid date format" };
   }
 
+  // Validate time format and bounds (HH:MM) for all dates
+  const startMinutes = parseTimeToMinutes(timeValue);
+  if (startMinutes === null) {
+    return { valid: false, message: "Invalid time format (use HH:MM or HH:MM-HH:MM)" };
+  }
+
+  // Shift current time to IST (UTC+5:30)
   const now = new Date();
-  const todayStart = new Date(now);
-  todayStart.setHours(0, 0, 0, 0);
+  const nowIST = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
 
-  const normalizedSlotDate = new Date(slotDate);
-  normalizedSlotDate.setHours(0, 0, 0, 0);
+  // Normalize today start in IST using UTC components on the shifted Date
+  const todayIST = new Date(Date.UTC(
+    nowIST.getUTCFullYear(),
+    nowIST.getUTCMonth(),
+    nowIST.getUTCDate()
+  ));
 
-  if (normalizedSlotDate < todayStart) {
+  if (slotDate < todayIST) {
     return { valid: false, message: "Slot date must be today or in the future" };
   }
 
-  if (normalizedSlotDate.getTime() === todayStart.getTime()) {
-    const startMinutes = parseTimeToMinutes(timeValue);
-    if (startMinutes === null) {
-      return { valid: false, message: "Invalid time format (use HH:MM or HH:MM-HH:MM)" };
-    }
-
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  if (slotDate.getTime() === todayIST.getTime()) {
+    const currentMinutes = nowIST.getUTCHours() * 60 + nowIST.getUTCMinutes();
     if (startMinutes <= currentMinutes) {
       return { valid: false, message: "Slot time must be in the future for today" };
     }
@@ -98,11 +113,17 @@ exports.createSlot = async (req, res) => {
       });
     }
 
+    const [h, m] = time.split("-")[0].split(":").map(Number);
+    const dateTimeObj = new Date(dateObj);
+    dateTimeObj.setUTCHours(h, m, 0, 0);
+    dateTimeObj.setTime(dateTimeObj.getTime() - 5.5 * 60 * 60 * 1000);
+
     // Fix 6a: Store dateObj (Date) instead of raw string
     const slot = await Slot.create({
       senior: req.user.id,
       date: dateObj,
       time,
+      dateTime: dateTimeObj,
     });
 
     res.status(201).json({
@@ -152,10 +173,16 @@ exports.createSlots = async (req, res) => {
       });
 
       if (!exists) {
+        const [h, m] = time.split("-")[0].split(":").map(Number);
+        const dateTimeObj = new Date(slotDate);
+        dateTimeObj.setUTCHours(h, m, 0, 0);
+        dateTimeObj.setTime(dateTimeObj.getTime() - 5.5 * 60 * 60 * 1000);
+
         newSlots.push({
           senior: req.user.id,
           date: slotDate,
           time,
+          dateTime: dateTimeObj,
         });
       }
     }

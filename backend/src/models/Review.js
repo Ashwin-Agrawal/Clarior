@@ -11,6 +11,12 @@ const reviewSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  booking: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Booking",
+    unique: true,
+    sparse: true,
+  },
   rating: {
     type: Number,
     required: true,
@@ -23,6 +29,7 @@ const reviewSchema = new mongoose.Schema({
 // Create indexes for faster queries
 reviewSchema.index({ senior: 1 });
 reviewSchema.index({ student: 1 });
-reviewSchema.index({ senior: 1, student: 1 }, { unique: true });
+reviewSchema.index({ booking: 1 }, { unique: true, sparse: true });
+reviewSchema.index({ senior: 1, student: 1 });
 
 module.exports = mongoose.model("Review", reviewSchema);

@@ -254,7 +254,7 @@ function Dashboard() {
           <div className="absolute right-0 top-0 h-40 w-40 rounded-full blur-3xl bg-primary/8 dark:bg-primary/5 -translate-y-1/2 translate-x-1/2 pointer-events-none" />
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between relative z-10">
             <div className="flex items-center gap-6">
-              <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-[28px] bg-gradient-to-br from-primary to-accent text-3xl font-extrabold text-white shadow-lift">
+              <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-[28px] bg-gradient-to-br from-primary to-accent text-3xl font-extrabold text-primary-foreground shadow-lift">
                 {user?.name?.trim()?.[0] || "C"}
               </div>
               <div>

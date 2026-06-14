@@ -256,7 +256,7 @@ function Home() {
                 <div className="absolute -inset-4 bg-gradient-to-tr from-primary/10 to-accent/20 rounded-[48px] blur-3xl pointer-events-none opacity-80 animate-pulse" />
                 <Card className="relative p-8 border-border/50 bg-surface  overflow-hidden shadow-hero hover:shadow-lift transition-all duration-500 hover:scale-[1.02]">
                   <div className="flex items-center gap-4 mb-8">
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold">JD</div>
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold">JD</div>
                     <div>
                       <div className="font-bold text-fg">Arjun Mehra</div>
                       <div className="text-[10px] font-bold text-muted uppercase tracking-widest">Senior at IIT Madras</div>

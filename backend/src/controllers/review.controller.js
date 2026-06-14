@@ -6,7 +6,7 @@ const Booking = require("../models/Booking");
 // ⭐ ADD REVIEW (ONLY AFTER SESSION)
 exports.addReview = async (req, res) => {
   try {
-    const { seniorId, rating, comment } = req.body;
+    const { bookingId, seniorId, rating, comment } = req.body;
 
     // � Validate inputs
     if (!seniorId || !rating) {
@@ -47,29 +47,47 @@ exports.addReview = async (req, res) => {
     }
 
     // 🔒 check booking exists (ONLY AFTER COMPLETION)
-    const booking = await Booking.findOne({
-      student: req.user.id,
-      senior: seniorId,
-      status: "completed",
-    });
+    let booking;
+    if (bookingId) {
+      const mongoose = require("mongoose");
+      if (!mongoose.Types.ObjectId.isValid(bookingId)) {
+        return res.status(400).json({ success: false, message: "Invalid booking ID" });
+      }
+      booking = await Booking.findOne({
+        _id: bookingId,
+        student: req.user.id,
+        status: "completed",
+      });
+    } else {
+      booking = await Booking.findOne({
+        student: req.user.id,
+        senior: seniorId,
+        status: "completed",
+      });
+    }
 
     if (!booking) {
       return res.status(400).json({
         success: false,
-        message: "You can review only after a confirmed session",
+        message: "You can review only after a completed session",
       });
     }
 
-    // ❌ prevent multiple reviews
-    const existingReview = await Review.findOne({
-      student: req.user.id,
-      senior: seniorId,
-    });
+    // ❌ prevent multiple reviews on the same booking/session
+    let existingReview;
+    if (bookingId) {
+      existingReview = await Review.findOne({ booking: bookingId });
+    } else {
+      existingReview = await Review.findOne({
+        student: req.user.id,
+        senior: seniorId,
+      });
+    }
 
     if (existingReview) {
       return res.status(400).json({
         success: false,
-        message: "You already reviewed this senior",
+        message: "You already reviewed this session",
       });
     }
 
@@ -77,6 +95,7 @@ exports.addReview = async (req, res) => {
     const review = await Review.create({
       student: req.user.id,
       senior: seniorId,
+      booking: bookingId || booking._id,
       rating,
       comment: comment ? comment.trim() : null,
     });
