@@ -174,30 +174,33 @@ function Home() {
                   ))}
                 </div>
 
-                <div className="mt-5 mx-auto max-w-4xl animate-fade-up delay-400">
-                  <div className="rounded-[24px] border border-primary/10 bg-surface/85 p-4 shadow-[0_20px_60px_-26px_rgba(37,99,235,0.24)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1">
-                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div className="mt-8 mx-auto max-w-4xl animate-fade-up delay-400">
+                  <div className="rounded-[32px] border border-border/80 bg-surface/75 p-5 md:p-7 shadow-[0_24px_80px_-25px_rgba(37,99,235,0.18)] dark:shadow-[0_24px_80px_-25px_rgba(96,165,250,0.08)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-2 pb-2">
                       <div>
-                        <div className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Why students book</div>
-                        <div className="mt-1 text-sm text-muted">Short, honest guidance that feels worth way more than ₹69.</div>
+                        <div className="text-[10px] font-black uppercase tracking-[0.25em] text-primary">Why students book</div>
+                        <div className="mt-1.5 text-sm font-semibold text-muted">Short, honest guidance that feels worth way more than ₹69.</div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         {motivationTips.map((_, index) => (
                           <button
                             key={index}
                             type="button"
                             aria-label={`Show tip ${index + 1}`}
                             onClick={() => setActiveTip(index)}
-                            className={`h-2.5 rounded-full transition-all ${activeTip === index ? "w-7 bg-primary" : "w-2.5 bg-primary/30"}`}
+                            className={`h-1.5 rounded-full transition-all duration-300 ${activeTip === index ? "w-6 bg-gradient-to-r from-primary to-accent shadow-soft" : "w-2 bg-muted/40 hover:bg-muted/60"}`}
                           />
                         ))}
                       </div>
                     </div>
 
-                    <div className="mt-3 rounded-[20px] bg-gradient-to-br from-primary/8 via-surface to-accent/8 p-4 md:p-5 shadow-inner min-h-[110px] flex flex-col justify-center overflow-hidden relative">
-                      <div key={activeTip} className="animate-quote-slide">
-                        <div className="text-base md:text-lg font-black text-fg">{motivationTips[activeTip].title}</div>
-                        <div className="mt-2 text-sm md:text-[15px] text-muted leading-relaxed">{motivationTips[activeTip].text}</div>
+                    <div className="mt-4 relative rounded-2xl bg-surface2/60 border border-border/50 p-6 md:p-8 min-h-[140px] flex flex-col justify-center overflow-hidden">
+                      {/* Quote Watermark */}
+                      <span className="absolute top-[-40px] left-[-15px] text-[180px] font-serif font-black text-primary/8 select-none pointer-events-none leading-none">“</span>
+                      
+                      <div key={activeTip} className="relative z-10 animate-quote-slide">
+                        <div className="text-lg md:text-xl font-black text-fg tracking-tight leading-snug">{motivationTips[activeTip].title}</div>
+                        <div className="mt-2 text-sm md:text-base text-muted font-medium leading-relaxed">{motivationTips[activeTip].text}</div>
                       </div>
                     </div>
                   </div>
