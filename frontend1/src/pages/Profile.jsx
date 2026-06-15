@@ -219,18 +219,18 @@ function Profile() {
                 </div>
 
                 {/* Profile Avatar & Info Block */}
-                <div className="flex flex-col md:flex-row items-center md:items-end gap-6 px-6 md:px-12 mt-12 md:mt-6 relative z-10">
-                  <div className="flex h-28 w-28 md:h-36 md:w-36 shrink-0 items-center justify-center rounded-full border-2 border-primary/20 bg-gradient-to-br from-primary/15 via-accent/15 to-primary/10 text-3xl font-black text-primary shadow-xl md:text-5xl">
+                <div className="flex flex-col md:flex-row items-center md:items-end gap-6 px-6 md:px-12 mt-6 md:mt-2 relative z-10">
+                  <div className="flex h-28 w-28 md:h-36 md:w-36 shrink-0 items-center justify-center rounded-full border-[6px] border-surface bg-surface-2 -mt-14 md:-mt-20 text-3xl font-black text-primary shadow-xl md:text-5xl z-20">
                     {initials}
                   </div>
                   
-                  <div className="flex-1 text-center md:text-left space-y-3 pb-2">
-                    <div className="flex flex-col md:flex-row md:items-center gap-3 justify-center md:justify-start">
-                      <h1 className="heading-display text-3xl md:text-5xl font-black text-fg tracking-tight leading-normal">
+                  <div className="flex-1 text-center md:text-left space-y-2 pb-2">
+                    <div className="flex flex-wrap items-center gap-3 justify-center md:justify-start">
+                      <h1 className="heading-display text-3xl md:text-5xl font-black text-fg tracking-tight leading-none">
                         {mentor.name}
                       </h1>
                       {mentor.isVerified && (
-                        <span className="ml-2 inline-flex self-center items-center gap-1.5 rounded-full bg-success/10 text-success border border-success/20 px-3 py-1 text-[10px] font-black uppercase tracking-wider select-none">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-success/10 text-success border border-success/20 px-3 py-1 text-[10px] font-black uppercase tracking-wider select-none">
                           <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                           Verified
                         </span>

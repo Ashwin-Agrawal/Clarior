@@ -21,7 +21,7 @@ function StarRating({ rating }) {
   
   const roundedRating = Math.round(num);
   return (
-    <div className="flex flex-col items-end gap-0.5">
+    <div className="flex flex-col items-end gap-0.5 shrink-0">
       <div className="flex gap-0.5 text-warning">
         {[1, 2, 3, 4, 5].map((star) => (
           <svg 
@@ -87,17 +87,17 @@ function MentorCard({ mentor }) {
 
       <div className="p-5">
         {/* Header row */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
+        <div className="flex items-start justify-between gap-3 min-w-0">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             {/* Avatar */}
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-gradient-to-br from-primary/15 via-accent/15 to-primary/10 text-sm font-bold text-primary shadow-sm">
               {initials}
             </div>
-            <div>
-              <h3 className="text-base font-bold text-fg group-hover:text-primary transition-colors leading-tight">
+            <div className="min-w-0 flex-1">
+              <h3 className="text-base font-bold text-fg group-hover:text-primary transition-colors leading-tight truncate">
                 {mentor.name}
               </h3>
-              <p className="text-xs text-muted mt-0.5 leading-4">
+              <p className="text-xs text-muted mt-0.5 leading-4 truncate" title={`${mentor.college || "Top College"}${mentor.branch ? ` · ${mentor.branch}` : ""}`}>
                 {mentor.college || "Top College"}
                 {mentor.branch ? ` · ${mentor.branch}` : ""}
               </p>

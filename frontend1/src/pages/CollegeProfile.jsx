@@ -116,7 +116,7 @@ function CollegeProfile() {
       <Navbar />
       <main className="bg-bg min-h-screen pb-32">
         {/* Dynamic Hero Campus Image Header */}
-        <section className="relative h-[280px] md:h-[400px] w-full overflow-hidden bg-surface2">
+        <section className="relative h-40 md:h-64 w-full overflow-hidden bg-surface2">
           <img
             src={college.image}
             alt={college.name}
@@ -125,84 +125,59 @@ function CollegeProfile() {
               e.target.src = "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1600&auto=format&fit=crop";
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-bg via-black/35 to-black/10 pointer-events-none" />
-
-          {/* Floating Back Navigation */}
-          <div className="absolute top-24 left-4 md:left-8">
-            <button
-              onClick={() => navigate("/explore")}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-black/40 text-white backdrop-blur-md border border-white/10 text-xs font-black uppercase tracking-wider hover:bg-black/60 transition-all shadow-lg"
-            >
-              <BackIcon />
-              Explore
-            </button>
-          </div>
-
-          {/* College Name & Details overlay */}
-          <div className="absolute bottom-0 inset-x-0 pb-8">
-            <SiteContainer>
-              <div className="max-w-4xl animate-fade-up">
-                <span className="inline-block px-3 py-1 rounded-full bg-primary/20 text-primary border border-primary/25 text-xs font-black uppercase tracking-wider mb-3 backdrop-blur-md">
-                  {college.type} College
-                </span>
-                <h1 className="text-3xl md:text-5xl font-black text-white leading-tight tracking-tight shadow-text">
-                  {college.name}
-                </h1>
-              </div>
-            </SiteContainer>
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-bg/90 to-transparent" />
         </section>
 
-        {/* Content Layout Grid */}
-        <SiteContainer className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* Left Side: College Metadata Card */}
-          <div className="lg:col-span-4 space-y-6 animate-fade-up">
-            <div className="bg-surface/50 border border-border/80 backdrop-blur-md rounded-[28px] p-6 shadow-card">
-              <h2 className="text-sm font-black text-muted uppercase tracking-[0.2em] mb-6">
-                College Information
-              </h2>
-
-              <ul className="space-y-5">
-                <li className="flex items-start gap-4">
-                  <span className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
-                    <LocationIcon className="h-5 w-5" />
+        {/* Profile Info Header overlapping the banner */}
+        <SiteContainer className="relative -mt-16 md:-mt-24 z-10">
+          <div className="bg-surface/90 border border-border backdrop-blur-md rounded-[32px] p-6 md:p-8 shadow-hero animate-fade-up">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div className="space-y-4">
+                {/* Back button and Badge row */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    onClick={() => navigate("/explore")}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface2 text-muted hover:text-fg border border-border text-xs font-bold transition-all"
+                  >
+                    <BackIcon className="h-3.5 w-3.5" />
+                    Back
+                  </button>
+                  <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-black uppercase tracking-wider">
+                    {college.type} College
                   </span>
-                  <div>
-                    <h3 className="text-xs font-black text-muted uppercase tracking-wider">Location</h3>
-                    <p className="text-fg font-bold text-sm mt-0.5">{college.city}, {college.state}</p>
-                  </div>
-                </li>
+                </div>
 
-                {college.established && (
-                  <li className="flex items-start gap-4">
-                    <span className="p-2.5 rounded-xl bg-accent/10 text-accent border border-accent/20">
-                      <CalendarIcon className="h-5 w-5" />
+                {/* College Title */}
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-fg leading-tight tracking-tight">
+                  {college.name}
+                </h1>
+
+                {/* Quick details */}
+                <div className="flex flex-wrap gap-4 text-xs font-bold text-muted uppercase tracking-wider">
+                  <span className="flex items-center gap-1.5">
+                    <LocationIcon className="h-4 w-4 text-primary" />
+                    {college.city}, {college.state}
+                  </span>
+                  {college.established && (
+                    <span className="flex items-center gap-1.5">
+                      <CalendarIcon className="h-4 w-4 text-accent" />
+                      Est. {college.established}
                     </span>
-                    <div>
-                      <h3 className="text-xs font-black text-muted uppercase tracking-wider">Established</h3>
-                      <p className="text-fg font-bold text-sm mt-0.5">{college.established}</p>
-                    </div>
-                  </li>
-                )}
-
-                <li className="flex items-start gap-4">
-                  <span className="p-2.5 rounded-xl bg-success/10 text-success border border-success/20">
-                    <AcademicIcon className="h-5 w-5" />
+                  )}
+                  <span className="flex items-center gap-1.5">
+                    <AcademicIcon className="h-4 w-4 text-success" />
+                    {seniors.length > 0 ? `${seniors.length} Verified Senior${seniors.length !== 1 ? 's' : ''}` : "No Seniors Registered"}
                   </span>
-                  <div>
-                    <h3 className="text-xs font-black text-muted uppercase tracking-wider">Seniors Available</h3>
-                    <p className="text-fg font-bold text-sm mt-0.5">
-                      {seniors.length > 0 ? `${seniors.length} Verified Senior${seniors.length !== 1 ? 's' : ''}` : "No Seniors Registered"}
-                    </p>
-                  </div>
-                </li>
-              </ul>
+                </div>
+              </div>
             </div>
           </div>
+        </SiteContainer>
 
-          {/* Right Side: Seniors Directory List */}
-          <div className="lg:col-span-8 space-y-6 animate-fade-up delay-100">
+        {/* Content Layout Grid */}
+        <SiteContainer className="mt-8">
+          {/* Seniors Directory List */}
+          <div className="space-y-6 animate-fade-up delay-100">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-black text-muted uppercase tracking-[0.2em]">
                 Seniors from this college
@@ -210,7 +185,7 @@ function CollegeProfile() {
             </div>
 
             {seniors.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {seniors.map((mentor) => (
                   <MentorCard key={mentor._id} mentor={mentor} />
                 ))}

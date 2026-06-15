@@ -318,3 +318,42 @@ html.dark .bg-grid-pattern {
 .animate-pulse-width {
   animation: pulseWidth 1.5s cubic-bezier(0.1, 0.8, 0.2, 1) infinite;
 }
+
+/* ─── Infinite Marquee Slider ────────────────────────────────── */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+.mask-marquee {
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+}
+
+/* ─── Premium Quotes Slider Animation ────────────────────────── */
+@keyframes quoteSlide {
+  0% { 
+    opacity: 0; 
+    transform: translateY(12px); 
+    filter: blur(4px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0); 
+    filter: blur(0); 
+  }
+}
+
+.animate-quote-slide {
+  animation: quoteSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}

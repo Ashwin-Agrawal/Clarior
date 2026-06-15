@@ -55,7 +55,6 @@ function Home() {
   const [collegesList, setCollegesList] = useState([]);
   const [collegesLoading, setCollegesLoading] = useState(true);
 
-  const carouselRef = useRef(null);
 
   useSEO("Home", "Talk to verified seniors from top Indian colleges for ₹69. Get clarity on college, branch, placements and more.");
 
@@ -195,9 +194,11 @@ function Home() {
                       </div>
                     </div>
 
-                    <div className="mt-3 rounded-[20px] bg-gradient-to-br from-primary/8 via-surface to-accent/8 p-4 md:p-5 shadow-inner">
-                      <div className="text-base md:text-lg font-black text-fg">{motivationTips[activeTip].title}</div>
-                      <div className="mt-2 text-sm md:text-[15px] text-muted leading-relaxed">{motivationTips[activeTip].text}</div>
+                    <div className="mt-3 rounded-[20px] bg-gradient-to-br from-primary/8 via-surface to-accent/8 p-4 md:p-5 shadow-inner min-h-[110px] flex flex-col justify-center overflow-hidden relative">
+                      <div key={activeTip} className="animate-quote-slide">
+                        <div className="text-base md:text-lg font-black text-fg">{motivationTips[activeTip].title}</div>
+                        <div className="mt-2 text-sm md:text-[15px] text-muted leading-relaxed">{motivationTips[activeTip].text}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -213,44 +214,31 @@ function Home() {
               <h2 className="relative z-10 text-[12px] font-black uppercase tracking-[0.5em] text-muted mb-8 text-center">Featuring colleges</h2>
               
               {/* Carousel Container */}
-              <div className="relative z-10 group/carousel px-4">
-                {/* Left Arrow Button */}
-                <button
-                  onClick={() => handleCarouselScroll("left")}
-                  className="absolute -left-2 top-1/2 -translate-y-1/2 z-20 h-11 w-11 rounded-full bg-surface/90 border border-border backdrop-blur-md flex items-center justify-center text-fg hover:bg-primary hover:text-white transition-all shadow-md opacity-0 md:group-hover/carousel:opacity-100 pointer-events-auto cursor-pointer"
-                  aria-label="Previous colleges"
-                >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
-                </button>
-
-                {/* Horizontal Scroll Area */}
-                <div
-                  ref={carouselRef}
-                  className="flex gap-6 overflow-x-auto scroll-smooth scrollbar-hide py-4 px-2"
-                >
-                  {collegesLoading ? (
-                    [1, 2, 3, 4].map((i) => (
+              <div className="relative z-10 w-full overflow-hidden mask-marquee py-4">
+                {collegesLoading ? (
+                  <div className="flex gap-6">
+                    {[1, 2, 3, 4].map((i) => (
                       <div key={i} className="w-[280px] sm:w-[320px] h-[340px] rounded-[28px] bg-surface2 animate-pulse flex-shrink-0" />
-                    ))
-                  ) : collegesList.length > 0 ? (
-                    collegesList.slice(0, 12).map((college, idx) => (
-                      <div key={college._id} className="w-[280px] sm:w-[320px] flex-shrink-0">
+                    ))}
+                  </div>
+                ) : collegesList.length > 0 ? (
+                  <div className="flex gap-6 animate-marquee w-max">
+                    {/* First copy of colleges */}
+                    {collegesList.slice(0, 15).map((college, idx) => (
+                      <div key={`c1-${college._id}`} className="w-[280px] sm:w-[320px] flex-shrink-0 transition-transform duration-300 hover:scale-[1.03]">
                         <CollegeCard college={college} index={idx} />
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center w-full py-8 text-muted font-semibold">No colleges available</div>
-                  )}
-                </div>
-
-                {/* Right Arrow Button */}
-                <button
-                  onClick={() => handleCarouselScroll("right")}
-                  className="absolute -right-2 top-1/2 -translate-y-1/2 z-20 h-11 w-11 rounded-full bg-surface/90 border border-border backdrop-blur-md flex items-center justify-center text-fg hover:bg-primary hover:text-white transition-all shadow-md opacity-0 md:group-hover/carousel:opacity-100 pointer-events-auto cursor-pointer"
-                  aria-label="Next colleges"
-                >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                </button>
+                    ))}
+                    {/* Second copy of colleges for seamless looping */}
+                    {collegesList.slice(0, 15).map((college, idx) => (
+                      <div key={`c2-${college._id}`} className="w-[280px] sm:w-[320px] flex-shrink-0 transition-transform duration-300 hover:scale-[1.03]">
+                        <CollegeCard college={college} index={idx} />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center w-full py-8 text-muted font-semibold">No colleges available</div>
+                )}
               </div>
 
               <div className="mt-8 text-center relative z-10">
