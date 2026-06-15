@@ -19,14 +19,20 @@ const motivationTips = [
   {
     title: "A ₹69 call can save you lakhs.",
     text: "One honest conversation can prevent a costly mistake in college choices, branches, or placements.",
+    badge: "🔥 Smart Choice",
+    tagColor: "text-amber-600 bg-amber-500/10 border-amber-500/25 dark:text-amber-400"
   },
   {
     title: "The best advice is often one call away.",
     text: "Get clarity from someone who already walked the path you’re on right now.",
+    badge: "⚡ Insider Access",
+    tagColor: "text-primary bg-primary/10 border-primary/25 dark:text-primary"
   },
   {
     title: "Don’t guess when you can ask a senior.",
     text: "Real guidance beats random internet opinions when the stakes are high.",
+    badge: "💡 Verified Experts",
+    tagColor: "text-success bg-success/10 border-success/25 dark:text-success"
   },
 ];
 
@@ -194,13 +200,36 @@ function Home() {
                       </div>
                     </div>
 
-                    <div className="mt-4 relative rounded-2xl bg-surface2/60 border border-border/50 p-6 md:p-8 min-h-[140px] flex flex-col justify-center overflow-hidden">
+                    {/* Highly Engaging Quote Ticker Card */}
+                    <div className="mt-4 relative rounded-3xl bg-gradient-to-br from-primary/8 via-surface to-accent/8 border border-primary/20 p-6 md:p-8 min-h-[170px] flex flex-col justify-between overflow-hidden shadow-inner">
                       {/* Quote Watermark */}
                       <span className="absolute top-[-40px] left-[-15px] text-[180px] font-serif font-black text-primary/8 select-none pointer-events-none leading-none">“</span>
                       
-                      <div key={activeTip} className="relative z-10 animate-quote-slide">
-                        <div className="text-lg md:text-xl font-black text-fg tracking-tight leading-snug">{motivationTips[activeTip].title}</div>
-                        <div className="mt-2 text-sm md:text-base text-muted font-medium leading-relaxed">{motivationTips[activeTip].text}</div>
+                      <div key={activeTip} className="relative z-10 animate-quote-slide space-y-4">
+                        {/* Quote Text */}
+                        <div>
+                          <div className="text-lg md:text-xl font-black text-fg tracking-tight leading-snug">{motivationTips[activeTip].title}</div>
+                          <div className="mt-2 text-sm md:text-base text-muted font-medium leading-relaxed">{motivationTips[activeTip].text}</div>
+                        </div>
+
+                        {/* Interactive Badges & Action CTA Row */}
+                        <div className="mt-4 pt-4 border-t border-primary/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${motivationTips[activeTip].tagColor}`}>
+                              {motivationTips[activeTip].badge}
+                            </span>
+                            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface/85 text-muted border border-border/60 text-[10px] font-black uppercase tracking-wider">
+                              ⚡️ ₹69 Fixed Price
+                            </span>
+                          </div>
+
+                          <Link to="/explore">
+                            <button className="flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary text-white font-black text-xs hover:bg-accent hover:-translate-y-0.5 shadow-soft hover:shadow-lift transition-all shrink-0 cursor-pointer">
+                              Get Clarity Now
+                              <svg className="h-3.5 w-3.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
+                            </button>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
