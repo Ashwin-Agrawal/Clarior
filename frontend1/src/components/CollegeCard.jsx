@@ -84,7 +84,7 @@ function CollegeCard({ college, index = 0 }) {
               {seniorCount > 0 ? `${seniorCount} Verified Seniors` : "No Seniors Registered"}
             </span>
           </div>
-          <span className="h-9 w-9 rounded-full bg-surface2 group-hover:bg-primary group-hover:text-white flex items-center justify-center text-muted transition-all duration-300 border border-border group-hover:border-primary">
+          <span className="h-9 w-9 rounded-full bg-surface2 group-hover:bg-blue-600 dark:group-hover:bg-blue-500 group-hover:text-white flex items-center justify-center text-muted transition-all duration-300 border border-border group-hover:border-blue-600 dark:group-hover:border-blue-500">
             <ArrowRightIcon className="h-4 w-4" />
           </span>
         </div>
