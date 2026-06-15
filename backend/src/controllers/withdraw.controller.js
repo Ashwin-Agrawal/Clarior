@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 // 🎓 REQUEST
 exports.requestWithdraw = async (req, res) => {
   try {
-    const { amount } = req.body;
+    const { amount, upiId } = req.body;
     
     // 🔒 Validate input
     if (!amount) {
@@ -29,10 +29,21 @@ exports.requestWithdraw = async (req, res) => {
     try {
       const user = await User.findById(req.user.id).session(session);
 
-      if (!user.upiId) {
+      const finalUpiId = upiId ? String(upiId).trim() : user.upiId;
+
+      if (!finalUpiId) {
         await session.abortTransaction();
         return res.status(400).json({
-          message: "Add UPI first",
+          message: "UPI ID is required",
+        });
+      }
+
+      // Validate UPI ID format
+      const upiRegex = /^[\w.]+@[\w]+$/;
+      if (!upiRegex.test(finalUpiId)) {
+        await session.abortTransaction();
+        return res.status(400).json({
+          message: "Invalid UPI ID format (e.g. name@bank)",
         });
       }
 
@@ -52,7 +63,7 @@ exports.requestWithdraw = async (req, res) => {
           {
             senior: user._id,
             amount: amountNum,
-            upiId: user.upiId,
+            upiId: finalUpiId,
             status: "pending",
           },
         ],

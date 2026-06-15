@@ -204,7 +204,10 @@ exports.startCall = async (req, res) => {
 
     if (!booking) return res.status(404).json({ message: "Not found" });
 
-    if (booking.student.toString() !== req.user.id) {
+    const isStudent = booking.student.toString() === req.user.id;
+    const isSenior = booking.senior.toString() === req.user.id;
+
+    if (!isStudent && !isSenior) {
       return res.status(403).json({ message: "Not authorized" });
     }
 
@@ -212,7 +215,7 @@ exports.startCall = async (req, res) => {
       return res.status(400).json({ message: "Already started" });
     }
 
-    // Fix 4: Prevent joining too early
+    // Prevent joining too early
     const now = new Date();
     const sessionStart = new Date(booking.startTime);
     const fiveMinBefore = new Date(sessionStart.getTime() - 5 * 60 * 1000);
@@ -222,13 +225,25 @@ exports.startCall = async (req, res) => {
       });
     }
 
-    booking.isCallStarted = true;
-    booking.actualStartTime = new Date();
+    if (isStudent) {
+      booking.isStudentStarted = true;
+    }
+    if (isSenior) {
+      booking.isSeniorStarted = true;
+    }
+
+    if (booking.isStudentStarted && booking.isSeniorStarted) {
+      booking.isCallStarted = true;
+      booking.actualStartTime = new Date();
+    }
 
     await booking.save();
 
     res.json({
-      message: "Call started",
+      message: booking.isCallStarted ? "Call started for both" : "Start confirmed. Waiting for the other participant.",
+      isStudentStarted: booking.isStudentStarted,
+      isSeniorStarted: booking.isSeniorStarted,
+      isCallStarted: booking.isCallStarted,
       startTime: booking.actualStartTime,
     });
   } catch (err) {

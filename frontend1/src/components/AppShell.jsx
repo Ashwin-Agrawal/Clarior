@@ -1,4 +1,41 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
+
+function SunIcon() {
+  return (
+    <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+    </svg>
+  );
+}
+
+function useDarkMode() {
+  const [dark, setDark] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    if (saved !== null) {
+      const isDark = saved === 'true';
+      document.documentElement.classList.toggle('dark', isDark);
+      return isDark;
+    }
+    return document.documentElement.classList.contains('dark');
+  });
+  const toggle = () => {
+    document.documentElement.classList.add('theme-animate');
+    const next = !dark;
+    document.documentElement.classList.toggle('dark', next);
+    localStorage.setItem('darkMode', String(next));
+    setDark(next);
+    setTimeout(() => document.documentElement.classList.remove('theme-animate'), 300);
+  };
+  return [dark, toggle];
+}
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
@@ -52,6 +89,7 @@ function NavItem({ to, label, icon, active }) {
 function AppShell({ title, subtitle, children }) {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
+  const [dark, toggleDark] = useDarkMode();
   const location = useLocation();
 
   const nav = useMemo(() => {
@@ -176,6 +214,15 @@ function AppShell({ title, subtitle, children }) {
                     <Link to="/" className="inline-flex rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium text-fg transition hover:bg-surface2">
                       Home
                     </Link>
+                    <button 
+                      type="button"
+                      onClick={toggleDark}
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface text-muted hover:text-fg hover:bg-surface2 transition-all shadow-sm"
+                      title="Toggle dark mode"
+                      aria-label="Toggle dark mode"
+                    >
+                      {dark ? <SunIcon /> : <MoonIcon />}
+                    </button>
                   </div>
                 </div>
               </div>

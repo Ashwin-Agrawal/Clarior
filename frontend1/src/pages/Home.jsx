@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
@@ -54,10 +54,35 @@ function LineIcon({ name, className = "h-5 w-5" }) {
   );
 }
 
+const testimonials = [
+  {
+    initials: "AA",
+    name: "Ashwin Agrawal",
+    role: "Senior at Newton School of Technology",
+    quote: "I helped over 50 students choose the right college last year. Clarior makes it so easy to connect with those who really need guidance.",
+    badge: "Top Rated Senior"
+  },
+  {
+    initials: "SC",
+    name: "Shagun Chauhan",
+    role: "Senior at Newton School of Technology",
+    quote: "Talking to juniors and clearing their doubts about CSE vs AI branches is extremely rewarding. Clarior keeps the booking and call flow seamless.",
+    badge: "Placement Star"
+  },
+  {
+    initials: "SA",
+    name: "Satvik Agrawal",
+    role: "Senior at Jk lakshmipat university",
+    quote: "Juniors often have massive confusion about university placements and CGPA. A quick 1:1 call saves them months of worry.",
+    badge: "Popular Mentor"
+  }
+];
+
 function Home() {
   const [scrolled, setScrolled] = useState(0);
   const [pulseLoading, setPulseLoading] = useState(true);
   const [activeTip, setActiveTip] = useState(0);
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [collegesList, setCollegesList] = useState([]);
   const [collegesLoading, setCollegesLoading] = useState(true);
 
@@ -86,6 +111,10 @@ function Home() {
       setActiveTip((prev) => (prev + 1) % motivationTips.length);
     }, 4200);
 
+    const testimonialTimer = window.setInterval(() => {
+      setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 4500);
+
     const handleScroll = () => {
       const progress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
       setScrolled(Math.min(progress, 1));
@@ -94,20 +123,11 @@ function Home() {
     return () => {
       clearTimeout(timer);
       window.clearInterval(tipTimer);
+      window.clearInterval(testimonialTimer);
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
-  const handleCarouselScroll = (direction) => {
-    const container = carouselRef.current;
-    if (container) {
-      const scrollAmount = container.clientWidth * 0.8;
-      container.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
 
   return (
     <>
@@ -317,34 +337,65 @@ function Home() {
                 </div>
               </div>
 
-              <div className="relative">
+              <div className="relative w-full max-w-lg mx-auto">
+                {/* Glow behind the slider */}
                 <div className="absolute -inset-4 bg-gradient-to-tr from-primary/10 to-accent/20 rounded-[48px] blur-3xl pointer-events-none opacity-80 animate-pulse" />
-                <Card className="relative p-8 border-border/50 bg-surface  overflow-hidden shadow-hero hover:shadow-lift transition-all duration-500 hover:scale-[1.02]">
-                  <div className="flex items-center gap-4 mb-8">
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold">AA</div>
-                    <div>
-                      <div className="font-bold text-fg">Ashwin Agrawal</div>
-                      <div className="text-[10px] font-bold text-muted uppercase tracking-widest">Senior at Newton School of Technology</div>
-                    </div>
+                
+                <div className="relative overflow-hidden rounded-2xl border border-border/40 shadow-card">
+                  <div 
+                    className="flex transition-transform duration-700 ease-out"
+                    style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}
+                  >
+                    {testimonials.map((t) => (
+                      <div key={t.name} className="w-full flex-shrink-0 p-1">
+                        <Card className="relative p-6 border-border/60 bg-surface/95 shadow-soft hover:shadow-lift transition-all duration-500 hover:scale-[1.01] h-[250px] flex flex-col justify-between group">
+                          <div>
+                            <div className="flex items-center gap-4 mb-4">
+                              {/* Avatar circle with neutral background */}
+                              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-surface-2 text-base font-bold text-fg shadow-sm">
+                                {t.initials}
+                              </div>
+                              <div>
+                                <div className="font-bold text-fg text-base leading-tight">{t.name}</div>
+                                <div className="text-[10px] font-bold text-muted uppercase tracking-wider mt-0.5">{t.role}</div>
+                              </div>
+                            </div>
+                            
+                            {/* Engaging Quote */}
+                            <div className="flex gap-2 items-start mt-3">
+                              <span className="text-3xl font-serif text-muted/30 leading-none select-none">“</span>
+                              <p className="text-sm text-fg/80 italic leading-relaxed pt-0.5">
+                                {t.quote}
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-4 flex justify-between items-center pt-3 border-t border-border/30">
+                            <div className="flex gap-1 text-warning">
+                              {[1,2,3,4,5].map(i => <svg key={i} width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
+                            </div>
+                            <div className="text-[10px] font-black text-primary uppercase tracking-widest">{t.badge}</div>
+                          </div>
+                        </Card>
+                      </div>
+                    ))}
                   </div>
-                  <div className="space-y-4">
-                    <div className="h-4 w-full bg-surface2 rounded-full overflow-hidden">
-                      <div className="h-full bg-primary w-[85%] animate-shimmer" />
-                    </div>
-                    <div className="h-4 w-[60%] bg-surface2 rounded-full overflow-hidden">
-                      <div className="h-full bg-accent w-[40%] animate-shimmer" />
-                    </div>
-                  </div>
-                  <div className="mt-8 p-4 rounded-2xl bg-primary/5 border border-primary/10 text-sm italic text-fg/80 leading-relaxed">
-                    "I helped over 50 students choose the right college last year. Clarior makes it so easy to connect with those who really need guidance."
-                  </div>
-                  <div className="mt-6 flex justify-between items-center">
-                    <div className="flex gap-1 text-warning">
-                      {[1,2,3,4,5].map(i => <svg key={i} width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
-                    </div>
-                    <div className="text-[10px] font-black text-primary uppercase tracking-widest">Top Rated Senior</div>
-                  </div>
-                </Card>
+                </div>
+
+                {/* Sliding Navigation Dots */}
+                <div className="mt-6 flex justify-center gap-1.5">
+                  {testimonials.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveTestimonial(idx)}
+                      className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                        activeTestimonial === idx 
+                          ? "w-6 bg-primary" 
+                          : "w-2 bg-muted/40 hover:bg-muted/60"
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </SiteContainer>

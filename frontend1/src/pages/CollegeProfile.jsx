@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
@@ -7,6 +7,15 @@ import MentorCard from "../components/MentorCard";
 import SiteContainer from "../components/layout/SiteContainer";
 import Button from "../components/ui/Button";
 import useSEO from "../hooks/useSEO";
+
+function SearchIcon({ className = "h-5 w-5" }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="11" cy="11" r="7.5" />
+      <path strokeLinecap="round" d="m20 20-3.8-3.8" />
+    </svg>
+  );
+}
 
 function LocationIcon({ className = "h-5 w-5" }) {
   return (
@@ -49,6 +58,37 @@ function CollegeProfile() {
   const [seniors, setSeniors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
+  const [search, setSearch] = useState("");
+  const [domainFilter, setDomainFilter] = useState("All");
+  const [branchFilter, setBranchFilter] = useState("All");
+
+  const domainList = useMemo(() => {
+    const d = new Set(seniors.map((s) => s.domain).filter(Boolean));
+    return ["All", ...Array.from(d).sort()];
+  }, [seniors]);
+
+  const branchList = useMemo(() => {
+    const b = new Set(seniors.map((s) => s.branch).filter(Boolean));
+    return ["All", ...Array.from(b).sort()];
+  }, [seniors]);
+
+  const filteredSeniors = useMemo(() => {
+    return seniors.filter((s) => {
+      const matchSearch =
+        !search.trim() ||
+        s.name.toLowerCase().includes(search.trim().toLowerCase());
+      const matchDomain = domainFilter === "All" || s.domain === domainFilter;
+      const matchBranch = branchFilter === "All" || s.branch === branchFilter;
+      return matchSearch && matchDomain && matchBranch;
+    });
+  }, [seniors, search, domainFilter, branchFilter]);
+
+  const clearFilters = () => {
+    setSearch("");
+    setDomainFilter("All");
+    setBranchFilter("All");
+  };
 
   useEffect(() => {
     const fetchCollegeDetails = async () => {
@@ -116,7 +156,7 @@ function CollegeProfile() {
       <Navbar />
       <main className="bg-bg min-h-screen pb-32">
         {/* Dynamic Hero Campus Image Header */}
-        <section className="relative h-40 md:h-64 w-full overflow-hidden bg-surface2">
+        <section className="relative h-56 md:h-80 w-full overflow-hidden rounded-b-[40px] md:rounded-b-[56px] shadow-lg">
           <img
             src={college.image}
             alt={college.name}
@@ -125,47 +165,47 @@ function CollegeProfile() {
               e.target.src = "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1600&auto=format&fit=crop";
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-bg/90 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-black/20" />
         </section>
 
         {/* Profile Info Header overlapping the banner */}
-        <SiteContainer className="relative -mt-16 md:-mt-24 z-10">
-          <div className="bg-surface/90 border border-border backdrop-blur-md rounded-[32px] p-6 md:p-8 shadow-hero animate-fade-up">
+        <SiteContainer className="relative -mt-20 md:-mt-28 z-10">
+          <div className="bg-surface/80 border border-border/60 backdrop-blur-xl rounded-[40px] p-8 md:p-10 shadow-hero shadow-primary/5 animate-fade-up">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-              <div className="space-y-4">
+              <div className="space-y-4 w-full">
                 {/* Back button and Badge row */}
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     onClick={() => navigate("/explore")}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface2 text-muted hover:text-fg border border-border text-xs font-bold transition-all"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface2/60 backdrop-blur border border-border text-xs font-bold text-muted hover:text-fg hover:border-primary/40 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
                   >
-                    <BackIcon className="h-3.5 w-3.5" />
-                    Back
+                    <BackIcon className="h-4 w-4 text-primary" />
+                    Back to Explore
                   </button>
-                  <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-black uppercase tracking-wider">
+                  <span className="inline-block px-3.5 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-black uppercase tracking-wider">
                     {college.type} College
                   </span>
                 </div>
 
                 {/* College Title */}
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-fg leading-tight tracking-tight">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-fg leading-tight tracking-tight pt-2">
                   {college.name}
                 </h1>
 
                 {/* Quick details */}
-                <div className="flex flex-wrap gap-4 text-xs font-bold text-muted uppercase tracking-wider">
-                  <span className="flex items-center gap-1.5">
-                    <LocationIcon className="h-4 w-4 text-primary" />
+                <div className="flex flex-wrap gap-3 mt-4">
+                  <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-primary/5 border border-primary/15 text-xs font-black uppercase tracking-wider text-primary">
+                    <LocationIcon className="h-4 w-4" />
                     {college.city}, {college.state}
                   </span>
                   {college.established && (
-                    <span className="flex items-center gap-1.5">
-                      <CalendarIcon className="h-4 w-4 text-accent" />
+                    <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-accent/5 border border-accent/15 text-xs font-black uppercase tracking-wider text-accent">
+                      <CalendarIcon className="h-4 w-4" />
                       Est. {college.established}
                     </span>
                   )}
-                  <span className="flex items-center gap-1.5">
-                    <AcademicIcon className="h-4 w-4 text-success" />
+                  <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-success/5 border border-success/15 text-xs font-black uppercase tracking-wider text-success">
+                    <AcademicIcon className="h-4 w-4" />
                     {seniors.length > 0 ? `${seniors.length} Verified Senior${seniors.length !== 1 ? 's' : ''}` : "No Seniors Registered"}
                   </span>
                 </div>
@@ -175,31 +215,122 @@ function CollegeProfile() {
         </SiteContainer>
 
         {/* Content Layout Grid */}
-        <SiteContainer className="mt-8">
+        <SiteContainer className="mt-12">
           {/* Seniors Directory List */}
-          <div className="space-y-6 animate-fade-up delay-100">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-black text-muted uppercase tracking-[0.2em]">
-                Seniors from this college
+          <div className="space-y-8 animate-fade-up delay-100">
+            <div className="text-center max-w-xl mx-auto space-y-3">
+              <h2 className="text-xs font-black text-primary uppercase tracking-[0.25em]">
+                Seniors Directory
               </h2>
+              <p className="text-2xl font-black text-fg tracking-tight">
+                Search & Filter Mentors
+              </p>
+              <p className="text-sm text-muted">
+                Find the right senior based on their study domain or branch specialization.
+              </p>
             </div>
 
-            {seniors.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {seniors.map((mentor) => (
+            {/* Search and Filters Hub */}
+            {seniors.length > 0 && (
+              <div className="bg-surface/50 border border-border/80 rounded-[36px] p-6 md:p-8 space-y-6 shadow-soft max-w-4xl mx-auto backdrop-blur-md">
+                {/* Search Bar */}
+                <div className="max-w-2xl mx-auto">
+                  <div className="relative group">
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors">
+                      <SearchIcon className="h-5 w-5" />
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Search seniors by name..."
+                      className="w-full h-14 pl-14 pr-6 rounded-2xl border border-border bg-surface2/60 outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-sm sm:text-base font-black text-fg hover:border-primary/25"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {/* Filter 1: Domain Pills */}
+                {domainList.length > 2 && (
+                  <div className="flex flex-col items-center gap-3">
+                    <span className="text-[10px] font-black uppercase tracking-[0.25em] text-muted">Filter by Domain</span>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {domainList.map((domain) => (
+                        <button
+                          key={domain}
+                          onClick={() => setDomainFilter(domain)}
+                          className={`px-5 py-2.5 rounded-full text-[11px] font-black tracking-wider transition-all duration-300 cursor-pointer uppercase ${
+                            domainFilter === domain
+                              ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white border-transparent shadow-md shadow-blue-500/20 scale-[1.03]"
+                              : "bg-surface border border-border text-muted hover:border-primary/40 hover:text-fg"
+                          }`}
+                        >
+                          {domain === "All" ? "All Domains" : domain}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Filter 2: Branch Pills */}
+                {branchList.length > 2 && (
+                  <div className="flex flex-col items-center gap-3 w-full">
+                    <span className="text-[10px] font-black uppercase tracking-[0.25em] text-muted">Filter by Branch</span>
+                    <div className="flex gap-2 overflow-x-auto scrollbar-hide max-w-full py-1.5 px-4 justify-start sm:justify-center w-full">
+                      {branchList.map((branch) => (
+                        <button
+                          key={branch}
+                          onClick={() => setBranchFilter(branch)}
+                          className={`px-4 py-2 rounded-full text-[10px] font-black tracking-wider transition-all duration-300 cursor-pointer flex-shrink-0 uppercase ${
+                            branchFilter === branch
+                              ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white border-transparent shadow-md shadow-blue-500/20"
+                              : "bg-surface border border-border text-muted hover:border-primary/40 hover:text-fg"
+                          }`}
+                        >
+                          {branch === "All" ? "All Branches" : branch}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {(search.trim() || domainFilter !== "All" || branchFilter !== "All") && (
+                  <div className="flex justify-center pt-2">
+                    <button
+                      onClick={clearFilters}
+                      className="text-xs font-black text-muted hover:text-primary transition-colors uppercase tracking-widest underline decoration-2 underline-offset-4 cursor-pointer"
+                    >
+                      Clear All Filters
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Seniors Directory List */}
+            {filteredSeniors.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                {filteredSeniors.map((mentor) => (
                   <MentorCard key={mentor._id} mentor={mentor} />
                 ))}
               </div>
             ) : (
-              <div className="py-20 text-center bg-surface/30 border border-border/60 rounded-[32px] p-8">
+              <div className="py-20 text-center bg-surface/30 border border-border/60 rounded-[32px] p-8 max-w-2xl mx-auto animate-scale-in">
                 <div className="text-4xl mb-4">💬</div>
                 <h3 className="text-xl font-black text-fg">No seniors registered yet</h3>
                 <p className="text-muted mt-2 max-w-sm mx-auto text-sm leading-relaxed">
-                  Be the first one to share details or tell your friends from {college.name} to apply as a mentor!
+                  {seniors.length === 0
+                    ? `Be the first one to share details or tell your friends from ${college.name} to apply as a mentor!`
+                    : "No matching seniors found. Try clearing filters or tweaking search queries."}
                 </p>
-                <Button onClick={() => navigate("/become-mentor")} variant="secondary" className="mt-6 rounded-full px-6 text-xs font-black">
-                  Become a Mentor
-                </Button>
+                {seniors.length === 0 ? (
+                  <Button onClick={() => navigate("/become-mentor")} variant="secondary" className="mt-6 rounded-full px-6 text-xs font-black">
+                    Become a Mentor
+                  </Button>
+                ) : (
+                  <Button onClick={clearFilters} variant="secondary" className="mt-6 rounded-full px-6 text-xs font-black">
+                    Clear Filters
+                  </Button>
+                )}
               </div>
             )}
           </div>

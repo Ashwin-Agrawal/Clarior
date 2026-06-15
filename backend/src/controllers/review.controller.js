@@ -140,6 +140,7 @@ exports.getSeniorReviews = async (req, res) => {
       success: true,
       count: reviews.length,
       data: reviews,
+      reviews: reviews,
     });
 
   } catch (error) {

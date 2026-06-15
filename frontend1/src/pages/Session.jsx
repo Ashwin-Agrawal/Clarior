@@ -65,6 +65,7 @@ function SessionTimer({ actualStart }) {
 }
 
 function Session() {
+  useSEO({ title: "Live Session Room", description: "Join your live 1:1 call with a verified mentor on Clarior." });
   const { bookingId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -129,7 +130,13 @@ function Session() {
     setActionError("");
     try {
       const res = await api.patch(`/bookings/start/${bookingId}`);
-      setBooking((b) => (b ? { ...b, isCallStarted: true, actualStartTime: res.data.startTime } : b));
+      setBooking((b) => (b ? {
+        ...b,
+        isStudentStarted: res.data.isStudentStarted,
+        isSeniorStarted: res.data.isSeniorStarted,
+        isCallStarted: res.data.isCallStarted,
+        actualStartTime: res.data.startTime
+      } : b));
     } catch (e) { setActionError(e?.response?.data?.message || "Error starting call"); }
   };
 
@@ -256,7 +263,22 @@ function Session() {
 
               <div className="flex flex-wrap gap-3 pt-6">
                 {user?.role === "student" && booking.status === "confirmed" && !booking.isCallStarted && (
-                  <Button onClick={startCall} size="lg" className="rounded-2xl flex-1 sm:flex-none">Confirm Start</Button>
+                  !booking.isStudentStarted ? (
+                    <Button onClick={startCall} size="lg" className="rounded-2xl flex-1 sm:flex-none">Confirm Start</Button>
+                  ) : (
+                    <Button disabled size="lg" className="rounded-2xl flex-1 sm:flex-none bg-muted/20 text-muted border border-border">
+                      Waiting for Senior to start...
+                    </Button>
+                  )
+                )}
+                {user?.role === "senior" && booking.status === "confirmed" && !booking.isCallStarted && (
+                  !booking.isSeniorStarted ? (
+                    <Button onClick={startCall} size="lg" className="rounded-2xl flex-1 sm:flex-none">Confirm Start</Button>
+                  ) : (
+                    <Button disabled size="lg" className="rounded-2xl flex-1 sm:flex-none bg-muted/20 text-muted border border-border">
+                      Waiting for Student to start...
+                    </Button>
+                  )
                 )}
                 {user?.role === "senior" && booking.isCallStarted && !booking.isSeniorMarkedDone && (
                   <Button onClick={seniorComplete} size="lg" className="rounded-2xl flex-1 sm:flex-none">Mark Completed</Button>
@@ -273,9 +295,11 @@ function Session() {
 
               <div className="flex flex-wrap gap-4 pt-4 border-t border-border/50">
                 {[
-                  { label: "Call Started", val: booking.isCallStarted },
-                  { label: "Senior Marked", val: booking.isSeniorMarkedDone },
-                  { label: "Student Confirmed", val: booking.isStudentConfirmed },
+                  { label: "Student Started", val: booking.isStudentStarted },
+                  { label: "Senior Started", val: booking.isSeniorStarted },
+                  { label: "Call Live", val: booking.isCallStarted },
+                  { label: "Senior Completed", val: booking.isSeniorMarkedDone },
+                  { label: "Student Confirmed End", val: booking.isStudentConfirmed },
                 ].map(st => (
                   <div key={st.label} className="flex items-center gap-1.5">
                     <span className={`h-1.5 w-1.5 rounded-full ${st.val ? "bg-success" : "bg-muted/30"}`} />

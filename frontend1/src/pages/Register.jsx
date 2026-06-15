@@ -44,6 +44,7 @@ function PasswordStrength({ password }) {
 }
 
 function Register() {
+  useSEO({ title: "Register", description: "Create an account on Clarior to connect with verified senior mentors." });
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const navigate = useNavigate();
   const { setUser } = useAuth();

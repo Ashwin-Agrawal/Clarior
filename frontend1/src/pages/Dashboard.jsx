@@ -83,7 +83,7 @@ function SessionList({ items, userRole, actionLabel, emptyTitle, emptyDescriptio
           >
             <div className="flex flex-1 items-center gap-4 min-w-0">
               {/* User Avatar Initials */}
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border bg-gradient-to-br from-surface to-surface2 text-sm font-black text-primary shadow-inner">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-surface-2 text-sm font-black text-fg shadow-sm">
                 {initials}
               </div>
 
@@ -160,10 +160,17 @@ function Dashboard() {
   const { showSuccess, showError } = useToast();
   const [loading, setLoading] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [withdrawUpi, setWithdrawUpi] = useState("");
   const [bookings, setBookings] = useState([]);
   const [slots, setSlots] = useState([]);
   const [dataLoading, setDataLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (user?.upiId && !withdrawUpi) {
+      setWithdrawUpi(user.upiId);
+    }
+  }, [user, withdrawUpi]);
 
   const handleWithdraw = async () => {
     try {
@@ -172,8 +179,17 @@ function Dashboard() {
         showError("Enter a valid amount (minimum ₹50).");
         return;
       }
+      if (!withdrawUpi.trim()) {
+        showError("UPI ID is required.");
+        return;
+      }
+      const upiRegex = /^[\w.]+@[\w]+$/;
+      if (!upiRegex.test(withdrawUpi.trim())) {
+        showError("Invalid UPI ID format (e.g. name@bank).");
+        return;
+      }
       setLoading(true);
-      await api.post("/withdraw/request", { amount });
+      await api.post("/withdraw/request", { amount, upiId: withdrawUpi.trim() });
       showSuccess("Withdraw request sent successfully.");
       setWithdrawAmount("");
       // Refresh to update balances
@@ -262,7 +278,7 @@ function Dashboard() {
           
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between relative z-10">
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-              <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-[28px] bg-gradient-to-br from-primary to-accent text-3xl font-black text-white shadow-lift border border-white/20">
+              <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full border border-border bg-surface-2 text-3xl font-black text-fg shadow-lift">
                 {user?.name?.trim()?.[0] || "C"}
               </div>
               <div className="space-y-2">
@@ -453,9 +469,20 @@ function Dashboard() {
                 <div className="text-[10px] font-black text-muted uppercase tracking-widest mt-[-8px] pl-1 select-none">
                   Minimum withdrawal amount is ₹50
                 </div>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold text-sm select-none">UPI</span>
+                  <input
+                    type="text"
+                    value={withdrawUpi}
+                    onChange={(e) => setWithdrawUpi(e.target.value)}
+                    placeholder="username@bank"
+                    disabled={loading || !user?.isVerified}
+                    className="w-full rounded-2xl border border-border bg-surface2 pl-12 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition animate-fade-in"
+                  />
+                </div>
                 <Button
                   onClick={handleWithdraw}
-                  disabled={loading || !user?.isVerified || !withdrawAmount}
+                  disabled={loading || !user?.isVerified || !withdrawAmount || !withdrawUpi}
                   className="w-full rounded-2xl"
                   size="lg"
                   loading={loading}

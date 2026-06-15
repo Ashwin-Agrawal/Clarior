@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -33,11 +33,33 @@ function BecomeMentor() {
   const { user, fetchUser, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [form, setForm] = useState({ phone: "", college: "", domain: "", branch: "", year: "", cgpa: "", bio: "", linkedin: "" });
+  const [form, setForm] = useState({ phone: "", college: "", domain: "", branch: "", year: "", cgpa: "", bio: "", linkedin: "", upiId: "" });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
+
+  const [colleges, setColleges] = useState([]);
+  const [showCollegesDropdown, setShowCollegesDropdown] = useState(false);
+
+  useEffect(() => {
+    const loadColleges = async () => {
+      try {
+        const res = await api.get("/colleges");
+        setColleges(res.data.colleges || []);
+      } catch (err) {
+        console.error("Failed to load colleges for suggestions", err);
+      }
+    };
+    loadColleges();
+  }, []);
+
+  const matchingColleges = useMemo(() => {
+    if (!form.college.trim()) return [];
+    return colleges.filter((c) =>
+      c.name.toLowerCase().includes(form.college.toLowerCase())
+    ).slice(0, 5);
+  }, [colleges, form.college]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -81,8 +103,19 @@ function BecomeMentor() {
     const ph = form.phone.replace(/\s+/g, "");
     if (!ph) errs.phone = "Phone is required";
     else if (!/^\+?\d{10,15}$/.test(ph)) errs.phone = "Enter a valid phone number";
-    if (!form.college.trim()) errs.college = "College is required";
+    
+    if (!form.college.trim()) {
+      errs.college = "College is required";
+    } else {
+      const match = colleges.some(c => c.name.toLowerCase() === form.college.trim().toLowerCase());
+      if (!match) {
+        errs.college = "Please select a valid college from the suggestions dropdown list";
+      }
+    }
+    
     if (!form.branch.trim()) errs.branch = "Branch is required";
+    if (!form.upiId.trim()) errs.upiId = "UPI ID is required";
+    else if (!/^[\w.]+@[\w]+$/.test(form.upiId.trim())) errs.upiId = "Enter a valid UPI ID (e.g. username@bank)";
     if (form.linkedin && !/^https?:\/\/.+/i.test(form.linkedin)) errs.linkedin = "Enter a valid URL";
     setFieldErrors(errs);
     return Object.keys(errs).length === 0;
@@ -101,7 +134,7 @@ function BecomeMentor() {
       await api.post("/users/apply-senior", { ...form, phone: form.phone.replace(/\s+/g, ""), year: form.year ? Number(form.year) : undefined, cgpa: form.cgpa ? Number(form.cgpa) : undefined });
       await fetchUser?.();
       setMessage("Application submitted. Our team will verify your profile within 48 hours.");
-      setForm({ phone: "", college: "", domain: "", branch: "", year: "", cgpa: "", bio: "", linkedin: "" });
+      setForm({ phone: "", college: "", domain: "", branch: "", year: "", cgpa: "", bio: "", linkedin: "", upiId: "" });
     } catch (err) { setError(err?.response?.data?.message || "Submission failed"); } finally { setLoading(false); }
   };
 
@@ -143,7 +176,41 @@ function BecomeMentor() {
                   <div className="space-y-8">
                     <h3 className="text-sm font-bold text-muted border-b border-border/60 pb-3 text-center uppercase tracking-wider">Academic Profile</h3>
                     <div className="grid sm:grid-cols-2 gap-8">
-                      <Input label="College Name *" placeholder="IIT Delhi, BITS Pilani..." value={form.college} onChange={(e) => update("college", e.target.value)} error={fieldErrors.college} className="rounded-2xl" />
+                      <div className="relative">
+                        <Input
+                          label="College Name *"
+                          placeholder="Type to search college (e.g. IIT Delhi)..."
+                          value={form.college}
+                          onChange={(e) => {
+                            update("college", e.target.value);
+                            setShowCollegesDropdown(true);
+                          }}
+                          onFocus={() => setShowCollegesDropdown(true)}
+                          onBlur={() => {
+                            // Delay to allow suggestion click to be registered
+                            setTimeout(() => setShowCollegesDropdown(false), 200);
+                          }}
+                          error={fieldErrors.college}
+                          className="rounded-2xl"
+                        />
+                        {showCollegesDropdown && matchingColleges.length > 0 && (
+                          <div className="absolute z-50 left-0 right-0 mt-1 bg-surface border border-border backdrop-blur-md rounded-2xl shadow-lg max-h-60 overflow-y-auto animate-scale-in">
+                            {matchingColleges.map((c) => (
+                              <button
+                                key={c._id}
+                                type="button"
+                                className="w-full text-left px-4 py-3 text-sm font-bold text-fg hover:bg-primary/10 hover:text-primary transition-all border-b border-border/40 last:border-0 cursor-pointer"
+                                onClick={() => {
+                                  update("college", c.name);
+                                  setShowCollegesDropdown(false);
+                                }}
+                              >
+                                {c.name} <span className="text-xs text-muted font-normal font-sans">({c.city}, {c.state})</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       <div className="space-y-2">
                         <div className="text-sm font-bold text-fg ml-1">Domain</div>
                         <select className="w-full rounded-2xl border border-border bg-surface px-4 py-3.5 text-sm text-fg outline-none focus:ring-2 focus:ring-primary/20 transition shadow-sm" value={form.domain} onChange={(e) => update("domain", e.target.value)}>
@@ -164,6 +231,13 @@ function BecomeMentor() {
                     <div className="space-y-2">
                       <div className="text-sm font-bold text-fg ml-1">Short Bio</div>
                       <textarea className="w-full rounded-2xl border border-border bg-surface px-4 py-4 text-sm text-fg outline-none focus:ring-2 focus:ring-primary/20 transition resize-none shadow-sm" rows={4} placeholder="Describe how you can help juniors..." value={form.bio} onChange={(e) => update("bio", e.target.value)} />
+                    </div>
+                  </div>
+
+                  <div className="space-y-8">
+                    <h3 className="text-sm font-bold text-muted border-b border-border/60 pb-3 text-center uppercase tracking-wider">Payout Details</h3>
+                    <div className="grid sm:grid-cols-2 gap-8">
+                      <Input label="UPI ID * (For receiving earnings)" placeholder="username@bank" value={form.upiId} onChange={(e) => update("upiId", e.target.value)} error={fieldErrors.upiId} className="rounded-2xl" />
                     </div>
                   </div>
 

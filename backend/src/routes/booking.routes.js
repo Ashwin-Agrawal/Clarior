@@ -29,7 +29,7 @@ router.delete("/:bookingId", authMiddleware, cancelBooking);
 router.patch(
   "/start/:bookingId",
   authMiddleware,
-  authorizeRoles("student"),
+  authorizeRoles("student", "senior"),
   startCall
 );
 

@@ -29,6 +29,16 @@ const bookingSchema = new mongoose.Schema(
     meetLink: String,
 
     // 🔥 CALL FLOW
+    isStudentStarted: {
+      type: Boolean,
+      default: false,
+    },
+
+    isSeniorStarted: {
+      type: Boolean,
+      default: false,
+    },
+
     isCallStarted: {
       type: Boolean,
       default: false,

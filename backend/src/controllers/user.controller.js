@@ -77,12 +77,12 @@ exports.getAllSeniors = async (req, res) => {
 // 🧑‍🏫 APPLY FOR SENIOR ROLE
 exports.applySenior = async (req, res) => {
   try {
-    const { phone, college, domain, branch, year, cgpa, bio, linkedin } = req.body;
+    const { phone, college, domain, branch, year, cgpa, bio, linkedin, upiId } = req.body;
 
-    if (!phone || !college || !branch) {
+    if (!phone || !college || !branch || !upiId) {
       return res.status(400).json({
         success: false,
-        message: "Phone, college, and branch are required",
+        message: "Phone, college, branch, and UPI ID are required",
       });
     }
 
@@ -91,6 +91,15 @@ exports.applySenior = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Enter a valid phone number",
+      });
+    }
+
+    const trimmedUpi = String(upiId).trim();
+    const upiRegex = /^[\w.]+@[\w]+$/;
+    if (!upiRegex.test(trimmedUpi)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid UPI ID format (e.g. username@bank)",
       });
     }
 
@@ -120,6 +129,7 @@ exports.applySenior = async (req, res) => {
     user.branch = String(branch).trim();
     user.bio = bio ? String(bio).trim() : user.bio;
     user.linkedin = linkedin ? String(linkedin).trim() : user.linkedin;
+    user.upiId = trimmedUpi;
     user.year = year !== undefined && year !== "" ? Number(year) : user.year;
     user.cgpa = cgpa !== undefined && cgpa !== "" ? Number(cgpa) : user.cgpa;
     user.isVerified = false;

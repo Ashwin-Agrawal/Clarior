@@ -90,7 +90,7 @@ function MentorCard({ mentor }) {
         <div className="flex items-start justify-between gap-3 min-w-0">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             {/* Avatar */}
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-gradient-to-br from-primary/15 via-accent/15 to-primary/10 text-sm font-bold text-primary shadow-sm">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-surface-2 text-sm font-black text-fg shadow-sm">
               {initials}
             </div>
             <div className="min-w-0 flex-1">

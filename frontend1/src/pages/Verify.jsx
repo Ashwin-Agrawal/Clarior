@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -21,11 +21,47 @@ function Verify() {
   const [msg, setMsg] = useState({ type: "", text: "" });
   const { fetchUser } = useAuth();
 
+  const [collegesList, setCollegesList] = useState([]);
+  const [showCollegesDropdown, setShowCollegesDropdown] = useState(false);
+
+  useEffect(() => {
+    const fetchCollegesList = async () => {
+      try {
+        const res = await api.get("/colleges");
+        setCollegesList(res.data.colleges || []);
+      } catch (err) {
+        console.error("Failed to fetch colleges list", err);
+      }
+    };
+    fetchCollegesList();
+  }, []);
+
+  const matchingColleges = useMemo(() => {
+    if (!college.trim()) return [];
+    return collegesList.filter((c) =>
+      c.name.toLowerCase().includes(college.toLowerCase())
+    ).slice(0, 5);
+  }, [collegesList, college]);
+
   const handleSubmit = async () => {
     try {
       setMsg({ type: "", text: "" });
+      if (!college.trim() || !upiId.trim()) {
+        setMsg({ type: "error", text: "College and UPI ID are required" });
+        return;
+      }
+      const match = collegesList.some(c => c.name.toLowerCase() === college.trim().toLowerCase());
+      if (!match) {
+        setMsg({ type: "error", text: "Please select a valid college from the suggestions dropdown list" });
+        return;
+      }
+      const upiRegex = /^[\w.]+@[\w]+$/;
+      if (!upiRegex.test(upiId.trim())) {
+        setMsg({ type: "error", text: "Invalid UPI ID format (e.g. name@bank)" });
+        return;
+      }
       setLoading(true);
-      await api.patch('/users/verification-details', { college, upiId });
+      await api.patch('/users/verification-details', { college: college.trim(), upiId: upiId.trim() });
       await fetchUser?.();
       setMsg({ type: "success", text: "Details saved! Your profile is now under review. ✅" });
     } catch (err) {
@@ -62,14 +98,41 @@ function Verify() {
             )}
 
             <div className="space-y-6">
-              <Input
-                label="Confirm College"
-                placeholder="e.g. IIT Delhi"
-                value={college}
-                onChange={(e) => setCollege(e.target.value)}
-                className="rounded-2xl"
-                iconLeft={<svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>}
-              />
+              <div className="relative">
+                <Input
+                  label="Confirm College"
+                  placeholder="e.g. IIT Delhi"
+                  value={college}
+                  onChange={(e) => {
+                    setCollege(e.target.value);
+                    setShowCollegesDropdown(true);
+                  }}
+                  onFocus={() => setShowCollegesDropdown(true)}
+                  onBlur={() => {
+                    // Delay to allow suggestion click to register
+                    setTimeout(() => setShowCollegesDropdown(false), 200);
+                  }}
+                  className="rounded-2xl"
+                  iconLeft={<svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>}
+                />
+                {showCollegesDropdown && matchingColleges.length > 0 && (
+                  <div className="absolute z-50 left-0 right-0 mt-1 bg-surface border border-border backdrop-blur-md rounded-2xl shadow-lg max-h-60 overflow-y-auto animate-scale-in">
+                    {matchingColleges.map((c) => (
+                      <button
+                        key={c._id}
+                        type="button"
+                        className="w-full text-left px-4 py-3 text-sm font-bold text-fg hover:bg-primary/10 hover:text-primary transition-all border-b border-border/40 last:border-0 cursor-pointer"
+                        onClick={() => {
+                          setCollege(c.name);
+                          setShowCollegesDropdown(false);
+                        }}
+                      >
+                        {c.name} <span className="text-xs text-muted font-normal font-sans">({c.city}, {c.state})</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               <Input
                 label="UPI ID (for payouts)"

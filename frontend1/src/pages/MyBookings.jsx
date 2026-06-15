@@ -71,7 +71,12 @@ function MyBookings() {
     try {
       setActionError("");
       const res = await api.patch(`/bookings/start/${bookingId}`);
-      patchBooking(bookingId, { isCallStarted: true, actualStartTime: res.data.startTime });
+      patchBooking(bookingId, {
+        isStudentStarted: res.data.isStudentStarted,
+        isSeniorStarted: res.data.isSeniorStarted,
+        isCallStarted: res.data.isCallStarted,
+        actualStartTime: res.data.startTime
+      });
     } catch (e) {
       setActionError(e?.response?.data?.message || "Error starting call");
     }
@@ -172,7 +177,9 @@ function MyBookings() {
 
                   <div className="flex flex-wrap gap-4 pt-2">
                     {[
-                      { label: "Call Started", val: b.isCallStarted },
+                      { label: "Student Started", val: b.isStudentStarted },
+                      { label: "Senior Started", val: b.isSeniorStarted },
+                      { label: "Call Live", val: b.isCallStarted },
                       { label: "Senior Done", val: b.isSeniorMarkedDone },
                       { label: "Student Confirmed", val: b.isStudentConfirmed },
                     ].map(st => (
@@ -190,14 +197,32 @@ function MyBookings() {
                   </Link>
 
                   {user?.role === "student" && b.status === "confirmed" && !b.isCallStarted && (
-                    <Button className="w-full rounded-2xl" variant="primary" onClick={() => startCall(b._id)}>
-                      Start Session
-                    </Button>
+                    !b.isStudentStarted ? (
+                      <Button className="w-full rounded-2xl" variant="primary" onClick={() => startCall(b._id)}>
+                        Start Session
+                      </Button>
+                    ) : (
+                      <Button className="w-full rounded-2xl" variant="secondary" disabled>
+                        Waiting for Senior...
+                      </Button>
+                    )
+                  )}
+
+                  {user?.role === "senior" && b.status === "confirmed" && !b.isCallStarted && (
+                    !b.isSeniorStarted ? (
+                      <Button className="w-full rounded-2xl" variant="primary" onClick={() => startCall(b._id)}>
+                        Start Session
+                      </Button>
+                    ) : (
+                      <Button className="w-full rounded-2xl" variant="secondary" disabled>
+                        Waiting for Student...
+                      </Button>
+                    )
                   )}
 
                   {user?.role === "senior" && b.isCallStarted && !b.isSeniorMarkedDone && (
                     <Button className="w-full rounded-2xl" variant="primary" onClick={() => seniorComplete(b._id)}>
-                      Mark 25m Done
+                      Mark Complete
                     </Button>
                   )}
 

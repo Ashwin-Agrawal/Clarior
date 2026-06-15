@@ -220,7 +220,7 @@ function Profile() {
 
                 {/* Profile Avatar & Info Block */}
                 <div className="flex flex-col md:flex-row items-center md:items-end gap-6 px-6 md:px-12 mt-6 md:mt-2 relative z-10">
-                  <div className="flex h-28 w-28 md:h-36 md:w-36 shrink-0 items-center justify-center rounded-full border-[6px] border-surface bg-surface-2 -mt-14 md:-mt-20 text-3xl font-black text-primary shadow-xl md:text-5xl z-20">
+                  <div className="flex h-28 w-28 md:h-36 md:w-36 shrink-0 items-center justify-center rounded-full border-[6px] border-surface bg-surface-2 -mt-14 md:-mt-20 text-3xl font-black text-fg shadow-xl md:text-5xl z-20">
                     {initials}
                   </div>
                   
