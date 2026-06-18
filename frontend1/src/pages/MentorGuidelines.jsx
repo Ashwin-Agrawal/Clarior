@@ -63,6 +63,9 @@ function MentorGuidelines() {
 
             <h3 className="font-semibold mt-4">7. Earnings</h3>
             <p className="text-fg">Mentors earn ₹52 per successfully completed session.</p>
+            <p className="text-danger font-bold mt-2 text-xs">
+              ⚠️ Payout Rejection Policy: If multiple bad reviews or low-quality ratings are received from students for a session, or if a mentor is reported for host absence, the platform administrators reserve the right to reject the payout. Rejection will reverse the senior's pending earnings and automatically refund the credit back to the student.
+            </p>
 
             <h3 className="font-semibold mt-4">8. Availability</h3>
             <p className="text-fg">Mentors set their own available time slots with full flexibility.</p>

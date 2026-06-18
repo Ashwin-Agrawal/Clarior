@@ -40,7 +40,7 @@ exports.getAllSeniors = async (req, res) => {
 
     // Fix 5: Only expose safe public fields — no phone, upiId, balances, credits, payments
     const seniors = await User.find(filter).select(
-      "name college branch domain bio rating numReviews isVerified year linkedin sessionsCompleted"
+      "name college affiliatedCollege branch domain bio rating numReviews isVerified year linkedin sessionsCompleted"
     );
 
     const Slot = require("../models/Slots");
@@ -77,13 +77,25 @@ exports.getAllSeniors = async (req, res) => {
 // 🧑‍🏫 APPLY FOR SENIOR ROLE
 exports.applySenior = async (req, res) => {
   try {
-    const { phone, college, domain, branch, year, cgpa, bio, linkedin, upiId } = req.body;
+    const { phone, college, domain, branch, year, cgpa, bio, linkedin, upiId, affiliatedCollege } = req.body;
 
     if (!phone || !college || !branch || !upiId) {
       return res.status(400).json({
         success: false,
         message: "Phone, college, branch, and UPI ID are required",
       });
+    }
+
+    const College = require("../models/College");
+    const dbCollege = await College.findOne({ name: { $regex: new RegExp("^" + String(college).trim() + "$", "i") } });
+    const isNewGen = dbCollege && (dbCollege.type === "New Gen" || dbCollege.type === "New-Gen");
+    if (isNewGen) {
+      if (!affiliatedCollege || !String(affiliatedCollege).trim()) {
+        return res.status(400).json({
+          success: false,
+          message: "Affiliated College is required for New Gen colleges",
+        });
+      }
     }
 
     const normalizedPhone = String(phone).replace(/\s+/g, "").trim();
@@ -125,6 +137,7 @@ exports.applySenior = async (req, res) => {
 
     user.phone = normalizedPhone;
     user.college = String(college).trim();
+    user.affiliatedCollege = isNewGen ? String(affiliatedCollege).trim() : null;
     user.domain = domain ? String(domain).trim() : user.domain;
     user.branch = String(branch).trim();
     user.bio = bio ? String(bio).trim() : user.bio;
@@ -263,7 +276,7 @@ exports.getSeniorById = async (req, res) => {
       return res.status(400).json({ message: "Invalid senior ID" });
     }
     const senior = await User.findOne({ _id: id, role: "senior", isVerified: true }).select(
-      "name college branch domain bio rating numReviews isVerified year linkedin sessionsCompleted"
+      "name college affiliatedCollege branch domain bio rating numReviews isVerified year linkedin sessionsCompleted"
     );
     if (!senior) return res.status(404).json({ message: "Senior not found" });
 
@@ -290,7 +303,7 @@ exports.getSeniorById = async (req, res) => {
 // Fix 12: PATCH /users/verification-details — atomic college + upiId update for seniors
 exports.updateVerificationDetails = async (req, res) => {
   try {
-    const { college, upiId } = req.body;
+    const { college, upiId, affiliatedCollege } = req.body;
     if (!college || !upiId) {
       return res.status(400).json({ message: "College and UPI ID are required" });
     }
@@ -298,9 +311,17 @@ exports.updateVerificationDetails = async (req, res) => {
     if (!upiRegex.test(upiId)) {
       return res.status(400).json({ message: "Invalid UPI ID format" });
     }
+    const College = require("../models/College");
+    const dbCollege = await College.findOne({ name: { $regex: new RegExp("^" + String(college).trim() + "$", "i") } });
+    const isNewGen = dbCollege && (dbCollege.type === "New Gen" || dbCollege.type === "New-Gen");
+    if (isNewGen) {
+      if (!affiliatedCollege || !String(affiliatedCollege).trim()) {
+        return res.status(400).json({ message: "Affiliated College is required for New Gen colleges" });
+      }
+    }
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { $set: { college, upiId } },
+      { $set: { college, upiId, affiliatedCollege: isNewGen ? String(affiliatedCollege).trim() : null } },
       { new: true }
     ).select("-password");
     return res.json({ message: "Verification details updated", user });

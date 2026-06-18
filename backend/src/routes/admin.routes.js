@@ -13,6 +13,7 @@ const {
   fastForwardBooking,
   getPendingReleases,
   releaseEarnings,
+  rejectEarnings,
 } = require("../controllers/admin.controller");
 
 // 🔐 only admin
@@ -27,5 +28,6 @@ router.post("/test/fast-forward-booking/:bookingId", fastForwardBooking);
 
 router.get("/pending-releases", getPendingReleases);
 router.patch("/release-earnings/:bookingId", releaseEarnings);
+router.patch("/reject-earnings/:bookingId", rejectEarnings);
 
 module.exports = router;

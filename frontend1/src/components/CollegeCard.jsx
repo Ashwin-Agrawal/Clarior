@@ -29,6 +29,7 @@ function CollegeCard({ college, index = 0 }) {
       case "private":
         return "bg-primary/10 text-primary border-primary/20";
       case "new-gen":
+      case "new gen":
         return "bg-accent/10 text-accent border-accent/20";
       default:
         return "bg-surface2 text-muted border-border";

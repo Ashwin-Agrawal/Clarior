@@ -191,6 +191,11 @@ function CollegeProfile() {
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-fg leading-tight tracking-tight pt-2">
                   {college.name}
                 </h1>
+                {college.affiliated_to && (
+                  <p className="text-sm md:text-base font-bold text-muted mt-1 leading-relaxed">
+                    Affiliated to {college.affiliated_to}
+                  </p>
+                )}
 
                 {/* Quick details */}
                 <div className="flex flex-wrap gap-3 mt-4">

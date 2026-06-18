@@ -11,13 +11,18 @@ const collegeSchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: ["Private", "Government", "New-Gen"],
+      enum: ["Private", "Government", "New-Gen", "New Gen"],
       trim: true,
     },
     image: {
       type: String,
       required: true,
       trim: true,
+    },
+    affiliated_to: {
+      type: String,
+      trim: true,
+      default: "",
     },
     established: {
       type: Number,

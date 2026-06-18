@@ -159,6 +159,53 @@ h1, h2, h3, h4, h5, h6 {
   from { opacity: 0; transform: translateY(-12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes textRotatorIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9) rotateX(-60deg);
+    filter: blur(4px);
+  }
+  12% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateX(0deg);
+    filter: blur(0);
+  }
+  88% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateX(0deg);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.9) rotateX(60deg);
+    filter: blur(4px);
+  }
+}
+/* ── Hero slogan – letter-by-letter drop-in ── */
+@keyframes letterDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-22px) scale(0.85);
+    filter: blur(4px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(3px) scale(1.04);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+    filter: blur(0px);
+  }
+}
+.slogan-letter {
+  display: inline-block;
+  opacity: 0;
+  animation: letterDrop 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+
 @keyframes shimmer {
   from { background-position: -200% 0; }
   to   { background-position:  200% 0; }
@@ -356,4 +403,496 @@ html.dark .bg-grid-pattern {
 
 .animate-quote-slide {
   animation: quoteSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   WORLD-CLASS LANDING PAGE ANIMATION SYSTEM
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Scroll Reveal System ───────────────────────────────────── */
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes revealScale {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes revealLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-80px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes revealRight {
+  from {
+    opacity: 0;
+    transform: translateX(80px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0);
+  }
+}
+
+/* Elements start invisible until IntersectionObserver triggers .revealed */
+.scroll-reveal {
+  opacity: 0;
+  will-change: transform, opacity, filter;
+}
+.scroll-reveal.revealed {
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+.scroll-reveal.revealed.reveal-up {
+  animation-name: revealUp;
+  animation-duration: 0.9s;
+}
+.scroll-reveal.revealed.reveal-scale {
+  animation-name: revealScale;
+  animation-duration: 0.8s;
+}
+.scroll-reveal.revealed.reveal-left {
+  animation-name: revealLeft;
+  animation-duration: 0.9s;
+}
+.scroll-reveal.revealed.reveal-right {
+  animation-name: revealRight;
+  animation-duration: 0.9s;
+}
+
+/* Stagger delays for child elements */
+.stagger-1 { animation-delay: 0.08s !important; }
+.stagger-2 { animation-delay: 0.16s !important; }
+.stagger-3 { animation-delay: 0.24s !important; }
+.stagger-4 { animation-delay: 0.32s !important; }
+.stagger-5 { animation-delay: 0.40s !important; }
+.stagger-6 { animation-delay: 0.48s !important; }
+.stagger-7 { animation-delay: 0.56s !important; }
+.stagger-8 { animation-delay: 0.64s !important; }
+
+/* ─── Word-by-Word Mask Reveal ───────────────────────────────── */
+@keyframes wordReveal {
+  from {
+    opacity: 0;
+    transform: translateY(100%) rotateX(-80deg);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg);
+    filter: blur(0);
+  }
+}
+
+.word-reveal-container {
+  perspective: 800px;
+}
+
+.word-reveal {
+  display: inline-block;
+  opacity: 0;
+  animation: wordReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ─── Shimmer Gradient Text ──────────────────────────────────── */
+@keyframes gradientShimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-text-animated {
+  background: linear-gradient(
+    135deg,
+    rgb(var(--primary)) 0%,
+    rgb(var(--accent)) 25%,
+    #a78bfa 50%,
+    rgb(var(--accent)) 75%,
+    rgb(var(--primary)) 100%
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShimmer 4s ease-in-out infinite;
+}
+
+/* Fix for word-reveal blocks nested inside gradient-text-animated */
+.gradient-text-animated .word-reveal {
+  background: linear-gradient(
+    135deg,
+    rgb(var(--primary)) 0%,
+    rgb(var(--accent)) 25%,
+    #a78bfa 50%,
+    rgb(var(--accent)) 75%,
+    rgb(var(--primary)) 100%
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: wordReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) both, gradientShimmer 4s ease-in-out infinite;
+}
+
+/* ─── 3D Tilt Card ───────────────────────────────────────────── */
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out, box-shadow 0.3s ease;
+  will-change: transform;
+}
+
+.tilt-card-inner {
+  transform: translateZ(20px);
+}
+
+/* ─── Animated Conic Gradient Border ─────────────────────────── */
+@keyframes rotateBorder {
+  from { --border-angle: 0deg; }
+  to { --border-angle: 360deg; }
+}
+
+@property --border-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.animated-border {
+  position: relative;
+}
+
+.animated-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--border-angle),
+    rgb(var(--primary)),
+    rgb(var(--accent)),
+    #a78bfa,
+    rgb(var(--primary))
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rotateBorder 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.animated-border:hover::before {
+  opacity: 1;
+}
+
+/* Featured card always shows the border */
+.animated-border-active::before {
+  opacity: 0.8;
+  padding: 2px;
+}
+
+/* ─── Floating Ambient Glow Blobs ────────────────────────────── */
+@keyframes floatSlow1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(60px, -40px) scale(1.15); }
+  50% { transform: translate(120px, 20px) scale(0.9); }
+  75% { transform: translate(-30px, 50px) scale(1.05); }
+}
+
+@keyframes floatSlow2 {
+  0%, 100% { transform: translate(0, 0) scale(1.1); }
+  33% { transform: translate(-80px, 50px) scale(0.85); }
+  66% { transform: translate(40px, -70px) scale(1.2); }
+}
+
+.animate-float-slow-1 {
+  animation: floatSlow1 25s ease-in-out infinite;
+}
+
+.animate-float-slow-2 {
+  animation: floatSlow2 30s ease-in-out infinite;
+}
+
+/* ─── Magnetic Button ────────────────────────────────────────── */
+.magnetic-btn {
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* ─── Wave Section Divider ───────────────────────────────────── */
+.wave-divider {
+  position: relative;
+  overflow: hidden;
+}
+
+.wave-divider svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.wave-divider path {
+  transition: d 0.5s ease;
+}
+
+/* ─── Noise / Grain Texture Overlay ──────────────────────────── */
+.grain-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+}
+
+html.dark .grain-overlay {
+  opacity: 0.04;
+}
+
+/* ─── Hero Glow Ring Pulse ───────────────────────────────────── */
+@keyframes glowRingExpand {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  50% { transform: scale(1.4); opacity: 0; }
+  100% { transform: scale(0.8); opacity: 0; }
+}
+
+.glow-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgb(var(--primary));
+  opacity: 0;
+  animation: glowRingExpand 3s ease-out infinite;
+}
+
+/* ─── Stats Counter Pulse ────────────────────────────────────── */
+@keyframes counterPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+.counter-pop {
+  animation: counterPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ─── Premium Section Glow ───────────────────────────────────── */
+@keyframes sectionGlow {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+.section-glow {
+  animation: sectionGlow 6s ease-in-out infinite;
+}
+
+/* ─── CTA Spark Burst ────────────────────────────────────────── */
+@keyframes sparkBurst {
+  0% { transform: translate(0, 0) scale(0); opacity: 1; }
+  100% { transform: translate(var(--spark-x), var(--spark-y)) scale(1); opacity: 0; }
+}
+
+.spark {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgb(var(--primary));
+  pointer-events: none;
+  animation: sparkBurst 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ─── Pricing Card Highlight Glow ────────────────────────────── */
+@keyframes pricingGlow {
+  0%, 100% { box-shadow: 0 0 30px rgba(var(--primary), 0.1), 0 20px 60px rgba(var(--primary), 0.05); }
+  50% { box-shadow: 0 0 50px rgba(var(--primary), 0.2), 0 25px 80px rgba(var(--primary), 0.1); }
+}
+
+.pricing-glow {
+  animation: pricingGlow 4s ease-in-out infinite;
+}
+
+/* ─── Smooth Underline Reveal ────────────────────────────────── */
+@keyframes underlineReveal {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.animated-underline {
+  position: relative;
+}
+
+.animated-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, rgb(var(--primary)), rgb(var(--accent)));
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animated-underline.revealed::after {
+  animation: underlineReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+/* ─── Navbar Link Custom Properties ──────────────────────────── */
+.nav-link {
+  display: inline-block;
+  border-radius: 9999px;
+  padding: 6px 16px !important;
+  font-size: 14px !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  outline: none !important;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  transform: scale(1.03) !important;
+}
+
+.nav-link:active {
+  transform: scale(0.97) !important;
+}
+
+/* Inactive link styles */
+.nav-link-inactive {
+  color: rgb(var(--muted)) !important;
+  font-weight: 500 !important;
+  background: transparent !important;
+}
+
+.nav-link-inactive:hover {
+  background-color: rgba(var(--primary), 0.1) !important;
+  color: rgb(var(--primary)) !important;
+}
+
+.nav-link-inactive:focus {
+  background-color: rgba(var(--primary), 0.1) !important;
+  color: rgb(var(--primary)) !important;
+}
+
+.nav-link-inactive:active {
+  background-color: rgba(var(--primary), 0.15) !important;
+  color: rgb(var(--primary)) !important;
+}
+
+/* Active link styles */
+.nav-link-active {
+  background: linear-gradient(135deg, rgb(var(--primary)) 0%, rgb(var(--accent)) 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(var(--primary), 0.22) !important;
+}
+
+/* Ensure active link stays gradient and white text under all circumstances */
+.nav-link-active:hover {
+  background: linear-gradient(135deg, rgb(var(--primary)) 0%, rgb(var(--accent)) 100%) !important;
+  color: #ffffff !important;
+  opacity: 0.95 !important;
+}
+
+.nav-link-active:focus {
+  background: linear-gradient(135deg, rgb(var(--primary)) 0%, rgb(var(--accent)) 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(var(--primary), 0.22) !important;
+}
+
+.nav-link-active:active {
+  background: linear-gradient(135deg, rgb(var(--primary)) 0%, rgb(var(--accent)) 100%) !important;
+  color: #ffffff !important;
+  transform: scale(0.97) !important;
+}
+
+/* ─── Avatar & Mobile Dropdowns Custom Styles ────────────────── */
+.avatar-dropdown {
+  background-color: rgba(var(--surface), 0.98) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(var(--border), 0.8) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.18) !important;
+  z-index: 100 !important;
+}
+
+html.dark .avatar-dropdown {
+  background-color: rgba(var(--surface), 0.98) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.4) !important;
+}
+
+.mobile-nav-dropdown {
+  background-color: rgba(var(--surface), 0.98) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(var(--border), 0.8) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+  z-index: 100 !important;
+}
+
+html.dark .mobile-nav-dropdown {
+  background-color: rgba(var(--surface), 0.98) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ─── Testimonial Premium 3D Hover Cards ─────────────────────── */
+.testimonial-card {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.4s ease !important;
+  perspective: 1000px;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-8px) rotateX(4deg) rotateY(-4deg) !important;
+  border-color: rgba(var(--primary), 0.45) !important;
+  box-shadow: 0 24px 50px -15px rgba(var(--primary), 0.16), 
+              0 0 0 1px rgba(var(--primary), 0.12),
+              0 8px 16px -8px rgba(var(--accent), 0.1) !important;
+}
+
+html.dark .testimonial-card:hover {
+  border-color: rgba(var(--primary), 0.5) !important;
+  box-shadow: 0 24px 50px -15px rgba(var(--primary), 0.25), 
+              0 0 0 1px rgba(var(--primary), 0.2),
+              0 8px 16px -8px rgba(var(--accent), 0.15) !important;
 }

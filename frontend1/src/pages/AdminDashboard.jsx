@@ -111,6 +111,17 @@ function AdminDashboard() {
     }
   };
 
+  const handleRejectEarnings = async (id) => {
+    if (!window.confirm("Are you sure you want to reject this session payout? This will refund the credit to the student and deduct the payout from the senior's pending balance.")) return;
+    try {
+      await api.patch(`/admin/reject-earnings/${id}`);
+      setMsg({ type: "success", text: "Earnings rejected and student credit refunded." });
+      refresh();
+    } catch (e) {
+      setMsg({ type: "error", text: e?.response?.data?.message || "Failed to reject earnings" });
+    }
+  };
+
   const connectGoogle = async () => {
     setGoogleLoading(true);
     try {
@@ -211,7 +222,7 @@ function AdminDashboard() {
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 bg-surface2/50 p-4 rounded-2xl border border-border/50">
                       <div className="space-y-1">
                         <div className="text-[9px] font-bold text-muted uppercase">College</div>
-                        <div className="text-xs font-bold text-fg truncate">{s.college || "—"}</div>
+                        <div className="text-xs font-bold text-fg truncate">{s.college || "—"}{s.affiliatedCollege ? ` (${s.affiliatedCollege})` : ""}</div>
                       </div>
                       <div className="space-y-1">
                         <div className="text-[9px] font-bold text-muted uppercase">Branch</div>
@@ -338,10 +349,39 @@ function AdminDashboard() {
                         <div className="text-[10px] text-muted font-medium">Senior: {b.senior?.name} ({b.senior?.email})</div>
                       </div>
                     </div>
+
+                    {/* Render Student Review if present */}
+                    {b.review ? (
+                      <div className="bg-surface2/60 p-4.5 rounded-2xl border border-border/50 text-xs mt-3 space-y-1.5 shadow-sm">
+                        <div className="flex items-center gap-2 font-bold text-fg">
+                          <span className="text-amber-500 font-extrabold flex items-center gap-0.5">
+                            ★ {b.review.rating}/5
+                          </span>
+                          <span className="text-[9px] font-black uppercase tracking-wider text-muted">• Student Review</span>
+                        </div>
+                        {b.review.comment ? (
+                          <p className="text-muted leading-relaxed italic">"{b.review.comment}"</p>
+                        ) : (
+                          <p className="text-muted/65 italic select-none">No comment provided.</p>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="bg-surface2/30 p-3 rounded-2xl text-[9px] text-muted font-black uppercase tracking-widest mt-3 border border-border/30 select-none">
+                        No review left by student yet
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex flex-row md:flex-col gap-2 min-w-[140px] justify-center">
                     <Button onClick={() => handleReleaseEarnings(b._id)} className="flex-1 rounded-xl" size="sm">Release Funds</Button>
+                    <Button 
+                      variant="secondary" 
+                      onClick={() => handleRejectEarnings(b._id)} 
+                      className="flex-1 rounded-xl border-danger/25 text-danger hover:bg-danger/10" 
+                      size="sm"
+                    >
+                      Reject Payout
+                    </Button>
                   </div>
                 </div>
               </Card>

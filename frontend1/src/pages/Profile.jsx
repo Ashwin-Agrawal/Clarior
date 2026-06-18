@@ -237,7 +237,7 @@ function Profile() {
                       )}
                     </div>
                     <p className="text-muted text-sm md:text-lg font-semibold">
-                      {mentor.college || "Top College"}{mentor.branch ? ` · ${mentor.branch}` : ""}
+                      {mentor.college || "Top College"}{mentor.affiliatedCollege ? ` (${mentor.affiliatedCollege})` : ""}{mentor.branch ? ` · ${mentor.branch}` : ""}
                     </p>
                   </div>
                 </div>
@@ -289,7 +289,7 @@ function Profile() {
                         </div>
                         <div>
                           <div className="text-[10px] font-black text-muted uppercase tracking-widest">College</div>
-                          <div className="mt-1 text-sm font-black text-fg truncate">{mentor.college || "N/A"}</div>
+                          <div className="mt-1 text-sm font-black text-fg truncate">{mentor.college || "N/A"}{mentor.affiliatedCollege ? ` (${mentor.affiliatedCollege})` : ""}</div>
                         </div>
                       </div>
                     </Card>

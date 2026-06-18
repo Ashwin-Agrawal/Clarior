@@ -218,7 +218,23 @@ exports.getPendingReleases = async (req, res) => {
     })
       .populate("senior", "name email upiId")
       .populate("student", "name email")
-      .sort({ updatedAt: 1 });
+      .sort({ updatedAt: 1 })
+      .lean();
+
+    const bookingIds = bookings.map(b => b._id);
+    const Review = require("../models/Review");
+    const reviews = await Review.find({ booking: { $in: bookingIds } }).lean();
+
+    const reviewMap = {};
+    reviews.forEach(r => {
+      if (r.booking) {
+        reviewMap[r.booking.toString()] = r;
+      }
+    });
+
+    bookings.forEach(b => {
+      b.review = reviewMap[b._id.toString()] || null;
+    });
 
     res.json({
       success: true,
@@ -266,5 +282,68 @@ exports.releaseEarnings = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ❌ ADMIN: REJECT EARNINGS (REFUND STUDENT CREDIT & REVERSE SENIOR EARNINGS)
+exports.rejectEarnings = async (req, res) => {
+  const mongoose = require("mongoose");
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const Booking = require("../models/Booking");
+    const { bookingId } = req.params;
+
+    const booking = await Booking.findById(bookingId).populate("senior").session(session);
+    if (!booking) {
+      return res.status(404).json({ success: false, message: "Booking not found" });
+    }
+
+    if (!booking.isSeniorMarkedDone || booking.isEarningsReleased) {
+      return res.status(400).json({ success: false, message: "Booking is not eligible for rejection" });
+    }
+
+    const payout = parseInt(process.env.PAYOUT_AMOUNT) || 52;
+
+    // 1. Deduct payout from senior pendingEarnings atomically
+    const updatedSenior = await User.findOneAndUpdate(
+      { _id: booking.senior._id, pendingEarnings: { $gte: payout } },
+      { $inc: { pendingEarnings: -payout } },
+      { new: true, session }
+    );
+    if (!updatedSenior) {
+      await User.findByIdAndUpdate(
+        booking.senior._id,
+        { $inc: { pendingEarnings: -payout } },
+        { session }
+      );
+    }
+
+    // 2. Refund credit to student
+    await User.findByIdAndUpdate(
+      booking.student,
+      { $inc: { callCredits: 1 } },
+      { session }
+    );
+
+    // 3. Mark booking status as cancelled to indicate rejected/refunded
+    booking.isEarningsReleased = false;
+    booking.isSeniorMarkedDone = false;
+    booking.status = "cancelled";
+    await booking.save({ session });
+
+    await session.commitTransaction();
+
+    res.json({
+      success: true,
+      message: "Earnings rejected and student credit refunded successfully",
+      bookingId: booking._id,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    res.status(500).json({ success: false, message: error.message });
+  } finally {
+    session.endSession();
   }
 };

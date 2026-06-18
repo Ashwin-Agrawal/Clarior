@@ -97,8 +97,9 @@ function MentorCard({ mentor }) {
               <h3 className="text-base font-bold text-fg group-hover:text-primary transition-colors leading-tight truncate">
                 {mentor.name}
               </h3>
-              <p className="text-xs text-muted mt-0.5 leading-4 truncate" title={`${mentor.college || "Top College"}${mentor.branch ? ` · ${mentor.branch}` : ""}`}>
+              <p className="text-xs text-muted mt-0.5 leading-4 truncate" title={`${mentor.college || "Top College"}${mentor.affiliatedCollege ? ` (${mentor.affiliatedCollege})` : ""}${mentor.branch ? ` · ${mentor.branch}` : ""}`}>
                 {mentor.college || "Top College"}
+                {mentor.affiliatedCollege ? ` (${mentor.affiliatedCollege})` : ""}
                 {mentor.branch ? ` · ${mentor.branch}` : ""}
               </p>
             </div>

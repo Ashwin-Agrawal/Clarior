@@ -102,7 +102,15 @@ const collegesData = [
   {"name": "Rishihood University", "type": "Private", "image": "https://images.shiksha.com/mediadata/images/1687532322phpREcKoz.jpeg", "established": 2020, "city": "Sonepat", "state": "Haryana", "common": "DELHI-NCR"},
   {"name": "Guru Tegh Bahadur Institute of Technology", "type": "Private", "image": "https://img.collegepravesh.com/2016/01/GTBIT-Delhi.jpg", "established": 1999, "city": "Rajouri Garden, Delhi", "state": "Delhi", "common": "DELHI-NCR"},
   {"name": "SGT University, Gurgaon", "type": "Private", "image": "https://f2.leadsquaredcdn.com/t/sgtuni/content/common/images/admAboutImg.jpg", "established": 2013, "city": "Gurugram", "state": "Haryana", "common": "DELHI-NCR"},
-  {"name": "PIET - Panipat Institute of Engineering and Technology", "type": "Private", "image": "https://media.collegedekho.com/media/img/institute/crawled_images/Block-DE.png", "established": 2006, "city": "Panipat", "state": "Haryana", "common": "DELHI-NCR"}
+  {"name": "PIET - Panipat Institute of Engineering and Technology", "type": "Private", "image": "https://media.collegedekho.com/media/img/institute/crawled_images/Block-DE.png", "established": 2006, "city": "Panipat", "state": "Haryana", "common": "DELHI-NCR"},
+  {"name": "Newton School of Technology, Sonepat", "type": "New Gen", "image": "https://www.collegeyaar.in/wp-content/uploads/2025/12/image-91-768x429.png", "established": 2023, "city": "Sonepat", "state": "Haryana", "common": "DELHI-NCR", "affiliated_to": "Rishihood University"},
+  {"name": "Newton School of Technology, Pune", "type": "New Gen", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS07NDeaTjeqHDOyzqUqinKeJ3txEYY5TZazFECVcmofw&s=10", "established": 2024, "city": "Pune", "state": "Maharashtra", "common": "", "affiliated_to": "Ajeenkya DY Patil University (ADYPU)"},
+  {"name": "Newton School of Technology, Bengaluru", "type": "New Gen", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfCr5NeX32_PNK5EzzesDDOkeyoHm1uESpULoNR6hxyQ&s=10", "established": 2025, "city": "Bengaluru", "state": "Karnataka", "common": "", "affiliated_to": "S-VYASA University"},
+  {"name": "Newton School of Technology, Hyderabad", "type": "New Gen", "image": "https://smru.edu.in/assets/hero-campus-2.png", "established": 2026, "city": "Hyderabad", "state": "Telangana", "common": "", "affiliated_to": "St. Mary's University (SMR)"},
+  {"name": "Scaler School of Technology (SST)", "type": "New Gen", "image": "https://scaler-blog-prod-wp-content.s3.ap-south-1.amazonaws.com/wp-content/uploads/2023/07/22114601/SST.jpg", "established": 2023, "city": "Bengaluru", "state": "Karnataka", "common": "", "affiliated_to": "BITS Pilani / IIT Madras"},
+  {"name": "Vedam School of Technology", "type": "New Gen", "image": "https://www.vedam.org/_next/image?url=%2Fimg%2Fcampuses%2FAdypu_home_page.webp&w=3840&q=75", "established": 2025, "city": "Pune", "state": "Maharashtra", "common": "", "affiliated_to": "Ajeenkya DY Patil University (ADYPU), Pune"},
+  {"name": "Polaris School of Technology", "type": "New Gen", "image": "https://framerusercontent.com/images/UljEla1SVzpagfn7pwNzcYxtMQ.webp?width=2592&height=1529", "established": 2024, "city": "Bengaluru", "state": "Karnataka", "common": "", "affiliated_to": "Medhavi Skills University, Sikkim"},
+  {"name": "BossCoder School of Technology", "type": "New Gen", "image": "https://www.bosscoderacademy.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FBST_Main_Img.1e005c1c.webp&w=1920&q=75", "established": 2025, "city": "Bengaluru", "state": "Karnataka", "common": "", "affiliated_to": "S-VYASA University"}
 ];
 
 async function seedColleges() {
@@ -116,13 +124,13 @@ async function seedColleges() {
     await College.deleteMany({});
     console.log("Deleted old colleges successfully.");
 
-    // Deduplicate collegesData by name before inserting
+    // Deduplicate collegesData by name and city before inserting
     const uniqueColleges = [];
     const seenNames = new Set();
     for (const c of collegesData) {
-      const normalizedName = c.name.trim().toLowerCase();
-      if (!seenNames.has(normalizedName)) {
-        seenNames.add(normalizedName);
+      const uniqueKey = `${c.name.trim()}-${c.city.trim()}`.toLowerCase();
+      if (!seenNames.has(uniqueKey)) {
+        seenNames.add(uniqueKey);
         uniqueColleges.push(c);
       }
     }

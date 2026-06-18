@@ -15,11 +15,12 @@ function Verify() {
     description: "Clarior Verify page"
   });
 
+  const { user, fetchUser } = useAuth();
   const [college, setCollege] = useState("");
   const [upiId, setUpiId] = useState("");
+  const [affiliatedCollege, setAffiliatedCollege] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState({ type: "", text: "" });
-  const { fetchUser } = useAuth();
 
   const [collegesList, setCollegesList] = useState([]);
   const [showCollegesDropdown, setShowCollegesDropdown] = useState(false);
@@ -36,11 +37,25 @@ function Verify() {
     fetchCollegesList();
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      if (user.college) setCollege(user.college);
+      if (user.upiId) setUpiId(user.upiId);
+      if (user.affiliatedCollege) setAffiliatedCollege(user.affiliatedCollege);
+    }
+  }, [user]);
+
   const matchingColleges = useMemo(() => {
     if (!college.trim()) return [];
     return collegesList.filter((c) =>
       c.name.toLowerCase().includes(college.toLowerCase())
     ).slice(0, 5);
+  }, [collegesList, college]);
+
+  const isNewGen = useMemo(() => {
+    if (!college.trim()) return false;
+    const match = collegesList.find(c => c.name.toLowerCase() === college.trim().toLowerCase());
+    return match?.type === "New Gen" || match?.type === "New-Gen";
   }, [collegesList, college]);
 
   const handleSubmit = async () => {
@@ -55,13 +70,17 @@ function Verify() {
         setMsg({ type: "error", text: "Please select a valid college from the suggestions dropdown list" });
         return;
       }
+      if (isNewGen && (!affiliatedCollege || !affiliatedCollege.trim())) {
+        setMsg({ type: "error", text: "Affiliated College is required for New Gen colleges" });
+        return;
+      }
       const upiRegex = /^[\w.]+@[\w]+$/;
       if (!upiRegex.test(upiId.trim())) {
         setMsg({ type: "error", text: "Invalid UPI ID format (e.g. name@bank)" });
         return;
       }
       setLoading(true);
-      await api.patch('/users/verification-details', { college: college.trim(), upiId: upiId.trim() });
+      await api.patch('/users/verification-details', { college: college.trim(), upiId: upiId.trim(), affiliatedCollege: isNewGen ? affiliatedCollege.trim() : null });
       await fetchUser?.();
       setMsg({ type: "success", text: "Details saved! Your profile is now under review. ✅" });
     } catch (err) {
@@ -133,6 +152,19 @@ function Verify() {
                   </div>
                 )}
               </div>
+
+              {isNewGen && (
+                <div className="animate-scale-in">
+                  <Input
+                    label="Affiliated College/University *"
+                    placeholder="e.g. Rishihood University"
+                    value={affiliatedCollege}
+                    onChange={(e) => setAffiliatedCollege(e.target.value)}
+                    className="rounded-2xl"
+                    iconLeft={<svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>}
+                  />
+                </div>
+              )}
 
               <Input
                 label="UPI ID (for payouts)"

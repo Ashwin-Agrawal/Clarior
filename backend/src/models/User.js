@@ -49,6 +49,12 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
 
+    affiliatedCollege: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+
     domain: {
       type: String,
       trim: true,

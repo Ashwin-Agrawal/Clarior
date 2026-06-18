@@ -79,7 +79,7 @@ exports.getCollegeById = async (req, res) => {
       role: "senior",
       isVerified: true,
       college: { $regex: `^${college.name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, $options: "i" }
-    }).select("name college branch domain bio rating numReviews isVerified year linkedin sessionsCompleted");
+    }).select("name college affiliatedCollege branch domain bio rating numReviews isVerified year linkedin sessionsCompleted");
 
     // Fetch active slot count for each senior
     const now = new Date();

@@ -33,7 +33,7 @@ function BecomeMentor() {
   const { user, fetchUser, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [form, setForm] = useState({ phone: "", college: "", domain: "", branch: "", year: "", cgpa: "", bio: "", linkedin: "", upiId: "" });
+  const [form, setForm] = useState({ phone: "", college: "", domain: "", branch: "", year: "", cgpa: "", bio: "", linkedin: "", upiId: "", affiliatedCollege: "" });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -59,6 +59,12 @@ function BecomeMentor() {
     return colleges.filter((c) =>
       c.name.toLowerCase().includes(form.college.toLowerCase())
     ).slice(0, 5);
+  }, [colleges, form.college]);
+
+  const isNewGen = useMemo(() => {
+    if (!form.college.trim()) return false;
+    const match = colleges.find(c => c.name.toLowerCase() === form.college.trim().toLowerCase());
+    return match?.type === "New Gen" || match?.type === "New-Gen";
   }, [colleges, form.college]);
 
   useEffect(() => {
@@ -112,6 +118,12 @@ function BecomeMentor() {
         errs.college = "Please select a valid college from the suggestions dropdown list";
       }
     }
+
+    if (isNewGen) {
+      if (!form.affiliatedCollege || !form.affiliatedCollege.trim()) {
+        errs.affiliatedCollege = "Affiliated College/University is required for New-Gen colleges";
+      }
+    }
     
     if (!form.branch.trim()) errs.branch = "Branch is required";
     if (!form.upiId.trim()) errs.upiId = "UPI ID is required";
@@ -134,7 +146,7 @@ function BecomeMentor() {
       await api.post("/users/apply-senior", { ...form, phone: form.phone.replace(/\s+/g, ""), year: form.year ? Number(form.year) : undefined, cgpa: form.cgpa ? Number(form.cgpa) : undefined });
       await fetchUser?.();
       setMessage("Application submitted. Our team will verify your profile within 48 hours.");
-      setForm({ phone: "", college: "", domain: "", branch: "", year: "", cgpa: "", bio: "", linkedin: "", upiId: "" });
+      setForm({ phone: "", college: "", domain: "", branch: "", year: "", cgpa: "", bio: "", linkedin: "", upiId: "", affiliatedCollege: "" });
     } catch (err) { setError(err?.response?.data?.message || "Submission failed"); } finally { setLoading(false); }
   };
 
@@ -211,6 +223,18 @@ function BecomeMentor() {
                           </div>
                         )}
                       </div>
+                      {isNewGen && (
+                        <div className="animate-scale-in">
+                          <Input
+                            label="Affiliated College/University *"
+                            placeholder="e.g. Rishihood University"
+                            value={form.affiliatedCollege}
+                            onChange={(e) => update("affiliatedCollege", e.target.value)}
+                            error={fieldErrors.affiliatedCollege}
+                            className="rounded-2xl"
+                          />
+                        </div>
+                      )}
                       <div className="space-y-2">
                         <div className="text-sm font-bold text-fg ml-1">Domain</div>
                         <select className="w-full rounded-2xl border border-border bg-surface px-4 py-3.5 text-sm text-fg outline-none focus:ring-2 focus:ring-primary/20 transition shadow-sm" value={form.domain} onChange={(e) => update("domain", e.target.value)}>

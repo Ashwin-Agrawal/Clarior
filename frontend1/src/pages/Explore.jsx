@@ -66,7 +66,11 @@ function Explore() {
           .toLowerCase()
           .includes(search.trim().toLowerCase());
       const matchState = stateFilter === "All" || c.state === stateFilter;
-      const matchType = typeFilter === "All" || c.type === typeFilter;
+      const matchType =
+        typeFilter === "All" ||
+        c.type === typeFilter ||
+        (typeFilter === "New-Gen" && c.type === "New Gen") ||
+        (typeFilter === "New Gen" && c.type === "New-Gen");
       return matchSearch && matchState && matchType;
     });
   }, [colleges, search, stateFilter, typeFilter]);
