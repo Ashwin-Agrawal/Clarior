@@ -1,5 +1,7 @@
 const Slot = require("../models/Slots");
 const mongoose = require("mongoose");
+const Booking = require("../models/Booking");
+const User = require("../models/User");
 
 const parseTimeToMinutes = (time) => {
   const match = time.match(/^(\d{1,2}):(\d{2})(?:-(\d{1,2}):(\d{2}))?$/);
@@ -302,5 +304,71 @@ exports.getSlotsBySenior = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+// ❌ Cancel a slot (senior only) — refunds student if booked
+exports.cancelSlot = async (req, res) => {
+  const dbSession = await mongoose.startSession();
+  dbSession.startTransaction();
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      await dbSession.abortTransaction();
+      dbSession.endSession();
+      return res.status(400).json({ success: false, message: "Invalid slot ID" });
+    }
+
+    const slot = await Slot.findById(id).session(dbSession);
+    if (!slot) {
+      await dbSession.abortTransaction();
+      dbSession.endSession();
+      return res.status(404).json({ success: false, message: "Slot not found" });
+    }
+
+    // Only the owning senior can cancel
+    if (slot.senior.toString() !== req.user.id) {
+      await dbSession.abortTransaction();
+      dbSession.endSession();
+      return res.status(403).json({ success: false, message: "Not authorized" });
+    }
+
+    // If slot is booked — refund student credit + cancel booking
+    if (slot.isBooked) {
+      const booking = await Booking.findOne({ slot: id }).session(dbSession);
+      if (booking) {
+        // Refund 1 credit to student
+        await User.findByIdAndUpdate(
+          booking.student,
+          { $inc: { callCredits: 1 } },
+          { session: dbSession }
+        );
+        // Mark booking as cancelled
+        await Booking.findByIdAndUpdate(
+          booking._id,
+          { $set: { status: "cancelled", cancelledBy: "senior" } },
+          { session: dbSession }
+        );
+      }
+    }
+
+    // Delete the slot
+    await Slot.findByIdAndDelete(id, { session: dbSession });
+
+    await dbSession.commitTransaction();
+    dbSession.endSession();
+
+    return res.json({
+      success: true,
+      message: slot.isBooked
+        ? "Slot cancelled and student credit refunded."
+        : "Slot cancelled successfully.",
+      wasBooked: slot.isBooked,
+    });
+  } catch (err) {
+    await dbSession.abortTransaction();
+    dbSession.endSession();
+    return res.status(500).json({ success: false, message: err.message });
   }
 };
