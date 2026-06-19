@@ -9,11 +9,6 @@ import CollegeCard from "../components/CollegeCard";
 import SiteContainer from "../components/layout/SiteContainer";
 import useSEO from "../hooks/useSEO";
 
-const stats = [
-  { label: "Active Seniors", value: "200+", numericValue: 200, suffix: "+", icon: "users" },
-  { label: "Colleges", value: "40+", numericValue: 40, suffix: "+", icon: "campus" },
-  { label: "Success Stories", value: "1.2k", numericValue: 1200, suffix: "", displayAs: "1.2k", icon: "spark" },
-];
 
 const motivationTips = [
   {
@@ -323,6 +318,18 @@ function Home() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [collegesList, setCollegesList] = useState([]);
   const [collegesLoading, setCollegesLoading] = useState(true);
+  const [globalStats, setGlobalStats] = useState({
+    collegesCount: 40,
+    seniorsCount: 200,
+    sessionsCount: 1200
+  });
+
+  const stats = useMemo(() => [
+    { label: "Active Seniors", numericValue: globalStats.seniorsCount, suffix: "+", icon: "users" },
+    { label: "Colleges", numericValue: globalStats.collegesCount, suffix: "+", icon: "campus" },
+    { label: "Success Stories", numericValue: globalStats.sessionsCount, suffix: "", displayAs: globalStats.sessionsCount >= 1000 ? `${(globalStats.sessionsCount / 1000).toFixed(1)}k` : undefined, icon: "spark" },
+  ], [globalStats]);
+
 
   // Mouse parallax for hero orbs
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -331,8 +338,8 @@ function Home() {
   // Carousel refs
   const sliderRef = useRef(null);
   const requestRef = useRef();
-  const speedRef = useRef(1.3);
-  const targetSpeedRef = useRef(1.3);
+  const speedRef = useRef(1.0);
+  const targetSpeedRef = useRef(1.0);
   const isMouseDownRef = useRef(false);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
@@ -413,7 +420,7 @@ function Home() {
 
   const handleMouseUp = () => {
     isMouseDownRef.current = false;
-    targetSpeedRef.current = 1.3;
+    targetSpeedRef.current = 1.0;
   };
 
   const handleMouseEnter = () => {
@@ -422,7 +429,7 @@ function Home() {
 
   const handleMouseLeave = () => {
     isMouseDownRef.current = false;
-    targetSpeedRef.current = 1.3;
+    targetSpeedRef.current = 1.0;
   };
 
   const handleTouchStart = (e) => {
@@ -508,7 +515,22 @@ function Home() {
         setCollegesLoading(false);
       }
     };
+
+    const fetchStats = async () => {
+      try {
+        const res = await api.get("/colleges/stats");
+        setGlobalStats({
+          collegesCount: res.data.collegesCount || 40,
+          seniorsCount: res.data.seniorsCount || 200,
+          sessionsCount: res.data.sessionsCount || 1200
+        });
+      } catch (err) {
+        console.error("Failed to load stats", err);
+      }
+    };
+
     fetchColleges();
+    fetchStats();
 
     const timer = setTimeout(() => {
       setPulseLoading(false);
@@ -587,32 +609,18 @@ function Home() {
               {/* Magnetic CTA Buttons */}
               <div className="scroll-reveal reveal-up stagger-3 mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link to="/explore">
-                  <div
-                    ref={magneticCTA1.ref}
-                    className="magnetic-btn"
-                    onMouseMove={magneticCTA1.handleMouseMove}
-                    onMouseLeave={magneticCTA1.handleMouseLeave}
-                  >
-                    <Button size="xl" className="relative w-full sm:w-auto overflow-hidden rounded-full px-10 shadow-[0_18px_45px_rgba(37,99,235,0.24)] group hover:-translate-y-1 transition-transform">
-                      <span className="relative z-10 flex items-center gap-2">
-                        Explore Seniors
-                        <LineIcon name="arrow" className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                      </span>
-                      <span className="absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.3)_50%,transparent_100%)] translate-x-[-180%] group-hover:translate-x-[180%] transition-transform duration-700" />
-                    </Button>
-                  </div>
+                  <Button size="xl" className="relative w-full sm:w-auto overflow-hidden rounded-full px-10 shadow-[0_18px_45px_rgba(37,99,235,0.24)] group hover:-translate-y-1 transition-transform">
+                    <span className="relative z-10 flex items-center gap-2">
+                      Explore Seniors
+                      <LineIcon name="arrow" className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    </span>
+                    <span className="absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.3)_50%,transparent_100%)] translate-x-[-180%] group-hover:translate-x-[180%] transition-transform duration-700" />
+                  </Button>
                 </Link>
                 <Link to="/become-mentor">
-                  <div
-                    ref={magneticCTA2.ref}
-                    className="magnetic-btn"
-                    onMouseMove={magneticCTA2.handleMouseMove}
-                    onMouseLeave={magneticCTA2.handleMouseLeave}
-                  >
-                    <Button variant="secondary" size="xl" className="w-full sm:w-auto rounded-full px-10 hover:-translate-y-1 transition-transform shadow-[0_12px_30px_rgba(15,23,42,0.08)]">
-                      Become a Senior
-                    </Button>
-                  </div>
+                  <Button variant="secondary" size="xl" className="w-full sm:w-auto rounded-full px-10 hover:-translate-y-1 transition-transform shadow-[0_12px_30px_rgba(15,23,42,0.08)]">
+                    Become a Senior
+                  </Button>
                 </Link>
               </div>
 
@@ -636,11 +644,14 @@ function Home() {
 
               {/* Motivation Tips Card */}
               <div className="scroll-reveal reveal-up stagger-6 mt-8 mx-auto max-w-4xl">
-                <div className="rounded-[32px] border border-border/80 bg-surface/75 p-5 md:p-7 shadow-[0_24px_80px_-25px_rgba(37,99,235,0.18)] dark:shadow-[0_24px_80px_-25px_rgba(96,165,250,0.08)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="rounded-[32px] border border-border/80 bg-surface/75 p-5 md:p-7 shadow-[0_24px_80px_-25px_rgba(37,99,235,0.18)] dark:shadow-[0_24px_80px_-25px_rgba(96,165,250,0.08)] backdrop-blur-xl transition-all duration-300">
                   <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-2 pb-2">
                     <div>
-                      <div className="text-[10px] font-black uppercase tracking-[0.25em] text-primary">Why students book</div>
-                      <div className="mt-1.5 text-sm font-semibold text-muted">Short, honest guidance that feels worth way more than ₹69.</div>
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-primary/8 to-accent/8 border border-primary/15 dark:border-primary/25 text-xs font-black uppercase tracking-[0.2em] text-primary shadow-sm hover:scale-[1.02] transition-transform select-none mb-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                        Why students book
+                      </div>
+                      <div className="mt-1 text-sm font-semibold text-muted">Short, honest guidance that feels worth way more than ₹69.</div>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
                       {motivationTips.map((_, index) => (
@@ -702,7 +713,15 @@ function Home() {
           <SiteContainer>
             <div ref={collegesRevealRef} className="relative overflow-hidden rounded-[40px] border border-white/20 bg-gradient-to-br from-primary/4 via-surface to-accent/4 p-6 shadow-[0_25px_90px_-35px_rgba(37,99,235,0.32)] md:p-10">
               <div className="absolute -inset-10 bg-gradient-to-tr from-primary/5 to-accent/5 rounded-[64px] blur-3xl pointer-events-none opacity-60 section-glow" />
-              <h2 className="scroll-reveal reveal-up relative z-10 text-[12px] font-black uppercase tracking-[0.5em] text-muted mb-8 text-center">Featuring colleges</h2>
+              
+              <h2 className="scroll-reveal reveal-up relative z-10 flex justify-center mb-8">
+                <span className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-2xl bg-gradient-to-r from-primary/8 via-accent/8 to-primary/8 border border-primary/20 dark:border-primary/30 text-xs sm:text-sm font-black uppercase tracking-[0.3em] text-primary shadow-sm hover:scale-[1.02] transition-transform select-none">
+                  <svg className="h-4.5 w-4.5 text-primary shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-3.163 0-6.194.298-9.132.872V21M3 21h18" />
+                  </svg>
+                  Featuring Colleges
+                </span>
+              </h2>
               
               {/* Carousel Container */}
               <div 

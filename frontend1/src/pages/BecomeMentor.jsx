@@ -10,6 +10,8 @@ import Card from "../components/ui/Card";
 import SiteContainer from "../components/layout/SiteContainer";
 import useSEO from "../hooks/useSEO";
 import AppShell from "../components/AppShell";
+import RequestCollegeModal from "../components/RequestCollegeModal";
+
 
 function BecomeMentorIcon({ name, className = "h-6 w-6 text-primary" }) {
   const icons = {
@@ -41,6 +43,8 @@ function BecomeMentor() {
 
   const [colleges, setColleges] = useState([]);
   const [showCollegesDropdown, setShowCollegesDropdown] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   useEffect(() => {
     const loadColleges = async () => {
@@ -125,10 +129,33 @@ function BecomeMentor() {
       }
     }
     
+    if (!form.domain) errs.domain = "Domain is required";
     if (!form.branch.trim()) errs.branch = "Branch is required";
+    
+    if (!form.year) {
+      errs.year = "Current Year of study is required";
+    } else {
+      const yr = Number(form.year);
+      if (isNaN(yr) || yr < 1 || yr > 5) {
+        errs.year = "Enter a valid year (1-5)";
+      }
+    }
+
+    if (!form.linkedin.trim()) {
+      errs.linkedin = "LinkedIn URL is required";
+    } else if (!/^https?:\/\/.+/i.test(form.linkedin.trim())) {
+      errs.linkedin = "Enter a valid URL";
+    }
+
+    if (!form.bio.trim()) {
+      errs.bio = "Short Bio is required";
+    } else if (form.bio.trim().length < 20) {
+      errs.bio = "Bio must be at least 20 characters";
+    }
+
     if (!form.upiId.trim()) errs.upiId = "UPI ID is required";
     else if (!/^[\w.]+@[\w]+$/.test(form.upiId.trim())) errs.upiId = "Enter a valid UPI ID (e.g. username@bank)";
-    if (form.linkedin && !/^https?:\/\/.+/i.test(form.linkedin)) errs.linkedin = "Enter a valid URL";
+    
     setFieldErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -222,7 +249,20 @@ function BecomeMentor() {
                             ))}
                           </div>
                         )}
+                        {form.college.trim() && (
+                          <div className="mt-2 text-xs text-muted text-left px-1">
+                            Can't find your college?{" "}
+                            <button
+                              type="button"
+                              onClick={() => setIsModalOpen(true)}
+                              className="text-primary font-black hover:underline cursor-pointer outline-none"
+                            >
+                              Request to add it
+                            </button>
+                          </div>
+                        )}
                       </div>
+
                       {isNewGen && (
                         <div className="animate-scale-in">
                           <Input
@@ -236,13 +276,14 @@ function BecomeMentor() {
                         </div>
                       )}
                       <div className="space-y-2">
-                        <div className="text-sm font-bold text-fg ml-1">Domain</div>
-                        <select className="w-full rounded-2xl border border-border bg-surface px-4 py-3.5 text-sm text-fg outline-none focus:ring-2 focus:ring-primary/20 transition shadow-sm" value={form.domain} onChange={(e) => update("domain", e.target.value)}>
+                        <div className="text-sm font-bold text-fg ml-1">Domain *</div>
+                        <select className={`w-full rounded-2xl border bg-surface px-4 py-3.5 text-sm text-fg outline-none focus:ring-2 focus:ring-primary/20 transition shadow-sm ${fieldErrors.domain ? "border-danger" : "border-border"}`} value={form.domain} onChange={(e) => update("domain", e.target.value)}>
                           {["", "Engineering", "Medical", "Commerce", "Arts", "Law", "Other"].map(d => <option key={d} value={d}>{d || "Select Domain"}</option>)}
                         </select>
+                        {fieldErrors.domain && <div className="mt-1.5 text-xs text-danger ml-1">{fieldErrors.domain}</div>}
                       </div>
                       <Input label="Branch/Department *" placeholder="CSE, MBBS..." value={form.branch} onChange={(e) => update("branch", e.target.value)} error={fieldErrors.branch} className="rounded-2xl" />
-                      <Input label="Current Year" type="number" placeholder="3" value={form.year} onChange={(e) => update("year", e.target.value)} className="rounded-2xl" />
+                      <Input label="Current Year *" type="number" placeholder="3" value={form.year} onChange={(e) => update("year", e.target.value)} error={fieldErrors.year} className="rounded-2xl" />
                     </div>
                   </div>
 
@@ -250,11 +291,12 @@ function BecomeMentor() {
                     <h3 className="text-sm font-bold text-muted border-b border-border/60 pb-3 text-center uppercase tracking-wider">Social & Bio</h3>
                     <div className="grid sm:grid-cols-2 gap-8">
                       <Input label="Phone Number *" placeholder="+91..." value={form.phone} onChange={(e) => update("phone", e.target.value)} error={fieldErrors.phone} className="rounded-2xl" />
-                      <Input label="LinkedIn URL" placeholder="https://..." value={form.linkedin} onChange={(e) => update("linkedin", e.target.value)} error={fieldErrors.linkedin} className="rounded-2xl" />
+                      <Input label="LinkedIn URL *" placeholder="https://..." value={form.linkedin} onChange={(e) => update("linkedin", e.target.value)} error={fieldErrors.linkedin} className="rounded-2xl" />
                     </div>
                     <div className="space-y-2">
-                      <div className="text-sm font-bold text-fg ml-1">Short Bio</div>
-                      <textarea className="w-full rounded-2xl border border-border bg-surface px-4 py-4 text-sm text-fg outline-none focus:ring-2 focus:ring-primary/20 transition resize-none shadow-sm" rows={4} placeholder="Describe how you can help juniors..." value={form.bio} onChange={(e) => update("bio", e.target.value)} />
+                      <div className="text-sm font-bold text-fg ml-1">Short Bio *</div>
+                      <textarea className={`w-full rounded-2xl border bg-surface px-4 py-4 text-sm text-fg outline-none focus:ring-2 focus:ring-primary/20 transition resize-none shadow-sm ${fieldErrors.bio ? "border-danger" : "border-border"}`} rows={4} placeholder="Describe how you can help juniors..." value={form.bio} onChange={(e) => update("bio", e.target.value)} />
+                      {fieldErrors.bio && <div className="mt-1.5 text-xs text-danger ml-1">{fieldErrors.bio}</div>}
                     </div>
                   </div>
 
@@ -319,6 +361,7 @@ function BecomeMentor() {
             </div>
           </div>
         </SiteContainer>
+        <RequestCollegeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </main>
       <Footer />
     </>

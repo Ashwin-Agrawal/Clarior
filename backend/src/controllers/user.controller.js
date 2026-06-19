@@ -329,3 +329,24 @@ exports.updateVerificationDetails = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
+
+// 👤 GET LOGGED IN USER'S TICKETS & COLLEGE REQUESTS
+exports.getMyRequests = async (req, res) => {
+  try {
+    const SupportTicket = require("../models/SupportTicket");
+    const CollegeRequest = require("../models/CollegeRequest");
+    const email = req.user.email;
+
+    const tickets = await SupportTicket.find({ email: { $regex: `^${email.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, $options: "i" } }).sort({ createdAt: -1 });
+    const requests = await CollegeRequest.find({ requesterEmail: { $regex: `^${email.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, $options: "i" } }).sort({ createdAt: -1 });
+
+    return res.json({
+      success: true,
+      tickets,
+      requests
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+

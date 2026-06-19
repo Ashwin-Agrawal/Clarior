@@ -280,7 +280,7 @@ function CollegeProfile() {
                 {branchList.length > 2 && (
                   <div className="flex flex-col items-center gap-3 w-full">
                     <span className="text-[10px] font-black uppercase tracking-[0.25em] text-muted">Filter by Branch</span>
-                    <div className="flex gap-2 overflow-x-auto scrollbar-hide max-w-full py-1.5 px-4 justify-start sm:justify-center w-full">
+                    <div className="flex gap-2 overflow-x-auto scrollbar-hide max-w-full py-1.5 px-4 justify-start w-full">
                       {branchList.map((branch) => (
                         <button
                           key={branch}

@@ -7,6 +7,7 @@ import Skeleton from "../components/ui/Skeleton";
 import Button from "../components/ui/Button";
 import SiteContainer from "../components/layout/SiteContainer";
 import useSEO from "../hooks/useSEO";
+import RequestCollegeModal from "../components/RequestCollegeModal";
 
 function SearchIcon({ className = "h-5 w-5" }) {
   return (
@@ -31,6 +32,7 @@ function Explore() {
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchColleges = async () => {
@@ -52,7 +54,12 @@ function Explore() {
   // Dynamically extract unique states list
   const statesList = useMemo(() => {
     const s = new Set(colleges.map((c) => c.state).filter(Boolean));
-    return ["All", ...Array.from(s).sort()];
+    const list = Array.from(s).sort();
+    const hasNcr = colleges.some(c => c.common === "DELHI-NCR" || c.common === "DELHI_NCR");
+    if (hasNcr) {
+      list.push("Delhi NCR");
+    }
+    return ["All", ...list.sort()];
   }, [colleges]);
 
   // Filtering
@@ -65,7 +72,10 @@ function Explore() {
           .join(" ")
           .toLowerCase()
           .includes(search.trim().toLowerCase());
-      const matchState = stateFilter === "All" || c.state === stateFilter;
+      const matchState =
+        stateFilter === "All" ||
+        c.state === stateFilter ||
+        (stateFilter === "Delhi NCR" && (c.common === "DELHI-NCR" || c.common === "DELHI_NCR"));
       const matchType =
         typeFilter === "All" ||
         c.type === typeFilter ||
@@ -146,7 +156,7 @@ function Explore() {
               {/* Filter 2: State Pills (Horizontal Scrollable) */}
               <div className="flex flex-col items-center gap-3 w-full">
                 <span className="text-[10px] font-black uppercase tracking-[0.25em] text-muted">Filter by State</span>
-                <div className="flex gap-2 overflow-x-auto scrollbar-hide max-w-full py-2.5 px-4 justify-start sm:justify-center w-full">
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide max-w-full py-2.5 px-4 justify-start w-full">
                   {statesList.map((state) => (
                     <button
                       key={state}
@@ -236,14 +246,20 @@ function Explore() {
               </div>
               <h3 className="text-2xl font-black text-fg">No colleges found</h3>
               <p className="text-muted mt-3 max-w-sm mx-auto leading-relaxed">
-                Try adjusting your search or location filters — or browse all colleges below.
+                Try adjusting your search or location filters — or request to add your college if it is missing.
               </p>
-              <Button variant="primary" className="mt-8 rounded-full px-10" onClick={clearFilters}>
-                See All Colleges
-              </Button>
+              <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button variant="primary" className="rounded-full px-10" onClick={clearFilters}>
+                  See All Colleges
+                </Button>
+                <Button variant="secondary" className="rounded-full px-10" onClick={() => setIsModalOpen(true)}>
+                  Request to Add College
+                </Button>
+              </div>
             </div>
           )}
         </SiteContainer>
+        <RequestCollegeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </main>
       <Footer />
     </>
@@ -251,3 +267,4 @@ function Explore() {
 }
 
 export default Explore;
+

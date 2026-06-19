@@ -14,6 +14,7 @@ const reviewRoutes = require("./routes/review.routes");
 const withdrawRoutes = require("./routes/withdraw.routes");
 const googleRoutes = require("./routes/google.routes");
 const collegeRoutes = require("./routes/college.routes");
+const supportRoutes = require("./routes/support.routes");
 const globalErrorHandler = require("./middleware/errorHandler.middleware");
 
 const paymentRoutes = require("./routes/payments.routes");
@@ -182,6 +183,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/withdraw", withdrawRoutes);
 app.use("/api/google", googleRoutes);
 app.use("/api/colleges", collegeRoutes);
+app.use("/api/support", supportRoutes);
 
 app.use("/api/payment", paymentRoutes);
 

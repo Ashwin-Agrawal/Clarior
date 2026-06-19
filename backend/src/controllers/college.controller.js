@@ -1,6 +1,7 @@
 const College = require("../models/College");
 const User = require("../models/User");
 const Slot = require("../models/Slots");
+const Booking = require("../models/Booking");
 
 // 🎯 Get all colleges — supports searching by name/city and filtering by state/type
 exports.getAllColleges = async (req, res) => {
@@ -111,3 +112,156 @@ exports.getCollegeById = async (req, res) => {
     });
   }
 };
+
+// 🎯 Get global stats of colleges, seniors and bookings
+exports.getGlobalStats = async (req, res) => {
+  try {
+    const collegesCount = await College.countDocuments();
+    const seniorsCount = await User.countDocuments({ role: "senior", isVerified: true });
+    const sessionsCount = await Booking.countDocuments({ status: { $ne: "cancelled" } });
+
+    res.status(200).json({
+      success: true,
+      collegesCount,
+      seniorsCount,
+      sessionsCount
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// 🎯 Request a new College (Public)
+exports.requestCollege = async (req, res) => {
+  try {
+    const { name, city, state, type, established, requesterEmail } = req.body;
+    const CollegeRequest = require("../models/CollegeRequest");
+    const emailService = require("../services/email.service");
+
+    if (!name || !city || !state) {
+      return res.status(400).json({
+        success: false,
+        message: "College Name, City, and State are required fields.",
+      });
+    }
+
+    const requestObj = await CollegeRequest.create({
+      name,
+      city,
+      state,
+      type: type || "Private",
+      established: established ? parseInt(established) : undefined,
+      requesterEmail,
+    });
+
+    // Fire email notification in background
+    emailService.sendCollegeRequestNotification(requestObj).catch((err) => {
+      console.error("Failed to send college request email notification:", err.message);
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "College request submitted successfully.",
+      request: requestObj,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// 🎯 Get all College requests (Admin Only)
+exports.getCollegeRequests = async (req, res) => {
+  try {
+    const CollegeRequest = require("../models/CollegeRequest");
+    const requests = await CollegeRequest.find().sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: requests.length,
+      requests,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// 🎯 Approve College Request (Admin Only — Creates College automatically)
+exports.approveCollegeRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const CollegeRequest = require("../models/CollegeRequest");
+
+    const requestObj = await CollegeRequest.findById(requestId);
+    if (!requestObj) {
+      return res.status(404).json({
+        success: false,
+        message: "College request not found",
+      });
+    }
+
+    if (requestObj.status === "approved") {
+      return res.status(400).json({
+        success: false,
+        message: "This request has already been approved",
+      });
+    }
+
+    // Mark request as approved/completed only (College is added manually by admin)
+    requestObj.status = "approved";
+    await requestObj.save();
+
+    res.json({
+      success: true,
+      message: "College request marked as approved/completed.",
+      request: requestObj
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// 🎯 Reject College Request (Admin Only)
+exports.rejectCollegeRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const CollegeRequest = require("../models/CollegeRequest");
+
+    const requestObj = await CollegeRequest.findByIdAndUpdate(
+      requestId,
+      { $set: { status: "rejected" } },
+      { new: true }
+    );
+
+    if (!requestObj) {
+      return res.status(404).json({
+        success: false,
+        message: "College request not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "College request rejected",
+      request: requestObj
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+

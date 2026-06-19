@@ -406,7 +406,7 @@ function Dashboard() {
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <span className="text-[10px] font-black uppercase tracking-widest text-muted">
-                  {user?.role === "senior" ? "Available Balance" : "Wallet Balance"}
+                  {user?.role === "senior" ? "Available Balance" : "Available Credit"}
                 </span>
                 <div className="text-2xl font-black text-fg mt-1.5 flex items-baseline gap-1">
                   {user?.role === "senior" ? (

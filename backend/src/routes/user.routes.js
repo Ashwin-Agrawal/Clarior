@@ -12,6 +12,7 @@ const {
   getMe,
   getSeniorById,
   updateVerificationDetails,
+  getMyRequests,
 } = require("../controllers/user.controller");
 
 // 🧑‍🏫 APPLY FOR SENIOR ROLE
@@ -29,6 +30,9 @@ router.get("/seniors", getAllSeniors);
 
 // Fix 10: PUBLIC — get single senior by ID (no auth required)
 router.get("/seniors/:id", getSeniorById);
+
+// 👤 GET CURRENT USER'S TICKETS & REQUESTS
+router.get("/me/requests", authMiddleware, getMyRequests);
 
 // 👤 GET CURRENT USER
 router.get("/me", authMiddleware, getMe);
