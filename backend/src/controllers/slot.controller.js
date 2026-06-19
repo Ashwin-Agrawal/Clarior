@@ -1,7 +1,5 @@
 const Slot = require("../models/Slots");
 const mongoose = require("mongoose");
-const Booking = require("../models/Booking");
-const User = require("../models/User");
 
 const parseTimeToMinutes = (time) => {
   const match = time.match(/^(\d{1,2}):(\d{2})(?:-(\d{1,2}):(\d{2}))?$/);
@@ -307,68 +305,71 @@ exports.getSlotsBySenior = async (req, res) => {
   }
 };
 
-// ❌ Cancel a slot (senior only) — refunds student if booked
-exports.cancelSlot = async (req, res) => {
-  const dbSession = await mongoose.startSession();
-  dbSession.startTransaction();
+// 👨‍🏫 Delete/Cancel slot by senior (with booking refund if booked)
+exports.deleteSlot = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      await dbSession.abortTransaction();
-      dbSession.endSession();
       return res.status(400).json({ success: false, message: "Invalid slot ID" });
     }
 
-    const slot = await Slot.findById(id).session(dbSession);
+    const slot = await Slot.findById(id).session(session);
     if (!slot) {
-      await dbSession.abortTransaction();
-      dbSession.endSession();
       return res.status(404).json({ success: false, message: "Slot not found" });
     }
 
-    // Only the owning senior can cancel
+    // Check ownership
     if (slot.senior.toString() !== req.user.id) {
-      await dbSession.abortTransaction();
-      dbSession.endSession();
-      return res.status(403).json({ success: false, message: "Not authorized" });
+      return res.status(403).json({ success: false, message: "You are not authorized to delete this slot" });
     }
 
-    // If slot is booked — refund student credit + cancel booking
+    let bookingCancelled = false;
+
     if (slot.isBooked) {
-      const booking = await Booking.findOne({ slot: id }).session(dbSession);
+      const Booking = require("../models/Booking");
+      const User = require("../models/User");
+      
+      const booking = await Booking.findOne({ slot: slot._id, status: { $ne: "cancelled" } }).session(session);
       if (booking) {
-        // Refund 1 credit to student
-        await User.findByIdAndUpdate(
-          booking.student,
-          { $inc: { callCredits: 1 } },
-          { session: dbSession }
-        );
-        // Mark booking as cancelled
-        await Booking.findByIdAndUpdate(
-          booking._id,
-          { $set: { status: "cancelled", cancelledBy: "senior" } },
-          { session: dbSession }
-        );
+        if (booking.status === "completed") {
+          return res.status(400).json({ success: false, message: "Cannot cancel a slot for a completed booking" });
+        }
+        if (booking.isCallStarted) {
+          return res.status(400).json({ success: false, message: "Cannot cancel a slot for an active call" });
+        }
+
+        // Cancel the booking
+        booking.status = "cancelled";
+        await booking.save({ session });
+
+        // Refund the student's credit
+        await User.updateOne(
+          { _id: booking.student },
+          { $inc: { callCredits: 1 } }
+        ).session(session);
+
+        bookingCancelled = true;
       }
     }
 
-    // Delete the slot
-    await Slot.findByIdAndDelete(id, { session: dbSession });
+    // Now delete the slot
+    await Slot.deleteOne({ _id: slot._id }).session(session);
 
-    await dbSession.commitTransaction();
-    dbSession.endSession();
+    await session.commitTransaction();
 
-    return res.json({
+    return res.status(200).json({
       success: true,
-      message: slot.isBooked
-        ? "Slot cancelled and student credit refunded."
-        : "Slot cancelled successfully.",
-      wasBooked: slot.isBooked,
+      message: bookingCancelled
+        ? "Slot deleted and booking cancelled. Student credit refunded."
+        : "Slot deleted successfully.",
     });
-  } catch (err) {
-    await dbSession.abortTransaction();
-    dbSession.endSession();
-    return res.status(500).json({ success: false, message: err.message });
+  } catch (error) {
+    await session.abortTransaction();
+    return res.status(500).json({ success: false, message: error.message });
+  } finally {
+    session.endSession();
   }
 };

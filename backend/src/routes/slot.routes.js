@@ -9,7 +9,7 @@ const {
   createSlots,
   getAvailableSlots,
   getSlotsBySenior,
-  cancelSlot,
+  deleteSlot,
 } = require("../controllers/slot.controller");
 
 // 🌍 Get all slots (public)
@@ -30,14 +30,6 @@ router.post(
   authorizeRoles("senior"),
   createSlots
 );
-
-// ❌ Cancel a slot (senior only) — refunds student if booked
-router.delete(
-  "/:id",
-  authMiddleware,
-  authorizeRoles("senior"),
-  cancelSlot
-);
-
 router.get("/senior/:id", getSlotsBySenior);
+router.delete("/:id", authMiddleware, authorizeRoles("senior"), deleteSlot);
 module.exports = router;
