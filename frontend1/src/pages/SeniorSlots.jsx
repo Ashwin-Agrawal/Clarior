@@ -217,16 +217,14 @@ function SeniorSlots() {
                     </div>
 
                     <div className="mt-4 flex items-center justify-between">
-                      <button 
+                      <Button 
+                        variant={isOpen ? "dark" : "secondary"}
+                        size="sm"
                         onClick={() => { setOpenSlotId(isOpen ? null : s._id); setConfirmSlotId(null); }} 
-                        className={`px-3.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer border ${
-                          isOpen 
-                            ? "bg-fg text-bg border-fg shadow-sm" 
-                            : "bg-primary/5 text-primary border-primary/15 hover:bg-primary/10"
-                        }`}
+                        className="rounded-2xl text-[10px] px-3.5 py-1.5 min-h-0 font-black uppercase tracking-widest shadow-sm hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer"
                       >
                         {isOpen ? "Hide Details" : "View Details"}
-                      </button>
+                      </Button>
                       {s.isBooked && (
                         <span className="px-2.5 py-1.5 rounded-xl text-[9px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
                           Linked to booking
