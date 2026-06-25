@@ -99,14 +99,37 @@ exports.createMeetForBooking = async (booking, { summary, description }) => {
   const start = booking.startTime || booking.date || new Date();
   const end = booking.endTime || new Date(new Date(start).getTime() + 25 * 60 * 1000);
 
+  // Fetch student and senior emails to invite them as attendees
+  const User = require("../models/User");
+  const attendees = [];
+  try {
+    if (booking.student) {
+      const student = await User.findById(booking.student).select("email");
+      if (student?.email) attendees.push({ email: student.email });
+    }
+  } catch (err) {
+    console.error("Error fetching student email for Calendar event:", err);
+  }
+
+  try {
+    if (booking.senior) {
+      const senior = await User.findById(booking.senior).select("email");
+      if (senior?.email) attendees.push({ email: senior.email });
+    }
+  } catch (err) {
+    console.error("Error fetching senior email for Calendar event:", err);
+  }
+
   const event = await calendar.events.insert({
     calendarId,
     conferenceDataVersion: 1,
+    sendUpdates: "all",
     requestBody: {
       summary: summary || "Clarior Mentorship Session",
       description: description || `Booking ${booking._id}`,
       start: { dateTime: new Date(start).toISOString() },
       end: { dateTime: new Date(end).toISOString() },
+      attendees: attendees,
       conferenceData: {
         createRequest: {
           requestId,
