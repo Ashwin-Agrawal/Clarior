@@ -149,7 +149,13 @@ exports.confirmByStudent = async (req, res) => {
     }
 
     booking.isStudentConfirmed = true;
-    booking.status = "completed";
+    if (booking.status !== "completed") {
+      booking.status = "completed";
+      const User = require("../models/User");
+      await User.findByIdAndUpdate(booking.senior, {
+        $inc: { sessionsCompleted: 1 }
+      });
+    }
     await booking.save();
 
     res.json({

@@ -99,6 +99,10 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    sessionsCompleted: {
+      type: Number,
+      default: 0,
+    },
 
     // 💰 PAYMENT (NEW)
     upiId: {

@@ -203,7 +203,10 @@ exports.createSlots = async (req, res) => {
 // 🌍 Get all available slots
 exports.getAvailableSlots = async (req, res) => {
   try {
-    const slots = await Slot.find({ isBooked: false }).populate({
+    const slots = await Slot.find({
+      isBooked: false,
+      dateTime: { $gt: new Date() }
+    }).populate({
       path: "senior",
       match: { isVerified: true },
       select: "name college linkedin rating isAnonymous",
@@ -266,8 +269,9 @@ exports.getSlotsBySenior = async (req, res) => {
       } catch (err) {}
     }
 
-    if (!isRequestingSelf) {
+    if (!isRequestingSelf || req.query.available === "true") {
       query.isBooked = false;
+      query.dateTime = { $gt: new Date() };
     }
 
     const slots = await Slot.find(query).sort({ date: 1 }).lean();
@@ -287,7 +291,8 @@ exports.getSlotsBySenior = async (req, res) => {
                 _id: booking._id,
                 studentName: booking.student?.name || "Student",
                 studentEmail: booking.student?.email || "",
-                meetLink: booking.meetLink || ""
+                meetLink: booking.meetLink || "",
+                status: booking.status
               } : null
             };
           }

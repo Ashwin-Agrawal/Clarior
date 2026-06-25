@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
@@ -103,6 +103,45 @@ function Session() {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [joinedLobby, setJoinedLobby] = useState(false);
+  const [cameraActive, setCameraActive] = useState(false);
+  const [micActive, setMicActive] = useState(false);
+  const [stream, setStream] = useState(null);
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [stream]);
+
+  const toggleCamera = async () => {
+    if (cameraActive) {
+      if (stream) {
+        stream.getVideoTracks().forEach(track => track.stop());
+        setStream(null);
+      }
+      setCameraActive(false);
+    } else {
+      try {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        setStream(mediaStream);
+        if (videoRef.current) {
+          videoRef.current.srcObject = mediaStream;
+        }
+        setCameraActive(true);
+      } catch (err) {
+        console.error("Error accessing webcam:", err);
+        setCameraActive(false);
+      }
+    }
+  };
+
+  const toggleMic = () => {
+    setMicActive(!micActive);
+  };
 
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
@@ -222,7 +261,120 @@ function Session() {
         </div>
       )}
 
-      {!loading && booking && (
+      {!loading && booking && !joinedLobby && booking.status !== "completed" && booking.status !== "cancelled" ? (
+        <div className="max-w-3xl mx-auto space-y-8 animate-fade-up">
+          {/* Pre-Session Header */}
+          <section className="relative overflow-hidden rounded-[36px] border border-border/80 bg-surface/90 p-8 shadow-[0_20px_60px_rgba(37,99,235,0.06)]">
+            <div className="space-y-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary px-3.5 py-1 text-[10px] font-black uppercase tracking-wider">
+                Setup Lobby
+              </span>
+              <h2 className="text-2xl font-black text-fg tracking-tight">Audio & Video Check</h2>
+              <p className="text-sm font-semibold text-muted leading-relaxed">
+                Test your devices before joining the scheduled mentorship room.
+              </p>
+            </div>
+          </section>
+
+          {/* Lobby Content Split */}
+          <div className="grid md:grid-cols-[1.2fr,1fr] gap-6">
+            {/* Left: Device Testing */}
+            <Card className="p-6 space-y-6 flex flex-col justify-between">
+              <div>
+                <h3 className="text-sm font-black uppercase tracking-widest text-muted mb-4">Webcam & Microphone</h3>
+                
+                {/* Visualizer Box */}
+                <div className="relative aspect-video rounded-2xl bg-surface2 border border-border/60 overflow-hidden flex items-center justify-center">
+                  {cameraActive ? (
+                    <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover transform -scale-x-100" />
+                  ) : (
+                    <div className="text-center space-y-3">
+                      <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary text-xl">
+                        📹
+                      </div>
+                      <div className="text-xs font-bold text-fg">Camera is turned off</div>
+                      <p className="text-[10px] text-muted max-w-xs mx-auto">Toggle camera to preview your video layout</p>
+                    </div>
+                  )}
+
+                  {/* sound visualizer overlay */}
+                  {micActive && (
+                    <div className="absolute bottom-3 left-3 right-3 flex items-center gap-1 bg-surface/85 backdrop-blur-md px-3 py-2 rounded-xl border border-border/50">
+                      <div className="flex gap-0.5 items-end h-3">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                          <div
+                            key={i}
+                            className="w-0.5 rounded-full bg-primary animate-pulse"
+                            style={{
+                              height: `${Math.random() * 100}%`,
+                              animationDuration: `${0.3 + i * 0.15}s`
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-[9px] font-black uppercase text-muted tracking-wider">Audio Input Active</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Toggles */}
+              <div className="flex gap-3 mt-4 pt-4 border-t border-border/40">
+                <Button
+                  onClick={toggleCamera}
+                  variant={cameraActive ? "primary" : "secondary"}
+                  className="flex-1 rounded-xl text-xs font-black uppercase tracking-wider py-3"
+                >
+                  {cameraActive ? "Disable Cam" : "Enable Cam"}
+                </Button>
+                <Button
+                  onClick={toggleMic}
+                  variant={micActive ? "primary" : "secondary"}
+                  className="flex-1 rounded-xl text-xs font-black uppercase tracking-wider py-3"
+                >
+                  {micActive ? "Mute Mic" : "Unmute Mic"}
+                </Button>
+              </div>
+            </Card>
+
+            {/* Right: Readiness Checklist */}
+            <Card className="p-6 space-y-6 flex flex-col justify-between">
+              <div className="space-y-4">
+                <h3 className="text-sm font-black uppercase tracking-widest text-muted">Readiness Checklist</h3>
+                <ul className="space-y-3.5">
+                  {[
+                    { title: "Stable Connection", desc: "Ensure you are in a quiet room with good network reception." },
+                    { title: "Microphone Active", desc: "Keep your audio unmuted so the mentor can hear you." },
+                    { title: "Ready Questions", desc: "Write down your key queries to make the most of the 20 minutes." }
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-success/15 border border-success/20 text-success text-[10px] font-bold">
+                        ✓
+                      </div>
+                      <div>
+                        <div className="text-xs font-black text-fg">{item.title}</div>
+                        <div className="text-[10px] text-muted mt-0.5 leading-relaxed">{item.desc}</div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <Button
+                onClick={() => {
+                  if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                  }
+                  setJoinedLobby(true);
+                }}
+                className="w-full rounded-2xl py-3.5 shadow-hero font-black uppercase tracking-wider"
+              >
+                Enter Call Room
+              </Button>
+            </Card>
+          </div>
+        </div>
+      ) : !loading && booking && (
         <div className="space-y-8 animate-fade-up">
           {/* 1. Full-Width Hero Status Banner */}
           {(() => {

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
@@ -45,8 +46,27 @@ function Step({ number, title, desc, last = false }) {
   );
 }
 
+const faqItems = [
+  { group: "general", q: "What is Clarior?", a: "Clarior is a peer mentorship platform connecting students with verified college seniors for 1-on-1 counseling calls. Seniors share their honest, firsthand experience about college selection, branches, and placement preparation." },
+  { group: "general", q: "How long is each guidance session?", a: "Each scheduled session is exactly 20 minutes long. This keeps the conversation focused, highly efficient, and productive." },
+  { group: "students", q: "How do I book a session?", a: "Go to 'Buy Credits' to purchase a session pass (1 credit = 1 session). Then browse the 'Colleges' directory, select a verified senior's profile, choose an available time slot, and click Book." },
+  { group: "students", q: "What happens if a senior cancels or misses a call?", a: "If a senior cancels a session or fails to show up, the credit is immediately refunded back to your account wallet so you can book another slot." },
+  { group: "seniors", q: "How do I earn on Clarior?", a: "You earn ₹52 per completed 20-minute guidance call. Once your application is verified, you can set your open time slots and accept bookings." },
+  { group: "seniors", q: "When can I withdraw my earnings?", a: "Once your session is marked complete, you can request a withdrawal via UPI directly from your dashboard balance. Withdrawals are processed within 24 hours." }
+];
+
 function HowItWorks() {
   useSEO({ title: 'How It Works', description: 'Learn how Clarior connects students with verified seniors for 1:1 guidance sessions at ₹69.' });
+
+  const [faqSearch, setFaqSearch] = useState("");
+  const [faqTab, setFaqTab] = useState("all");
+  const [openFaq, setOpenFaq] = useState(null);
+
+  const filteredFaqs = faqItems.filter(item => {
+    const matchesSearch = item.q.toLowerCase().includes(faqSearch.toLowerCase()) || item.a.toLowerCase().includes(faqSearch.toLowerCase());
+    const matchesTab = faqTab === "all" || item.group === faqTab;
+    return matchesSearch && matchesTab;
+  });
 
   return (
     <>
@@ -136,6 +156,80 @@ function HowItWorks() {
             <Link to="/mentor-guidelines" className="text-sm font-semibold text-primary transition hover:underline">
               Read full senior guidelines →
             </Link>
+          </div>
+        </div>
+
+        {/* Interactive Accordion FAQs */}
+        <div className="section-shell mt-10 rounded-3xl p-8 sm:p-10 animate-fade-up delay-350">
+          <div className="mb-8 text-center max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-fg" style={{ fontFamily: "'Outfit', sans-serif" }}>
+              Frequently Asked Questions
+            </h2>
+            <p className="mt-2 text-sm text-muted">
+              Have questions about Clarior? Search our helper guide or filter by topic.
+            </p>
+
+            {/* Search FAQ */}
+            <div className="mt-6 relative">
+              <input
+                type="text"
+                value={faqSearch}
+                onChange={(e) => setFaqSearch(e.target.value)}
+                placeholder="Search questions (e.g. refund, payouts...)"
+                className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-border bg-surface text-fg text-sm focus:outline-none focus:border-primary/50 focus:shadow-glow transition-all"
+              />
+              <svg className="absolute left-4 top-4 h-4.5 w-4.5 text-muted" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-4.3-4.3" />
+              </svg>
+            </div>
+
+            {/* Filter Tabs */}
+            <div className="mt-6 flex flex-wrap justify-center gap-2">
+              {["all", "general", "students", "seniors"].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => { setFaqTab(tab); setOpenFaq(null); }}
+                  className={`px-6 py-2.5 rounded-full text-xs font-black tracking-wider transition-all duration-300 cursor-pointer uppercase ${
+                    faqTab === tab
+                      ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white border-transparent shadow-md shadow-blue-500/20 scale-[1.03]"
+                      : "bg-white border border-slate-200 text-slate-600 hover:border-blue-400 hover:text-blue-600 dark:bg-surface/50 dark:border-border/75 dark:text-muted dark:hover:text-primary"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-3 max-w-3xl mx-auto">
+            {filteredFaqs.length === 0 ? (
+              <div className="text-center py-8 text-sm font-semibold text-muted">
+                No matching questions found. Try search query "refund" or "credits".
+              </div>
+            ) : (
+              filteredFaqs.map((faq, index) => {
+                const isOpen = openFaq === index;
+                return (
+                  <div key={index} className="rounded-2xl border border-border/70 bg-surface/90 overflow-hidden transition-all duration-350">
+                    <button
+                      onClick={() => setOpenFaq(isOpen ? null : index)}
+                      className="w-full flex items-center justify-between p-5 text-left font-bold text-fg text-sm sm:text-base cursor-pointer hover:bg-primary/5 transition-all"
+                    >
+                      <span>{faq.q}</span>
+                      <svg className={`h-4.5 w-4.5 text-primary transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                      </svg>
+                    </button>
+                    {isOpen && (
+                      <div className="px-5 pb-5 pt-1 text-xs sm:text-sm leading-relaxed text-muted border-t border-border/20 bg-surface-2/45 animate-slide-down">
+                        {faq.a}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
 

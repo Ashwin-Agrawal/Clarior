@@ -904,6 +904,8 @@ function Home() {
                   { 
                     label: "Single Pass", 
                     price: "₹69", 
+                    originalPrice: "₹89",
+                    badge: "SAVE ₹20",
                     note: "1 credit", 
                     cta: "Start with one call", 
                     variant: "secondary",
@@ -918,6 +920,8 @@ function Home() {
                   { 
                     label: "Growth Pack", 
                     price: "₹189", 
+                    originalPrice: "₹249",
+                    badge: "SAVE ₹60",
                     note: "3 credits", 
                     cta: "Get growth pack", 
                     variant: "primary",
@@ -925,7 +929,7 @@ function Home() {
                     isPrimary: true,
                     features: [
                       "3 separate 20-minute sessions", 
-                      "Save 9% overall compared to single pass", 
+                      "Save ₹60 overall compared to original price", 
                       "Compare multiple branches/colleges",
                       "Priority customer & booking support"
                     ] 
@@ -945,8 +949,18 @@ function Home() {
                           : "animated-border"
                       }`}
                     >
-                      <div className="text-xs font-black uppercase tracking-[0.2em] text-muted">{plan.label}</div>
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs font-black uppercase tracking-[0.2em] text-muted">{plan.label}</div>
+                        {plan.badge && (
+                          <span className="bg-success/10 text-success text-[10px] font-bold px-2 py-1 rounded-lg">
+                            {plan.badge}
+                          </span>
+                        )}
+                      </div>
                       <div className="mt-5 flex items-baseline gap-2">
+                        {plan.originalPrice && (
+                          <span className="text-xl line-through text-muted mr-1 font-bold">{plan.originalPrice}</span>
+                        )}
                         <span className="text-5xl font-black tracking-tight text-fg">{plan.price}</span>
                         <span className="font-semibold text-muted">/ {plan.note}</span>
                       </div>

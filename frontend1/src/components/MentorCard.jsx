@@ -160,7 +160,7 @@ function MentorCard({ mentor }) {
             </span>
           </div>
           <span className="text-xs font-black text-primary bg-primary/10 border border-primary/20 rounded-full px-3 py-1 shadow-sm">
-            ₹69 / session
+            1 Credit
           </span>
         </div>
 

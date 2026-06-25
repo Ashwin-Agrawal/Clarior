@@ -5,7 +5,7 @@ const Slot = require("../models/Slots");
 cron.schedule("0 0 * * *", async () => {
   try {
     const now = new Date();
-    const result = await Slot.deleteMany({ date: { $lt: now }, isBooked: false });
+    const result = await Slot.deleteMany({ dateTime: { $lt: now }, isBooked: false });
     console.log(`[CRON] Cleaned up ${result.deletedCount} expired slots`);
   } catch (err) {
     console.error("[CRON] Error cleaning slots:", err.message);

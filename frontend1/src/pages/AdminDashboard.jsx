@@ -4,6 +4,7 @@ import api from "../services/api";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import useSEO from "../hooks/useSEO";
+import ConfirmModal from "../components/ui/ConfirmModal";
 
 async function fetchGoogleStatus(setGoogleStatus) {
   try {
@@ -67,6 +68,14 @@ function AdminDashboard() {
   const [googleStatus, setGoogleStatus] = useState(null);
   const [msg, setMsg] = useState({ type: "", text: "" });
   const [activeTab, setActiveTab] = useState("queue");
+  const [confirmConfig, setConfirmConfig] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    confirmText: "",
+    onConfirm: () => {},
+    variant: "danger",
+  });
 
   const loadGoogleStatus = async () => {
     await fetchGoogleStatus(setGoogleStatus);
@@ -108,15 +117,25 @@ function AdminDashboard() {
     }
   };
 
-  const reject = async (id) => {
-    if (!window.confirm("Are you sure you want to reject and delete this user?")) return;
-    try { 
-      await api.delete(`/admin/user/${id}`); 
-      setMsg({ type: "success", text: "User deleted." }); 
-      refresh(); 
-    } catch (e) { 
-      setMsg({ type: "error", text: e?.response?.data?.message || "Reject failed" }); 
-    }
+  const reject = (id) => {
+    setConfirmConfig({
+      isOpen: true,
+      title: "Reject & Delete User",
+      message: "Are you sure you want to reject and delete this user? This action is permanent.",
+      confirmText: "Delete User",
+      variant: "danger",
+      onConfirm: async () => {
+        try { 
+          await api.delete(`/admin/user/${id}`); 
+          setMsg({ type: "success", text: "User deleted." }); 
+          refresh(); 
+        } catch (e) { 
+          setMsg({ type: "error", text: e?.response?.data?.message || "Reject failed" }); 
+        } finally {
+          setConfirmConfig(prev => ({ ...prev, isOpen: false }));
+        }
+      }
+    });
   };
 
   const approvePayout = async (id) => {
@@ -129,15 +148,25 @@ function AdminDashboard() {
     }
   };
 
-  const rejectPayout = async (id) => {
-    if (!window.confirm("Are you sure you want to reject this payout?")) return;
-    try { 
-      await api.patch(`/withdraw/reject/${id}`); 
-      setMsg({ type: "success", text: "Payout rejected." }); 
-      refresh(); 
-    } catch (e) { 
-      setMsg({ type: "error", text: e?.response?.data?.message || "Reject payout failed" }); 
-    }
+  const rejectPayout = (id) => {
+    setConfirmConfig({
+      isOpen: true,
+      title: "Reject Payout Request",
+      message: "Are you sure you want to reject this withdrawal payout request?",
+      confirmText: "Reject Payout",
+      variant: "danger",
+      onConfirm: async () => {
+        try { 
+          await api.patch(`/withdraw/reject/${id}`); 
+          setMsg({ type: "success", text: "Payout rejected." }); 
+          refresh(); 
+        } catch (e) { 
+          setMsg({ type: "error", text: e?.response?.data?.message || "Reject payout failed" }); 
+        } finally {
+          setConfirmConfig(prev => ({ ...prev, isOpen: false }));
+        }
+      }
+    });
   };
 
   const handleReleaseEarnings = async (id) => {
@@ -150,15 +179,25 @@ function AdminDashboard() {
     }
   };
 
-  const handleRejectEarnings = async (id) => {
-    if (!window.confirm("Are you sure you want to reject this session payout? This will refund the credit to the student and deduct the payout from the senior's pending balance.")) return;
-    try {
-      await api.patch(`/admin/reject-earnings/${id}`);
-      setMsg({ type: "success", text: "Earnings rejected and student credit refunded." });
-      refresh();
-    } catch (e) {
-      setMsg({ type: "error", text: e?.response?.data?.message || "Failed to reject earnings" });
-    }
+  const handleRejectEarnings = (id) => {
+    setConfirmConfig({
+      isOpen: true,
+      title: "Reject Session Payout",
+      message: "Are you sure you want to reject this session payout? This will refund the credit to the student and deduct the payout from the senior's pending balance.",
+      confirmText: "Reject Payout & Refund",
+      variant: "danger",
+      onConfirm: async () => {
+        try {
+          await api.patch(`/admin/reject-earnings/${id}`);
+          setMsg({ type: "success", text: "Earnings rejected and student credit refunded." });
+          refresh();
+        } catch (e) {
+          setMsg({ type: "error", text: e?.response?.data?.message || "Failed to reject earnings" });
+        } finally {
+          setConfirmConfig(prev => ({ ...prev, isOpen: false }));
+        }
+      }
+    });
   };
 
   const connectGoogle = async () => {
@@ -198,15 +237,25 @@ function AdminDashboard() {
     }
   };
 
-  const handleRejectRequest = async (id) => {
-    if (!window.confirm("Are you sure you want to reject this college request?")) return;
-    try {
-      await api.patch(`/colleges/admin/requests/${id}/reject`);
-      setMsg({ type: "success", text: "College request rejected." });
-      refresh();
-    } catch (e) {
-      setMsg({ type: "error", text: e?.response?.data?.message || "Failed to reject college request" });
-    }
+  const handleRejectRequest = (id) => {
+    setConfirmConfig({
+      isOpen: true,
+      title: "Reject College Request",
+      message: "Are you sure you want to reject this college addition request?",
+      confirmText: "Reject Request",
+      variant: "danger",
+      onConfirm: async () => {
+        try {
+          await api.patch(`/colleges/admin/requests/${id}/reject`);
+          setMsg({ type: "success", text: "College request rejected." });
+          refresh();
+        } catch (e) {
+          setMsg({ type: "error", text: e?.response?.data?.message || "Failed to reject college request" });
+        } finally {
+          setConfirmConfig(prev => ({ ...prev, isOpen: false }));
+        }
+      }
+    });
   };
 
   const formatISTDate = (dateStr) => {
@@ -646,6 +695,17 @@ function AdminDashboard() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={confirmConfig.isOpen}
+        title={confirmConfig.title}
+        message={confirmConfig.message}
+        confirmText={confirmConfig.confirmText}
+        cancelText="Cancel"
+        onConfirm={confirmConfig.onConfirm}
+        onCancel={() => setConfirmConfig(prev => ({ ...prev, isOpen: false }))}
+        variant={confirmConfig.variant}
+      />
     </AppShell>
   );
 }

@@ -182,6 +182,21 @@ function Dashboard() {
   const [dataLoading, setDataLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(() => Date.now());
 
+  const upcomingSlots = useMemo(() => {
+    return slots.filter((slot) => {
+      if (slot.dateTime) {
+        return new Date(slot.dateTime).getTime() > currentTime;
+      }
+      if (slot.date && slot.time) {
+        const [h, m] = slot.time.split("-")[0].split(":").map(Number);
+        const d = new Date(slot.date);
+        d.setHours(h, m, 0, 0);
+        return d.getTime() > currentTime;
+      }
+      return true;
+    });
+  }, [slots, currentTime]);
+
   useSEO({ title: "Dashboard", description: "Manage bookings, availability, and payout transfers on Clarior." });
 
   useEffect(() => {
@@ -493,6 +508,7 @@ function Dashboard() {
           </Card>
         </div>
 
+
         {/* Sessions Section */}
         {(user?.role === "student" || user?.role === "senior") && (
           <div className="grid gap-8 lg:grid-cols-2">
@@ -634,8 +650,8 @@ function Dashboard() {
                 </div>
                 
                 <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-border/60">
-                  {slots.length ? (
-                    slots.slice(0, 3).map((slot, idx) => {
+                  {upcomingSlots.length ? (
+                    upcomingSlots.slice(0, 3).map((slot, idx) => {
                       const slotDate = new Date(slot.date);
                       const isPast = slotDate.getTime() < Date.now();
                       return (

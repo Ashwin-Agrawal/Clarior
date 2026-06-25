@@ -10,6 +10,7 @@ import Footer from "../components/Footer";
 import SiteContainer from "../components/layout/SiteContainer";
 import useSEO from "../hooks/useSEO";
 import { useToast } from "../context/ToastContext";
+import ConfirmModal from "../components/ui/ConfirmModal";
 
 function getGradient(domain = "", name = "") {
   const domainLower = domain?.toLowerCase() || "";
@@ -133,25 +134,34 @@ function Profile() {
   const [error, setError] = useState("");
   const [bookingSlot, setBookingSlot] = useState(null);
   const bookingPanelRef = useRef(null);
+  const isOwnProfile = user && (user.id === id || user._id === id);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [slotToBook, setSlotToBook] = useState(null);
 
   const slotsByDay = useMemo(() => {
     const groups = {};
     slots.forEach(slot => {
-      const dateStr = new Date(slot.date).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
-      if (!groups[dateStr]) groups[dateStr] = [];
-      groups[dateStr].push(slot);
+      if (!slot.date) return;
+      const d = new Date(slot.date);
+      if (isNaN(d.getTime())) return;
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const dayVal = String(d.getDate()).padStart(2, '0');
+      const dateKey = `${year}-${month}-${dayVal}`;
+      if (!groups[dateKey]) groups[dateKey] = [];
+      groups[dateKey].push(slot);
     });
     return groups;
   }, [slots]);
 
-  const days = useMemo(() => Object.keys(slotsByDay), [slotsByDay]);
+  const days = useMemo(() => Object.keys(slotsByDay).sort(), [slotsByDay]);
   const [activeDay, setActiveDay] = useState(null);
 
-    useEffect(() => {
-      if (days.length > 0 && !activeDay) {
-        setActiveDay(days[0]);
-      }
-    }, [days, activeDay]);
+  useEffect(() => {
+    if (days.length > 0 && (!activeDay || !days.includes(activeDay))) {
+      setActiveDay(days[0]);
+    }
+  }, [days, activeDay]);
 
   useSEO({ title: mentor?.name ? `${mentor.name} — Senior Profile` : 'Senior Profile', description: mentor ? `Book a 20-minute 1:1 session with ${mentor.name} from ${mentor.college || 'top college'} on Clarior.` : 'Find and book verified seniors on Clarior.' });
 
@@ -160,7 +170,7 @@ function Profile() {
       setError(""); setLoading(true);
       const res = await api.get(`/users/seniors/${id}`);
       setMentor(res.data.senior);
-      const slotRes = await api.get(`/slots/senior/${id}`);
+      const slotRes = await api.get(`/slots/senior/${id}?available=true`);
       setSlots(slotRes.data.slots || []);
       const reviewRes = await api.get('/reviews/' + id);
       setReviews(reviewRes.data.reviews || []);
@@ -178,18 +188,26 @@ function Profile() {
     load();
   }, [id]);
 
-  const handleBooking = async (slotId) => {
+  const triggerBooking = (slotId) => {
+    if (!user) return navigate("/login");
+    if (user.callCredits === 0) return navigate("/buy-credits");
+    setSlotToBook(slotId);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmBooking = async () => {
+    if (!slotToBook) return;
     try {
-      setBookingSlot(slotId);
-      if (!user) return navigate("/login");
-      if (user.callCredits === 0) return navigate("/buy-credits");
-      await api.post("/bookings", { slotId });
+      setBookingSlot(slotToBook);
+      setConfirmOpen(false);
+      await api.post("/bookings", { slotId: slotToBook });
       showSuccess("Session booked! Find joining links in your dashboard.");
-      setSlots(prev => prev.filter(s => s._id !== slotId));
+      setSlots(prev => prev.filter(s => s._id !== slotToBook));
     } catch (err) {
       showError(err?.response?.data?.message || "Booking failed");
     } finally {
       setBookingSlot(null);
+      setSlotToBook(null);
     }
   };  const gradient = getGradient(mentor?.domain, mentor?.name || "");
   const initials = mentor?.name?.trim().split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase() || "?";
@@ -199,8 +217,9 @@ function Profile() {
       <Navbar />
       <main className="bg-bg min-h-screen pb-24 relative overflow-hidden">
         {/* Ambient background glow orbs */}
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px] pointer-events-none animate-float-slow" />
-        <div className="absolute bottom-[20%] right-[-10%] w-[45%] h-[45%] rounded-full bg-accent/5 blur-[130px] pointer-events-none animate-float" style={{ animationDelay: '-3s' }} />
+        <div className="absolute top-[-5%] left-[-5%] w-[60%] h-[60%] rounded-full bg-gradient-to-tr from-primary/10 to-accent/5 blur-[130px] pointer-events-none animate-float-slow" />
+        <div className="absolute bottom-[10%] right-[-5%] w-[50%] h-[50%] rounded-full bg-gradient-to-bl from-accent/10 to-primary/5 blur-[140px] pointer-events-none animate-float" style={{ animationDelay: '-3s' }} />
+        <div className="absolute top-[40%] left-[20%] w-[40%] h-[40%] rounded-full bg-indigo-500/5 blur-[120px] pointer-events-none animate-float-slow" style={{ animationDelay: '-6s' }} />
 
         <SiteContainer className="max-w-6xl relative">
           {loading && (
@@ -264,7 +283,7 @@ function Profile() {
                       <div className="flex flex-col sm:flex-row sm:items-center gap-6 pt-2">
                         <div className="relative group/avatar shrink-0">
                           {/* Inner glowing aura */}
-                          <div className={`absolute -inset-1 rounded-full bg-gradient-to-tr ${gradient} opacity-50 blur-md group-hover/avatar:opacity-85 transition-opacity duration-500 animate-pulse`} />
+                          <div className={`absolute -inset-1.5 rounded-full bg-gradient-to-tr ${gradient} opacity-60 blur-lg group-hover/avatar:opacity-90 transition-opacity duration-500 animate-pulse`} />
                           
                           {/* Main avatar */}
                           <div className={`relative flex h-24 w-24 md:h-28 md:w-28 items-center justify-center rounded-full border-[5px] border-surface bg-gradient-to-tr ${gradient} text-2xl md:text-4xl font-black text-white shadow-xl transition-all duration-500 group-hover/avatar:scale-105 group-hover/avatar:rotate-3`}>
@@ -295,7 +314,7 @@ function Profile() {
                       {/* Bento Details Hub */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 pt-6 border-t border-border/30">
                         {/* College Widget */}
-                        <div className="flex items-center gap-4 p-4 rounded-2xl bg-surface-2/60 border border-border/35 hover:border-primary/20 hover:bg-surface transition-all duration-300 shadow-sm">
+                        <div className="flex items-center gap-4 p-4 rounded-2xl bg-surface2/60 border border-border/35 hover:border-primary/30 hover:bg-surface backdrop-blur-md hover:shadow-soft hover:scale-[1.02] transition-all duration-300 shadow-sm">
                           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                             <LocationIcon className="h-6 w-6" />
                           </div>
@@ -313,7 +332,7 @@ function Profile() {
                         </div>
 
                         {/* Academic Year Widget */}
-                        <div className="flex items-center gap-4 p-4 rounded-2xl bg-surface-2/60 border border-border/35 hover:border-accent/20 hover:bg-surface transition-all duration-300 shadow-sm">
+                        <div className="flex items-center gap-4 p-4 rounded-2xl bg-surface2/60 border border-border/35 hover:border-accent/30 hover:bg-surface backdrop-blur-md hover:shadow-soft hover:scale-[1.02] transition-all duration-300 shadow-sm">
                           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent">
                             <CalendarIcon className="h-6 w-6" />
                           </div>
@@ -326,7 +345,7 @@ function Profile() {
                         </div>
 
                         {/* Sessions Widget */}
-                        <div className="flex items-center gap-4 p-4 rounded-2xl bg-surface-2/60 border border-border/35 hover:border-success/20 hover:bg-surface transition-all duration-300 shadow-sm">
+                        <div className="flex items-center gap-4 p-4 rounded-2xl bg-surface2/60 border border-border/35 hover:border-success/30 hover:bg-surface backdrop-blur-md hover:shadow-soft hover:scale-[1.02] transition-all duration-300 shadow-sm">
                           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-success/10 text-success">
                             <AcademicIcon className="h-6 w-6" />
                           </div>
@@ -339,7 +358,7 @@ function Profile() {
                         </div>
 
                         {/* Rating Widget */}
-                        <div className="flex items-center gap-4 p-4 rounded-2xl bg-surface-2/60 border border-border/35 hover:border-warning/20 hover:bg-surface transition-all duration-300 shadow-sm">
+                        <div className="flex items-center gap-4 p-4 rounded-2xl bg-surface2/60 border border-border/35 hover:border-warning/30 hover:bg-surface backdrop-blur-md hover:shadow-soft hover:scale-[1.02] transition-all duration-300 shadow-sm">
                           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-warning/10 text-warning">
                             <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -406,7 +425,65 @@ function Profile() {
                     </section>
 
                     <section>
-                      <h2 className="text-xl font-black text-fg mb-6">Recent Reviews</h2>
+                      <h2 className="text-xl font-black text-fg mb-6">Ratings & Reviews</h2>
+                      
+                      {/* Ratings Breakdown Grid */}
+                      <Card className="p-6 mb-6 border border-border/50 bg-surface shadow-soft">
+                        <div className="grid md:grid-cols-[1fr,2fr] gap-8 items-center">
+                          {/* Left stats summary */}
+                          <div className="text-center md:border-r md:border-border/40 md:pr-8 py-2">
+                            <h3 className="text-5xl font-black text-fg leading-none">
+                              {mentor.rating ? mentor.rating.toFixed(1) : "0.0"}
+                            </h3>
+                            <div className="flex justify-center text-warning gap-1 mt-3">
+                              {[1,2,3,4,5].map(i => (
+                                <svg key={i} width="16" height="16" fill={i <= Math.round(mentor.rating || 0) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                              ))}
+                            </div>
+                            <p className="text-xs text-muted font-bold mt-2 uppercase tracking-wider">
+                              {mentor.numReviews || 0} Verified Reviews
+                            </p>
+                          </div>
+
+                          {/* Right bar chart */}
+                          <div className="space-y-2">
+                            {[5, 4, 3, 2, 1].map((stars) => {
+                              const count = reviews.filter(r => Math.round(r.rating) === stars).length;
+                              const pct = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
+                              return (
+                                <div key={stars} className="flex items-center gap-3 text-xs">
+                                  <span className="w-8 text-right font-black text-fg">{stars} ★</span>
+                                  <div className="flex-1 h-3 rounded-full bg-border/40 overflow-hidden relative shadow-inner">
+                                    <div 
+                                      className="absolute top-0 bottom-0 left-0 rounded-full bg-gradient-to-r from-warning to-amber-400 transition-all duration-500" 
+                                      style={{ width: `${pct}%` }} 
+                                    />
+                                  </div>
+                                  <span className="w-10 text-muted font-bold text-right">{Math.round(pct)}%</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Recommendation Tags */}
+                        {reviews.length > 0 && (
+                          <div className="mt-6 pt-5 border-t border-border/30">
+                            <span className="text-[10px] font-black uppercase text-muted tracking-wider block mb-3">Student Tags & Highlights</span>
+                            <div className="flex flex-wrap gap-2">
+                              {["🎓 Career Guidance", "📝 Admission Tips", "💻 Placement Prep", "💬 Extremely Friendly"].map((tag, idx) => (
+                                <span key={idx} className="inline-flex items-center rounded-xl bg-primary/8 border border-primary/15 text-primary text-[10px] font-black uppercase tracking-wider px-3.5 py-1.5 shadow-sm">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </Card>
+
+                      <h3 className="text-base font-black text-fg mb-4 uppercase tracking-wider">Recent Reviews</h3>
                       <div className="space-y-4">
                         {reviews.length === 0 ? (
                           <Card className="p-8 text-center border-dashed border-2 border-border/70 bg-surface/40 backdrop-blur-sm">
@@ -458,61 +535,116 @@ function Profile() {
                       <h2 className="text-xl font-black text-fg mb-6">Choose a Slot</h2>
 
                       <div className="space-y-4">
+                        {isOwnProfile && (
+                          <div className="p-4 rounded-2xl bg-primary/10 border border-primary/20 text-center text-xs font-bold text-fg mb-4">
+                            This is your public profile. You cannot book your own slots.
+                          </div>
+                        )}
                         {days.length > 0 ? (
                           <>
                             {/* Calendar Week Strip */}
-                            <div className="flex gap-2 overflow-x-auto pb-3 -mx-2 px-2 scrollbar-hide">
-                              {days.map((day) => (
-                                <button
-                                  key={day}
-                                  onClick={() => setActiveDay(day)}
-                                  className={`flex-shrink-0 px-4 py-3 rounded-2xl border text-center transition-all cursor-pointer ${
-                                    activeDay === day
-                                      ? "bg-primary border-primary text-white shadow-md scale-[1.03]"
-                                      : "bg-surface border-border text-muted hover:border-primary/40 hover:text-fg"
-                                  }`}
-                                >
-                                  <div className="text-[9px] font-black uppercase tracking-wider opacity-70">
-                                    {day.split(" ")[0].replace(",", "")}
-                                  </div>
-                                  <div className="text-xs font-black mt-0.5">
-                                    {day.split(" ").slice(1).join(" ")}
-                                  </div>
-                                </button>
-                              ))}
+                            <div className="flex gap-2.5 overflow-x-auto pb-3 -mx-2 px-2 scrollbar-hide">
+                              {days.map((dayKey) => {
+                                const parsedDate = new Date(dayKey);
+                                const weekday = parsedDate.toLocaleDateString("en-IN", { weekday: "short" });
+                                const dateLabel = parsedDate.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+                                const isActive = activeDay === dayKey;
+                                return (
+                                  <button
+                                    key={dayKey}
+                                    onClick={() => setActiveDay(dayKey)}
+                                    className={`flex-shrink-0 px-4.5 py-3 rounded-2xl border text-center transition-all duration-300 transform cursor-pointer ${
+                                      isActive
+                                        ? "bg-gradient-to-tr from-primary via-blue-600 to-accent border-transparent text-white shadow-[0_8px_20px_-6px_rgba(37,99,235,0.4)] scale-105"
+                                        : "bg-surface2/60 dark:bg-surface-2/40 border-border/40 text-fg hover:border-primary/40 hover:text-primary hover:scale-[1.02]"
+                                    }`}
+                                  >
+                                    <div className={`text-[9px] font-black uppercase tracking-[0.18em] ${isActive ? "text-white/85" : "text-muted"}`}>
+                                      {weekday}
+                                    </div>
+                                    <div className={`text-sm font-black mt-0.5 ${isActive ? "text-white" : "text-fg"}`}>
+                                      {dateLabel}
+                                    </div>
+                                  </button>
+                                );
+                              })}
                             </div>
 
-                            {/* Slots for Active Day */}
-                            <div className="space-y-3 mt-4">
-                              {(slotsByDay[activeDay] || []).map((slot) => (
-                                <Card 
-                                  key={slot._id} 
-                                  className="group p-5 flex justify-between items-center gap-4 hover:border-primary/40 hover:shadow-hero hover:shadow-primary/5 hover:scale-[1.01] active:scale-100 transition-all duration-300 cursor-pointer bg-surface"
-                                  onClick={() => handleBooking(slot._id)}
-                                >
-                                  <div>
-                                    <span className="inline-flex items-center gap-1.5 rounded-full bg-success/10 text-success border border-success/20 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider select-none animate-pulse">
-                                      Available
-                                    </span>
-                                    <div className="mt-2 flex items-center gap-2 text-sm font-black text-fg">
-                                      <div className="text-primary shrink-0">
-                                        <StatIcon type="clock" />
-                                      </div>
-                                      <span>{slot.time || slot.startTime}</span>
+                             {/* Slots for Active Day Categorized */}
+                            {(() => {
+                              const activeSlots = slotsByDay[activeDay] || [];
+                              
+                              const categorizeTime = (timeStr) => {
+                                  if (!timeStr) return "evening";
+                                  const lower = timeStr.toLowerCase();
+                                  if (lower.includes("am")) {
+                                    const hour = parseInt(lower);
+                                    if (hour < 12) return "morning";
+                                  }
+                                  if (lower.includes("pm")) {
+                                    const hour = parseInt(lower);
+                                    if (hour === 12 || hour < 5) return "afternoon";
+                                    return "evening";
+                                  }
+                                  const hour = parseInt(timeStr.split(":")[0]);
+                                  if (!isNaN(hour)) {
+                                    if (hour < 12) return "morning";
+                                    if (hour < 17) return "afternoon";
+                                    return "evening";
+                                  }
+                                  return "evening";
+                                };
+
+                              const morningSlots = activeSlots.filter(s => categorizeTime(s.time) === "morning");
+                              const afternoonSlots = activeSlots.filter(s => categorizeTime(s.time) === "afternoon");
+                              const eveningSlots = activeSlots.filter(s => categorizeTime(s.time) === "evening");
+
+                              const renderSlotGroup = (title, items) => {
+                                if (items.length === 0) return null;
+                                return (
+                                  <div className="space-y-2.5 mt-5 animate-fade-up">
+                                    <h4 className="text-[10px] font-black text-muted uppercase tracking-[0.2em] flex items-center gap-2 pl-1">
+                                      <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                                      {title}
+                                    </h4>
+                                    <div className="grid grid-cols-1 gap-2.5">
+                                      {items.map((slot) => (
+                                        <div
+                                          key={slot._id}
+                                          className={`group flex items-center justify-between p-3.5 rounded-2xl border border-border/40 bg-surface2/60 dark:bg-surface-2/20 hover:border-primary/30 hover:bg-surface transition-all duration-300 ${
+                                            bookingSlot === slot._id || isOwnProfile ? "opacity-60 pointer-events-none" : ""
+                                          }`}
+                                        >
+                                          <div className="flex items-center gap-2.5 text-xs font-black text-fg pl-1">
+                                            <span className="text-primary flex-shrink-0">
+                                              <StatIcon type="clock" />
+                                            </span>
+                                            <span>{slot.time || slot.startTime}</span>
+                                          </div>
+                                          <Button
+                                            disabled={bookingSlot === slot._id || isOwnProfile}
+                                            onClick={() => triggerBooking(slot._id)}
+                                            variant="primary"
+                                            size="sm"
+                                            className="rounded-xl shadow-sm hover:scale-[1.03] text-xs font-black uppercase tracking-wider"
+                                          >
+                                            Book
+                                          </Button>
+                                        </div>
+                                      ))}
                                     </div>
-                                    <span className="text-[10px] text-muted font-bold block mt-1">20-minute 1:1 call</span>
                                   </div>
-                                  <Button
-                                    onClick={(e) => { e.stopPropagation(); handleBooking(slot._id); }}
-                                    loading={bookingSlot === slot._id}
-                                    size="md"
-                                    className="rounded-2xl px-6 font-black uppercase tracking-wider"
-                                  >
-                                    Book ₹69
-                                  </Button>
-                                </Card>
-                              ))}
-                            </div>
+                                );
+                              };
+
+                              return (
+                                <div className="space-y-4">
+                                  {renderSlotGroup("Morning Sessions", morningSlots)}
+                                  {renderSlotGroup("Afternoon Sessions", afternoonSlots)}
+                                  {renderSlotGroup("Evening Sessions", eveningSlots)}
+                                </div>
+                              );
+                            })()}
                           </>
                         ) : (
                           <Card className="p-8 text-center border-dashed border-2 border-border/70 bg-surface">
@@ -561,7 +693,7 @@ function Profile() {
       </main>
 
       {/* Sticky Mobile Booking Bar */}
-      {!loading && mentor && slots.length > 0 && (
+      {!loading && mentor && slots.length > 0 && !isOwnProfile && (
         <div className="fixed bottom-0 left-0 w-full p-4 bg-surface border-t border-border z-[60] md:hidden animate-slide-down">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -569,11 +701,22 @@ function Profile() {
               <div className="text-sm font-black text-fg">{new Date(slots[0].date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} • {slots[0].time || slots[0].startTime}</div>
             </div>
             <Button size="lg" className="rounded-2xl px-10 shadow-hero" onClick={() => bookingPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
-              Book ₹69
+              Book (1 Credit)
             </Button>
           </div>
         </div>
       )}
+      
+      <ConfirmModal
+        isOpen={confirmOpen}
+        title="Confirm Booking"
+        message="Are you sure you want to book this session? 1 Credit will be deducted from your wallet."
+        confirmText="Book Slot"
+        cancelText="Cancel"
+        onConfirm={handleConfirmBooking}
+        onCancel={() => { setConfirmOpen(false); setSlotToBook(null); }}
+        loading={!!bookingSlot}
+      />
       
       <Footer />
     </>

@@ -272,6 +272,9 @@ exports.releaseEarnings = async (req, res) => {
     booking.isEarningsReleased = true;
     if (booking.status !== "completed") {
       booking.status = "completed";
+      await User.findByIdAndUpdate(booking.senior._id, {
+        $inc: { sessionsCompleted: 1 }
+      });
     }
     await booking.save();
 

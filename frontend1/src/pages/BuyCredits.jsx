@@ -136,12 +136,14 @@ function BuyCredits() {
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <div className="text-xs font-bold uppercase tracking-[0.2em] text-muted">Single Pass</div>
+                  <span className="bg-success/10 text-success text-[10px] font-bold px-2 py-1 rounded-lg">SAVE ₹20</span>
                 </div>
                 <h3 className="mt-4 text-2xl font-extrabold text-fg">Quick Clarity</h3>
                 <p className="text-sm text-muted mt-2 leading-relaxed">Perfect for getting answers to specific questions about one college or branch.</p>
                 
                 <div className="mt-10 mb-8">
                   <div className="flex items-baseline gap-2">
+                    <span className="text-xl line-through text-muted mr-1 font-bold">₹89</span>
                     <span className="text-5xl font-extrabold text-fg tracking-tight">₹69</span>
                     <span className="text-muted font-medium">/ credit</span>
                   </div>
@@ -180,13 +182,14 @@ function BuyCredits() {
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <div className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Growth Bundle</div>
-                  <span className="bg-success/10 text-success text-[10px] font-bold px-2 py-1 rounded-lg">SAVE ₹18</span>
+                  <span className="bg-success/10 text-success text-[10px] font-bold px-2 py-1 rounded-lg">SAVE ₹60</span>
                 </div>
                 <h3 className="mt-4 text-2xl font-extrabold text-fg">Growth Pack</h3>
                 <p className="text-sm text-muted mt-2 leading-relaxed">Get a comprehensive perspective by talking to seniors across different colleges.</p>
                 
                 <div className="mt-10 mb-8">
                   <div className="flex items-baseline gap-2">
+                    <span className="text-xl line-through text-muted mr-1 font-bold">₹249</span>
                     <span className="text-5xl font-extrabold text-fg tracking-tight">₹189</span>
                     <span className="text-muted font-medium">/ 3 credits</span>
                   </div>

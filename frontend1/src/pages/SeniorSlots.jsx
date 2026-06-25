@@ -61,11 +61,21 @@ function SeniorSlots() {
   const [todayMin] = useState(() => new Date().toISOString().split("T")[0]);
   const [activeTab, setActiveTab] = useState("Open");
 
+  const getSlotStatus = (s, isPast) => {
+    if (s.isBooked) {
+      if (s.booking?.status === "completed" || s.booking?.status === "cancelled") {
+        return "Past";
+      }
+      return "Booked";
+    }
+    return isPast ? "Past" : "Open";
+  };
+
   const filteredSlots = useMemo(() => {
     return mySlots.filter((s) => {
       const dt = parseSlotDateTime(s.date, s.time);
       const isPast = dt ? dt.getTime() < now : false;
-      const status = s.isBooked ? "Booked" : isPast ? "Past" : "Open";
+      const status = getSlotStatus(s, isPast);
       return status === activeTab;
     });
   }, [mySlots, activeTab, now]);
@@ -164,7 +174,7 @@ function SeniorSlots() {
               const count = mySlots.filter((s) => {
                 const dt = parseSlotDateTime(s.date, s.time);
                 const isPast = dt ? dt.getTime() < now : false;
-                const status = s.isBooked ? "Booked" : isPast ? "Past" : "Open";
+                const status = getSlotStatus(s, isPast);
                 return status === tab;
               }).length;
 
@@ -191,7 +201,7 @@ function SeniorSlots() {
               filteredSlots.map((s, idx) => {
                 const dt = parseSlotDateTime(s.date, s.time);
                 const isPast = dt ? dt.getTime() < now : false;
-                const status = s.isBooked ? "Booked" : isPast ? "Past" : "Open";
+                const status = getSlotStatus(s, isPast);
                 const isOpen = openSlotId === s._id;
 
                 return (

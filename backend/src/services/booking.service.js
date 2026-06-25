@@ -38,6 +38,8 @@ class BookingService {
       if (!senior || senior.role !== "senior") throw new Error("SENIOR_NOT_FOUND");
       if (!senior.isVerified) throw new Error("SENIOR_NOT_VERIFIED");
 
+      if (slot.senior.toString() === studentId.toString()) throw new Error("CANNOT_BOOK_OWN_SLOT");
+
       // 4. Deduct credits
       user.callCredits -= 1;
       await user.save({ session });
