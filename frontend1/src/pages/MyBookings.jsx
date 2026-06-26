@@ -6,6 +6,8 @@ import AppShell from "../components/AppShell";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Skeleton from "../components/ui/Skeleton";
+import ConfirmModal from "../components/ui/ConfirmModal";
+import { useToast } from "../context/ToastContext";
 import useSEO from "../hooks/useSEO";
 
 function formatDateTime(d) {
@@ -46,10 +48,14 @@ function MyBookings() {
   });
 
   const { user } = useAuth();
+  const { showSuccess, showError } = useToast();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [actionError, setActionError] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const sorted = useMemo(() => {
     return [...bookings].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
@@ -102,6 +108,27 @@ function MyBookings() {
     }
   };
 
+  const handleDeleteSession = async () => {
+    if (!confirmDeleteId) return;
+    try {
+      setDeleteLoading(true);
+      setDeletingId(confirmDeleteId);
+      await api.delete(`/bookings/history/${confirmDeleteId}`);
+      // Animate out then remove
+      setTimeout(() => {
+        setBookings(prev => prev.filter(b => b._id !== confirmDeleteId));
+        setDeletingId(null);
+      }, 350);
+      showSuccess("Session removed from your history.");
+    } catch (e) {
+      showError(e?.response?.data?.message || "Could not remove session.");
+      setDeletingId(null);
+    } finally {
+      setDeleteLoading(false);
+      setConfirmDeleteId(null);
+    }
+  };
+
   return (
     <AppShell title="Sessions" subtitle="Manage your session lifecycle — from start to completion.">
       <div className="flex justify-end mb-6">
@@ -132,7 +159,13 @@ function MyBookings() {
       {!loading && !error && (
         <div className="space-y-4">
           {sorted.map((b, idx) => (
-            <Card key={b._id} className="p-6 animate-fade-up" style={{ animationDelay: `${idx * 100}ms` }}>
+            <Card
+              key={b._id}
+              className={`p-6 animate-fade-up transition-all duration-350 ${
+                deletingId === b._id ? "opacity-0 scale-95 pointer-events-none" : "opacity-100"
+              }`}
+              style={{ animationDelay: `${idx * 100}ms` }}
+            >
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div className="flex-1 space-y-4">
                   <div className="flex items-center gap-3">
@@ -146,6 +179,20 @@ function MyBookings() {
                     }`}>
                       {b.status}
                     </span>
+
+                    {/* Delete button — only for completed/cancelled */}
+                    {(b.status === "completed" || b.status === "cancelled") && (
+                      <button
+                        onClick={() => setConfirmDeleteId(b._id)}
+                        title="Remove from history"
+                        className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider text-danger/70 border border-danger/15 bg-danger/5 hover:bg-danger/10 hover:text-danger hover:border-danger/30 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                        Delete
+                      </button>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
@@ -259,6 +306,19 @@ function MyBookings() {
           )}
         </div>
       )}
+
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={!!confirmDeleteId}
+        title="Remove from History"
+        message="This will remove this session from your history view. The session record is kept for admin purposes. This cannot be undone."
+        confirmText="Yes, Remove"
+        cancelText="Keep it"
+        variant="danger"
+        loading={deleteLoading}
+        onConfirm={handleDeleteSession}
+        onCancel={() => setConfirmDeleteId(null)}
+      />
     </AppShell>
   );
 }

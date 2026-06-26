@@ -13,6 +13,7 @@ const {
   markCompletedBySenior,
   confirmByStudent,
   getBookingById,
+  hideBooking,
 } = require("../controllers/booking.controller");
 
 
@@ -59,5 +60,8 @@ router.patch(
 
 // Fix 11: GET single booking by ID — must be AFTER /my and /meet-link to avoid conflicts
 router.get("/:id", authMiddleware, getBookingById);
+
+// 🗑️ HIDE SESSION FROM HISTORY (soft delete)
+router.delete("/history/:bookingId", authMiddleware, hideBooking);
 
 module.exports = router;

@@ -16,31 +16,12 @@ function MoonIcon() {
   );
 }
 
-function useDarkMode() {
-  const [dark, setDark] = useState(() => {
-    const saved = localStorage.getItem('darkMode');
-    if (saved !== null) {
-      const isDark = saved === 'true';
-      document.documentElement.classList.toggle('dark', isDark);
-      return isDark;
-    }
-    return document.documentElement.classList.contains('dark');
-  });
-  const toggle = () => {
-    document.documentElement.classList.add('theme-animate');
-    const next = !dark;
-    document.documentElement.classList.toggle('dark', next);
-    localStorage.setItem('darkMode', String(next));
-    setDark(next);
-    setTimeout(() => document.documentElement.classList.remove('theme-animate'), 300);
-  };
-  return [dark, toggle];
-}
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import SiteContainer from "./layout/SiteContainer";
 import { Logo } from "./layout/icons";
+import { useTheme } from "../context/ThemeContext";
 
 function cx(...parts) { return parts.filter(Boolean).join(" "); }
 
@@ -61,6 +42,9 @@ function IconCalendar() {
 }
 function IconLogout() {
   return <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>;
+}
+function IconProfile() {
+  return <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
 }
 
 function NavItem({ to, label, icon, active }) {
@@ -89,11 +73,13 @@ function NavItem({ to, label, icon, active }) {
 function AppShell({ title, subtitle, children }) {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
-  const [dark, toggleDark] = useDarkMode();
+  const { theme, toggle: toggleDark } = useTheme();
+  const dark = theme === "dark";
   const location = useLocation();
 
   const nav = useMemo(() => {
     const items = [
+      { to: "/profile",      label: "Profile",      icon: <IconProfile /> },
       { to: "/dashboard",    label: "Dashboard",    icon: <IconDashboard /> },
       { to: "/bookings",     label: "Sessions",     icon: <IconSessions /> },
     ];

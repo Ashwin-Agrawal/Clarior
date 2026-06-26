@@ -149,13 +149,7 @@ exports.confirmByStudent = async (req, res) => {
     }
 
     booking.isStudentConfirmed = true;
-    if (booking.status !== "completed") {
-      booking.status = "completed";
-      const User = require("../models/User");
-      await User.findByIdAndUpdate(booking.senior, {
-        $inc: { sessionsCompleted: 1 }
-      });
-    }
+    booking.status = "completed";
     await booking.save();
 
     res.json({
@@ -184,13 +178,14 @@ exports.cancelBooking = async (req, res) => {
 exports.getMyBookings = async (req, res) => {
   try {
     let bookings;
+    const userId = req.user.id;
 
     if (req.user.role === "student") {
-      bookings = await Booking.find({ student: req.user.id })
+      bookings = await Booking.find({ student: userId, hiddenBy: { $ne: userId } })
         .populate("senior", "name college")
         .sort({ startTime: 1, createdAt: -1 });
     } else if (req.user.role === "senior") {
-      bookings = await Booking.find({ senior: req.user.id })
+      bookings = await Booking.find({ senior: userId, hiddenBy: { $ne: userId } })
         .populate("student", "name")
         .sort({ startTime: 1, createdAt: -1 });
     } else {
@@ -282,6 +277,38 @@ exports.getBookingById = async (req, res) => {
       return res.status(403).json({ message: "Not authorized" });
     }
     return res.json({ booking });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+// 🗑️ HIDE BOOKING FROM HISTORY (soft delete — only completed or cancelled)
+exports.hideBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.bookingId);
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    const userId = req.user.id;
+    const isStudent = booking.student.toString() === userId;
+    const isSenior = booking.senior.toString() === userId;
+
+    if (!isStudent && !isSenior) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    // Only allow hiding completed or cancelled sessions
+    if (booking.status !== "completed" && booking.status !== "cancelled") {
+      return res.status(400).json({
+        message: "Only completed or cancelled sessions can be removed from history.",
+      });
+    }
+
+    // Idempotent: only add if not already hidden by this user
+    await Booking.findByIdAndUpdate(req.params.bookingId, {
+      $addToSet: { hiddenBy: userId },
+    });
+
+    return res.json({ message: "Session removed from your history." });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

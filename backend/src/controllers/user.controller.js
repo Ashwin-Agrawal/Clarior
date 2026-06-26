@@ -163,7 +163,7 @@ exports.applySenior = async (req, res) => {
 // ✏️ UPDATE PROFILE
 exports.updateProfile = async (req, res) => {
   try {
-    const { college, domain, branch, bio, linkedin, isAnonymous } = req.body;
+    const { college, domain, branch, bio, linkedin, isAnonymous, year, avatar } = req.body;
 
     // 🔒 Validate input lengths
     if (college && college.length > 100) {
@@ -184,6 +184,15 @@ exports.updateProfile = async (req, res) => {
     if (linkedin && linkedin.length > 255) {
       return res.status(400).json({ message: "LinkedIn URL too long" });
     }
+    if (year !== undefined && year !== null && year !== "") {
+      const yearNum = Number(year);
+      if (isNaN(yearNum) || yearNum < 1 || yearNum > 6) {
+        return res.status(400).json({ message: "Invalid year. Must be between 1 and 6." });
+      }
+    }
+    if (avatar && !["initials", "avatar-1", "avatar-2", "avatar-3", "avatar-4", "avatar-5", "avatar-6"].includes(avatar)) {
+      return res.status(400).json({ message: "Invalid avatar selection" });
+    }
 
     const user = await User.findById(req.user.id);
 
@@ -196,6 +205,8 @@ exports.updateProfile = async (req, res) => {
     if (branch) user.branch = branch.trim();
     if (bio) user.bio = bio.trim();
     if (linkedin) user.linkedin = linkedin.trim();
+    if (year !== undefined && year !== null && year !== "") user.year = Number(year);
+    if (avatar) user.avatar = avatar;
     if (typeof isAnonymous === "boolean") user.isAnonymous = isAnonymous;
 
     await user.save();

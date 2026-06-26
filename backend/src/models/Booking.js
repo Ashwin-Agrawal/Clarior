@@ -60,6 +60,14 @@ const bookingSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    // 🗑️ SOFT DELETE — user can hide from their session history
+    hiddenBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );

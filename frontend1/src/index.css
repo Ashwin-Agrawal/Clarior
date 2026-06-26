@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+@theme {
+  --color-bg: rgb(var(--bg));
+  --color-surface: rgb(var(--surface));
+  --color-surface2: rgb(var(--surface-2));
+  --color-border: rgb(var(--border));
+  --color-fg: rgb(var(--fg));
+  --color-muted: rgb(var(--muted));
+  --color-primary: rgb(var(--primary));
+  --color-primary-fg: rgb(var(--primary-fg));
+  --color-accent: rgb(var(--accent));
+  --color-accent-fg: rgb(var(--accent-fg));
+  --color-success: rgb(var(--success));
+  --color-warning: rgb(var(--warning));
+  --color-danger: rgb(var(--danger));
+}
+
 /* ─── Base Layout ─────────────────────────────────────────── */
 html, body, #root { height: 100%; }
 
@@ -11,6 +27,11 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+option {
+  background-color: rgb(var(--surface));
+  color: rgb(var(--fg));
 }
 
 /* ─── Light Mode Tokens ───────────────────────────────────── */

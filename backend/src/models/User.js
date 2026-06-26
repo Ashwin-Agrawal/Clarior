@@ -84,6 +84,11 @@ const userSchema = new mongoose.Schema(
     },
     collegeIdImage: String,
 
+    avatar: {
+      type: String,
+      default: "initials",
+    },
+
     isAnonymous: {
       type: Boolean,
       default: false,

@@ -179,6 +179,7 @@ function RequestCollegeModal({ isOpen, onClose }) {
             <span style={labelStyle}>College Name <span style={{ color: "#ef4444" }}>*</span></span>
             <input
               style={inputStyle}
+              className="placeholder:text-muted/60 focus:border-primary/60 outline-none"
               placeholder="e.g. MS Ramaiah Institute of Technology (MSRIT)"
               value={name}
               onChange={e => setName(e.target.value)}
@@ -193,6 +194,7 @@ function RequestCollegeModal({ isOpen, onClose }) {
               <span style={labelStyle}>City <span style={{ color: "#ef4444" }}>*</span></span>
               <input
                 style={inputStyle}
+                className="placeholder:text-muted/60 focus:border-primary/60 outline-none"
                 placeholder="e.g. Bengaluru"
                 value={city}
                 onChange={e => setCity(e.target.value)}
@@ -204,6 +206,7 @@ function RequestCollegeModal({ isOpen, onClose }) {
               <span style={labelStyle}>State <span style={{ color: "#ef4444" }}>*</span></span>
               <input
                 style={inputStyle}
+                className="placeholder:text-muted/60 focus:border-primary/60 outline-none"
                 placeholder="e.g. Karnataka"
                 value={state}
                 onChange={e => setState(e.target.value)}
@@ -223,15 +226,16 @@ function RequestCollegeModal({ isOpen, onClose }) {
                 onChange={e => setType(e.target.value)}
                 disabled={loading}
               >
-                <option value="Private">Private</option>
-                <option value="Government">Government</option>
-                <option value="New Gen">New Gen</option>
+                <option value="Private" style={{ background: inputBg, color: fg }}>Private</option>
+                <option value="Government" style={{ background: inputBg, color: fg }}>Government</option>
+                <option value="New Gen" style={{ background: inputBg, color: fg }}>New Gen</option>
               </select>
             </div>
             <div>
               <span style={labelStyle}>Established Year</span>
               <input
                 style={inputStyle}
+                className="placeholder:text-muted/60 focus:border-primary/60 outline-none"
                 type="number"
                 placeholder="e.g. 1962"
                 value={established}
@@ -246,6 +250,7 @@ function RequestCollegeModal({ isOpen, onClose }) {
             <span style={labelStyle}>Your Email Address</span>
             <input
               style={inputStyle}
+              className="placeholder:text-muted/60 focus:border-primary/60 outline-none"
               type="email"
               placeholder="your.email@example.com"
               value={requesterEmail}

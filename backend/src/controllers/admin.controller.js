@@ -270,13 +270,13 @@ exports.releaseEarnings = async (req, res) => {
     if (!updated) return res.status(400).json({ message: "Insufficient pending earnings" });
 
     booking.isEarningsReleased = true;
-    if (booking.status !== "completed") {
-      booking.status = "completed";
-      await User.findByIdAndUpdate(booking.senior._id, {
-        $inc: { sessionsCompleted: 1 }
-      });
-    }
+    booking.status = "completed";
     await booking.save();
+
+    // Increment sessionsCompleted — always on admin release (single source of truth)
+    await User.findByIdAndUpdate(booking.senior._id, {
+      $inc: { sessionsCompleted: 1 }
+    });
 
     res.json({
       success: true,

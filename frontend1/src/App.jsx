@@ -6,6 +6,7 @@ import { ToastContainer } from "./components/Toast";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
 import Profile from "./pages/Profile";
+import UserProfile from "./pages/UserProfile";
 import BuyCredits from "./pages/BuyCredits";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -67,6 +68,14 @@ function App() {
         <Route path="/terms" element={<Terms />} />
 
         {/* 🔐 PROTECTED ROUTE */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <UserProfile />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/dashboard"
           element={
