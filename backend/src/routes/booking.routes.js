@@ -23,8 +23,7 @@ router.post("/", authMiddleware, authorizeRoles("student"), createBooking);
 // 📊 GET BOOKINGS
 router.get("/my", authMiddleware, getMyBookings);
 
-// ❌ CANCEL
-router.delete("/:bookingId", authMiddleware, cancelBooking);
+
 
 // 🚀 START CALL
 router.patch(
@@ -61,7 +60,10 @@ router.patch(
 // Fix 11: GET single booking by ID — must be AFTER /my and /meet-link to avoid conflicts
 router.get("/:id", authMiddleware, getBookingById);
 
-// 🗑️ HIDE SESSION FROM HISTORY (soft delete)
+// 🗑️ HIDE SESSION FROM HISTORY (soft delete) — must be BEFORE /:bookingId to avoid route conflict
 router.delete("/history/:bookingId", authMiddleware, hideBooking);
+
+// ❌ CANCEL — generic delete, keep LAST among delete routes
+router.delete("/:bookingId", authMiddleware, cancelBooking);
 
 module.exports = router;
