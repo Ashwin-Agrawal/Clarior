@@ -266,6 +266,7 @@ exports.getBookingById = async (req, res) => {
       .populate("slot")
       .lean();
     if (!booking) return res.status(404).json({ message: "Booking not found" });
+    
     // Only allow the student, senior, or admin to view
     const userId = req.user.id;
     const role = req.user.role;
@@ -276,6 +277,12 @@ exports.getBookingById = async (req, res) => {
     ) {
       return res.status(403).json({ message: "Not authorized" });
     }
+
+    // Attach existing review if present
+    const Review = require("../models/Review");
+    const review = await Review.findOne({ booking: id }).lean();
+    booking.review = review;
+
     return res.json({ booking });
   } catch (err) {
     return res.status(500).json({ message: err.message });

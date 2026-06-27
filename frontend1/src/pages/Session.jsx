@@ -87,11 +87,24 @@ function SessionTimer({ actualStart }) {
             Call Completed! Please submit confirmation below.
           </span>
         ) : (
-          "Keep the Google Meet session active until the timer completes."
+          "Keep the video call session active until the timer completes."
         )}
       </div>
     </Card>
   );
+}
+
+// Detects if the page is currently in dark mode
+function useIsDark() {
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
+  useEffect(() => {
+    const obs = new MutationObserver(() =>
+      setDark(document.documentElement.classList.contains("dark"))
+    );
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+  return dark;
 }
 
 function Session() {
@@ -99,6 +112,7 @@ function Session() {
   const { bookingId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isDark = useIsDark();
 
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -117,69 +131,162 @@ function Session() {
     };
   }, [stream]);
 
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [reviewMsg, setReviewMsg] = useState("");
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+  const [actionError, setActionError] = useState("");
+
+  // Auto-open Review Modal when session is completed and not reviewed yet
+  useEffect(() => {
+    if (
+      booking &&
+      booking.status === "completed" &&
+      user?.role === "student" &&
+      !booking.review &&
+      !reviewMsg
+    ) {
+      setShowReviewModal(true);
+    }
+  }, [booking?.status, booking?.review, user?.role, reviewMsg]);
+
   const toggleCamera = async () => {
+    setActionError("");
     if (cameraActive) {
       if (stream) {
         stream.getVideoTracks().forEach(track => track.stop());
-        setStream(null);
       }
       setCameraActive(false);
     } else {
       try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
         setStream(mediaStream);
-        if (videoRef.current) {
-          videoRef.current.srcObject = mediaStream;
-        }
         setCameraActive(true);
       } catch (err) {
         console.error("Error accessing webcam:", err);
         setCameraActive(false);
+        setActionError("Camera access denied. Please click 'Allow' in the browser permission prompt.");
       }
     }
   };
 
-  const toggleMic = () => {
-    setMicActive(!micActive);
+  const toggleMic = async () => {
+    setActionError("");
+    if (micActive) {
+      if (stream) {
+        stream.getAudioTracks().forEach(track => track.stop());
+      }
+      setMicActive(false);
+    } else {
+      try {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        setStream(mediaStream);
+        setMicActive(true);
+      } catch (err) {
+        console.error("Error accessing microphone:", err);
+        setMicActive(false);
+        setActionError("Microphone access denied. Please click 'Allow' in the browser permission prompt.");
+      }
+    }
   };
 
-  const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState("");
-  const [reviewMsg, setReviewMsg] = useState("");
-  const [submittingReview, setSubmittingReview] = useState(false);
+  // Jitsi Meet Integration States
+  const [jitsiLoaded, setJitsiLoaded] = useState(false);
+  const [jitsiApi, setJitsiApi] = useState(null);
+  const jitsiContainerRef = useRef(null);
 
-  const [newMeetLink, setNewMeetLink] = useState("");
-  const [meetLinkLoading, setMeetLinkLoading] = useState(false);
-  const [meetLinkMsg, setMeetLinkMsg] = useState("");
-
-  const [actionError, setActionError] = useState("");
-
-  const [prevBookingMeetLink, setPrevBookingMeetLink] = useState(null);
-
+  // Dynamic script loader for Jitsi
   useEffect(() => {
-    if (booking?.meetLink && booking.meetLink !== prevBookingMeetLink) {
-      setPrevBookingMeetLink(booking.meetLink);
-      setNewMeetLink(booking.meetLink);
-    }
-  }, [booking?.meetLink]);
-
-  const updateMeetLink = async () => {
-    setMeetLinkMsg("");
-    if (!newMeetLink) {
-      setMeetLinkMsg("Please enter a meeting link");
+    if (window.JitsiMeetExternalAPI) {
+      setJitsiLoaded(true);
       return;
     }
-    setMeetLinkLoading(true);
-    try {
-      const res = await api.patch(`/bookings/meet-link/${bookingId}`, { meetLink: newMeetLink });
-      setBooking((b) => (b ? { ...b, meetLink: res.data.meetLink } : b));
-      setMeetLinkMsg("Meet link updated successfully!");
-    } catch (e) {
-      setMeetLinkMsg(e?.response?.data?.message || "Failed to update meet link");
-    } finally {
-      setMeetLinkLoading(false);
+    const script = document.createElement("script");
+    script.src = "https://meet.jit.si/external_api.js";
+    script.async = true;
+    script.onload = () => setJitsiLoaded(true);
+    document.body.appendChild(script);
+  }, []);
+
+  // Reset/Refresh Jitsi call session handler
+  const handleRefreshCall = () => {
+    if (jitsiApi) {
+      try {
+        jitsiApi.dispose();
+      } catch (err) {
+        console.error("Error disposing Jitsi:", err);
+      }
+      setJitsiApi(null);
     }
+    setRefreshKey((prev) => prev + 1);
   };
+
+  // Jitsi Iframe mounting hook
+  useEffect(() => {
+    if (booking?.isCallStarted && joinedLobby && jitsiLoaded && jitsiContainerRef.current && !jitsiApi) {
+      const domain = "jitsi.riot.im";
+      const roomName = `ClariorSession-Booking-${bookingId}`;
+
+      const options = {
+        roomName: roomName,
+        width: "100%",
+        height: "100%",
+        parentNode: jitsiContainerRef.current,
+        userInfo: {
+          displayName: user?.name || "Participant",
+          email: user?.email || "",
+        },
+        configOverwrite: {
+          prejoinPageEnabled: false,
+          startWithAudioMuted: !micActive,
+          startWithVideoMuted: !cameraActive,
+          disableDeepLinking: true,
+          disableEndMeetingForAll: true,
+        },
+        interfaceConfigOverwrite: {
+          TOOLBAR_BUTTONS: [
+            "microphone",
+            "camera",
+            "closedcaptions",
+            "desktop",
+            "fullscreen",
+            "fodeviceselection",
+            "hangup",
+            "profile",
+            "chat",
+            "settings",
+            "videoquality",
+            "filmstrip",
+            "shortcuts",
+            "tileview",
+            "videobackgroundblur",
+          ],
+        },
+      };
+
+      try {
+        const apiInstance = new window.JitsiMeetExternalAPI(domain, options);
+        setJitsiApi(apiInstance);
+
+        // Listen for call hung up by user
+        apiInstance.addEventListener("videoConferenceLeft", () => {
+          apiInstance.dispose();
+          setJitsiApi(null);
+        });
+      } catch (err) {
+        console.error("Error creating Jitsi instance:", err);
+      }
+    }
+
+    return () => {
+      if (jitsiApi) {
+        jitsiApi.dispose();
+      }
+    };
+  }, [booking?.isCallStarted, joinedLobby, jitsiLoaded, bookingId, user, micActive, cameraActive, refreshKey]);
 
   const load = async () => {
     await loadSessionBooking({ bookingId, setError, setLoading, setBooking });
@@ -188,6 +295,27 @@ function Session() {
   useEffect(() => {
     loadSessionBooking({ bookingId, setError, setLoading, setBooking });
   }, [bookingId]);
+
+  // Background polling to sync call start/end states in real-time (every 5 seconds)
+  useEffect(() => {
+    if (!bookingId) return;
+
+    // Stop polling once session is completed/cancelled
+    if (booking && (booking.status === "completed" || booking.status === "cancelled")) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      loadSessionBooking({
+        bookingId,
+        setError: () => {}, // Silent error handling to prevent UI flickers
+        setLoading: () => {}, // Silent loading to prevent screen overlays
+        setBooking
+      });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [bookingId, booking?.status]);
 
   const actualStart = useMemo(() => {
     if (!booking?.actualStartTime) return null;
@@ -231,9 +359,11 @@ function Session() {
     try {
       const seniorId = typeof booking.senior === "string" ? booking.senior : booking.senior?._id;
       await api.post("/reviews", { bookingId, seniorId, rating: Number(rating), comment });
-      setReviewMsg("Review submitted.");
+      setReviewMsg("Review submitted successfully.");
+      setShowReviewModal(false); // Only close modal on success
+      load(); // Reload booking details to sync status
     } catch (e) {
-      setReviewMsg(e?.response?.data?.message || "Review failed");
+      setReviewMsg(e?.response?.data?.message || "Review submission failed. Please try again.");
     } finally {
       setSubmittingReview(false);
     }
@@ -262,117 +392,120 @@ function Session() {
       )}
 
       {!loading && booking && !joinedLobby && booking.status !== "completed" && booking.status !== "cancelled" ? (
-        <div className="max-w-3xl mx-auto space-y-8 animate-fade-up">
-          {/* Pre-Session Header */}
-          <section className="relative overflow-hidden rounded-[36px] border border-border/80 bg-surface/90 p-8 shadow-[0_20px_60px_rgba(37,99,235,0.06)]">
-            <div className="space-y-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary px-3.5 py-1 text-[10px] font-black uppercase tracking-wider">
-                Setup Lobby
-              </span>
-              <h2 className="text-2xl font-black text-fg tracking-tight">Audio & Video Check</h2>
-              <p className="text-sm font-semibold text-muted leading-relaxed">
-                Test your devices before joining the scheduled mentorship room.
-              </p>
-            </div>
-          </section>
+        <div className="max-w-3xl mx-auto animate-fade-up">
+          <Card className="p-6 md:p-8 shadow-hero border border-border/80 bg-surface/90 backdrop-blur-xl relative overflow-hidden rounded-[32px]">
+            {/* Ambient subtle glow background */}
+            <div className="absolute -top-12 -right-12 w-28 h-28 rounded-full bg-primary/10 blur-xl pointer-events-none" />
 
-          {/* Lobby Content Split */}
-          <div className="grid md:grid-cols-[1.2fr,1fr] gap-6">
-            {/* Left: Device Testing */}
-            <Card className="p-6 space-y-6 flex flex-col justify-between">
-              <div>
-                <h3 className="text-sm font-black uppercase tracking-widest text-muted mb-4">Webcam & Microphone</h3>
-                
-                {/* Visualizer Box */}
-                <div className="relative aspect-video rounded-2xl bg-surface2 border border-border/60 overflow-hidden flex items-center justify-center">
-                  {cameraActive ? (
-                    <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover transform -scale-x-100" />
-                  ) : (
-                    <div className="text-center space-y-3">
-                      <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary text-xl">
-                        📹
-                      </div>
-                      <div className="text-xs font-bold text-fg">Camera is turned off</div>
-                      <p className="text-[10px] text-muted max-w-xs mx-auto">Toggle camera to preview your video layout</p>
-                    </div>
-                  )}
+            <div className="grid md:grid-cols-2 gap-8 items-stretch">
+              {/* Left Column: Device Checklist */}
+              <div className="space-y-6 flex flex-col justify-between">
+                <div className="space-y-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary px-3.5 py-1 text-[10px] font-black uppercase tracking-wider">
+                    Lobby Check-in
+                  </span>
+                  <h2 className="text-xl font-black text-fg tracking-tight">Audio & Video Setup</h2>
+                  <p className="text-xs text-muted font-semibold leading-relaxed">Configure call options before entering.</p>
+                </div>
 
-                  {/* sound visualizer overlay */}
-                  {micActive && (
-                    <div className="absolute bottom-3 left-3 right-3 flex items-center gap-1 bg-surface/85 backdrop-blur-md px-3 py-2 rounded-xl border border-border/50">
-                      <div className="flex gap-0.5 items-end h-3">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                          <div
-                            key={i}
-                            className="w-0.5 rounded-full bg-primary animate-pulse"
-                            style={{
-                              height: `${Math.random() * 100}%`,
-                              animationDuration: `${0.3 + i * 0.15}s`
-                            }}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-[9px] font-black uppercase text-muted tracking-wider">Audio Input Active</span>
+                <div className="space-y-3.5">
+                  {/* Camera Row */}
+                  <button
+                    onClick={toggleCamera}
+                    className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 transform active:scale-[0.99] cursor-pointer ${
+                      cameraActive 
+                        ? "bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/35" 
+                        : "bg-surface2/60 border-border/60 hover:border-primary/30"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={`text-base select-none ${cameraActive ? "text-emerald-500" : "text-muted"}`}>📹</span>
+                      <span className="text-sm font-black text-fg">Enable Camera Access</span>
                     </div>
-                  )}
+                    <div className={`h-6 w-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${
+                      cameraActive 
+                        ? "bg-emerald-500 border-emerald-500 text-white shadow-sm" 
+                        : "border-border bg-transparent"
+                    }`}>
+                      {cameraActive && (
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Microphone Row */}
+                  <button
+                    onClick={toggleMic}
+                    className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 transform active:scale-[0.99] cursor-pointer ${
+                      micActive 
+                        ? "bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/35" 
+                        : "bg-surface2/60 border-border/60 hover:border-primary/30"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={`text-base select-none ${micActive ? "text-emerald-500" : "text-muted"}`}>🎙️</span>
+                      <span className="text-sm font-black text-fg">Enable Microphone Access</span>
+                    </div>
+                    <div className={`h-6 w-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${
+                      micActive 
+                        ? "bg-emerald-500 border-emerald-500 text-white shadow-sm" 
+                        : "border-border bg-transparent"
+                    }`}>
+                      {micActive && (
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                      )}
+                    </div>
+                  </button>
+                </div>
+
+                {actionError && (
+                  <div className="rounded-xl border border-danger/30 bg-danger/5 px-4 py-3 text-xs font-bold text-danger animate-scale-in">
+                    ⚠️ {actionError}
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column: Suggestions & Enter Button */}
+              <div className="space-y-6 md:border-l md:border-border/40 md:pl-8 flex flex-col justify-between">
+                <div className="space-y-3.5">
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-muted pl-0.5">Join Guidelines</h3>
+                  <ul className="space-y-3.5">
+                    {[
+                      { emoji: "🎧", title: "Headphones Suggested", desc: "Filters background noise and prevents audio echoes." },
+                      { emoji: "📝", title: "Focused Session", desc: "Keep questions prioritized to fit the 20-minute limit." },
+                      { emoji: "📶", title: "Connection Quality", desc: "Join from a quiet spot with a stable network link." }
+                    ].map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-3">
+                        <span className="text-lg select-none shrink-0 pt-0.5">{item.emoji}</span>
+                        <div>
+                          <div className="text-xs font-black text-fg leading-none">{item.title}</div>
+                          <div className="text-[11px] text-muted font-semibold mt-1 leading-normal">{item.desc}</div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="pt-2">
+                  <Button
+                    onClick={() => {
+                      if (stream) {
+                        stream.getTracks().forEach(track => track.stop());
+                      }
+                      setJoinedLobby(true);
+                    }}
+                    className="w-full rounded-2xl py-3.5 shadow-hero text-xs font-black uppercase tracking-wider"
+                  >
+                    Enter Call Room
+                  </Button>
                 </div>
               </div>
-
-              {/* Toggles */}
-              <div className="flex gap-3 mt-4 pt-4 border-t border-border/40">
-                <Button
-                  onClick={toggleCamera}
-                  variant={cameraActive ? "primary" : "secondary"}
-                  className="flex-1 rounded-xl text-xs font-black uppercase tracking-wider py-3"
-                >
-                  {cameraActive ? "Disable Cam" : "Enable Cam"}
-                </Button>
-                <Button
-                  onClick={toggleMic}
-                  variant={micActive ? "primary" : "secondary"}
-                  className="flex-1 rounded-xl text-xs font-black uppercase tracking-wider py-3"
-                >
-                  {micActive ? "Mute Mic" : "Unmute Mic"}
-                </Button>
-              </div>
-            </Card>
-
-            {/* Right: Readiness Checklist */}
-            <Card className="p-6 space-y-6 flex flex-col justify-between">
-              <div className="space-y-4">
-                <h3 className="text-sm font-black uppercase tracking-widest text-muted">Readiness Checklist</h3>
-                <ul className="space-y-3.5">
-                  {[
-                    { title: "Stable Connection", desc: "Ensure you are in a quiet room with good network reception." },
-                    { title: "Microphone Active", desc: "Keep your audio unmuted so the mentor can hear you." },
-                    { title: "Ready Questions", desc: "Write down your key queries to make the most of the 20 minutes." }
-                  ].map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-success/15 border border-success/20 text-success text-[10px] font-bold">
-                        ✓
-                      </div>
-                      <div>
-                        <div className="text-xs font-black text-fg">{item.title}</div>
-                        <div className="text-[10px] text-muted mt-0.5 leading-relaxed">{item.desc}</div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <Button
-                onClick={() => {
-                  if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                  }
-                  setJoinedLobby(true);
-                }}
-                className="w-full rounded-2xl py-3.5 shadow-hero font-black uppercase tracking-wider"
-              >
-                Enter Call Room
-              </Button>
-            </Card>
-          </div>
+            </div>
+          </Card>
         </div>
       ) : !loading && booking && (
         <div className="space-y-8 animate-fade-up">
@@ -396,7 +529,7 @@ function Session() {
                 glowColor = "bg-amber-500/10";
               } else {
                 statusTitle = "Call is Live!";
-                statusDesc = "The 20-minute session countdown is active. Join Google Meet and start talking now!";
+                statusDesc = "The 20-minute session countdown is active. Join the video room below and start talking now!";
                 statusBadge = "bg-success/15 text-success border-success/20 animate-pulse";
                 glowColor = "bg-success/15 shadow-[0_0_50px_rgba(16,185,129,0.15)]";
               }
@@ -430,21 +563,6 @@ function Session() {
                       {statusDesc}
                     </p>
                   </div>
-
-                  {booking.meetLink && booking.status !== "completed" && booking.status !== "cancelled" && (
-                    <a
-                      href={booking.meetLink}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-2.5 px-8 py-4 bg-gradient-to-br from-emerald-600 to-green-700 dark:from-emerald-500 dark:to-green-600 text-white border border-emerald-500/25 rounded-2xl font-black text-sm md:text-base shadow-[0_16px_36px_-6px_rgba(16,185,129,0.45)] hover:shadow-[0_20px_40px_-6px_rgba(16,185,129,0.55)] hover:-translate-y-1 hover:brightness-105 active:translate-y-0 active:scale-[0.98] transition-all shrink-0 animate-bounce cursor-pointer"
-                      style={{ animationDuration: '3s' }}
-                    >
-                      <span>Join Google Meet</span>
-                      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
-                      </svg>
-                    </a>
-                  )}
                 </div>
 
                 {/* Progress Stepper embedded directly at bottom of status hero */}
@@ -632,6 +750,33 @@ function Session() {
               {booking.isCallStarted && (
                 <SessionTimer actualStart={actualStart} />
               )}
+
+              {/* Jitsi In-App Video Call Screen */}
+              {booking.isCallStarted && (
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center px-2">
+                    <span className="text-[10px] font-black uppercase text-muted tracking-widest">In-App Calling Active</span>
+                    <button
+                      onClick={handleRefreshCall}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider text-primary border border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/45 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+                    >
+                      🔄 Refresh Video Call
+                    </button>
+                  </div>
+                  <Card className="p-2 overflow-hidden bg-slate-950 border border-border/80 rounded-[32px] shadow-hero aspect-video w-full min-h-[480px] relative">
+                    {!jitsiLoaded && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-slate-900/90 backdrop-blur-md rounded-[28px] z-10 animate-fade-in">
+                        <div className="text-center space-y-3">
+                          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary mx-auto" />
+                          <div className="text-xs font-black text-white uppercase tracking-widest">Initializing Secure Room...</div>
+                          <p className="text-[10px] text-slate-400">Loading open-source audio & video engine</p>
+                        </div>
+                      </div>
+                    )}
+                    <div ref={jitsiContainerRef} className="w-full h-full rounded-[24px] overflow-hidden" />
+                  </Card>
+                </div>
+              )}
             </div>
 
             {/* Right Column: Session Info & Partner details */}
@@ -657,70 +802,112 @@ function Session() {
                   </div>
                 </div>
 
-                {/* Meeting Link display */}
+                {/* Room Status display */}
                 <div className="space-y-2">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-muted block pl-1">Meeting Link Address</span>
-                  <div className="p-3.5 rounded-2xl bg-surface2/60 border border-border/60 text-xs font-semibold break-all flex items-center justify-between gap-3">
-                    {booking.meetLink ? (
-                      <>
-                        <a href={booking.meetLink} target="_blank" rel="noreferrer" className="text-primary hover:underline font-bold truncate">
-                          {booking.meetLink}
-                        </a>
-                        <a href={booking.meetLink} target="_blank" rel="noreferrer" className="shrink-0 p-1.5 rounded-lg bg-primary/10 text-primary border border-primary/20 hover:scale-105 transition-all">
-                          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
-                        </a>
-                      </>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-muted block pl-1">Room Status</span>
+                  <div className="p-3.5 rounded-2xl bg-surface2/60 border border-border/60 text-xs font-semibold flex items-center justify-between gap-3">
+                    {booking.isCallStarted ? (
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
+                        <span className="font-bold text-fg">In-App Live Room Active</span>
+                      </div>
                     ) : (
-                      <span className="text-muted/65 italic select-none">Link not generated yet</span>
+                      <span className="text-muted/65 italic select-none">Waiting for check-in to start room</span>
                     )}
                   </div>
                 </div>
-
-                {/* Manage Meet Link for Seniors */}
-                {user?.role === "senior" && booking.status === "confirmed" && (
-                  <div className="space-y-3 pt-4 border-t border-border/50">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted block pl-1">Manage Meet Link</span>
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="e.g. https://meet.google.com/abc-defg-hij"
-                        value={newMeetLink}
-                        onChange={(e) => setNewMeetLink(e.target.value)}
-                        className="flex-1 bg-surface2/60 rounded-xl"
-                      />
-                      <Button onClick={updateMeetLink} loading={meetLinkLoading} className="rounded-xl shrink-0 font-bold px-4">
-                        Update
-                      </Button>
-                    </div>
-                    {meetLinkMsg && (
-                      <div className={`text-[10px] font-black uppercase tracking-wider ${meetLinkMsg.includes("successfully") ? "text-success" : "text-danger"}`}>
-                        {meetLinkMsg}
-                      </div>
-                    )}
-                  </div>
-                )}
               </Card>
             </div>
           </div>
 
-          {/* Review Section */}
-          {user?.role === "student" && booking.status === "completed" && (
-            <Card className="p-8 animate-fade-up max-w-2xl">
-              <h3 className="heading-display text-2xl font-extrabold text-fg mb-2">Rate your senior</h3>
-              <p className="text-sm text-muted mb-8">Your feedback helps us maintain high quality guidance.</p>
+          {/* Glassmorphic Review Modal (Forcing Student Review) */}
+          {user?.role === "student" && booking.status === "completed" && showReviewModal && (
+            <div
+              style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 100,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 16,
+                background: isDark ? "rgba(0,0,0,0.7)" : "rgba(15,33,59,0.45)",
+                backdropFilter: "blur(12px)",
+                animation: "fadeIn 0.25s ease both",
+              }}
+            >
+              {/* Modal Box */}
+              <div
+                style={{
+                  position: "relative",
+                  zIndex: 10,
+                  width: "100%",
+                  maxWidth: 480,
+                  background: isDark ? "#0f1d33" : "#ffffff",
+                  border: `1.5px solid ${isDark ? "#233b5c" : "#d0e0f7"}`,
+                  borderRadius: 28,
+                  padding: "32px 28px",
+                  boxShadow: isDark
+                    ? "0 32px 80px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)"
+                    : "0 32px 80px -20px rgba(15,33,59,0.18), 0 0 0 1px rgba(37,99,235,0.06)",
+                  animation: "scaleIn 0.3s cubic-bezier(0.22,1,0.36,1) both",
+                }}
+              >
+                {/* Header Badge */}
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "3px 12px",
+                    borderRadius: 999,
+                    background: isDark ? "rgba(16,185,129,0.15)" : "rgba(16,185,129,0.1)",
+                    border: `1px solid ${isDark ? "rgba(16,185,129,0.25)" : "rgba(16,185,129,0.2)"}`,
+                    color: isDark ? "#10b981" : "#10b981",
+                    fontSize: 9,
+                    fontWeight: 900,
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    marginBottom: 12,
+                  }}
+                >
+                  🎉 Call Completed!
+                </div>
 
-              <div className="space-y-6">
-                <div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-muted mb-3">Your Rating</div>
-                  <div className="flex gap-1.5">
+                <h2 style={{ fontSize: 22, fontWeight: 900, color: isDark ? "#dfeafc" : "#10213b", marginBottom: 6, lineHeight: 1.15 }}>
+                  Rate your{" "}
+                  <span
+                    style={{
+                      background: "linear-gradient(135deg, #2563eb, #38bdf8)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
+                    Senior Mentor
+                  </span>
+                </h2>
+                
+                <p style={{ fontSize: 12, color: isDark ? "#95b0dc" : "#567198", lineHeight: 1.6, marginBottom: 24 }}>
+                  Your feedback helps us maintain high quality mentorship and guidance on Clarior.
+                </p>
+
+                {/* Rating Stars */}
+                <div style={{ marginBottom: 20 }}>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: isDark ? "#dfeafc" : "#10213b", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 8 }}>
+                    Your Rating
+                  </span>
+                  <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((r) => (
                       <button
                         key={r}
+                        type="button"
                         onClick={() => setRating(r)}
-                        className="transition-transform hover:scale-110 focus:outline-none"
+                        className="transition-transform hover:scale-110 focus:outline-none cursor-pointer"
                         aria-label={`${r} star${r !== 1 ? 's' : ''}`}
                       >
                         <svg
-                          width="32" height="32"
+                          width="36"
+                          height="36"
                           fill={rating >= r ? "#f59e0b" : "none"}
                           stroke="#f59e0b"
                           strokeWidth="1.5"
@@ -733,23 +920,50 @@ function Session() {
                   </div>
                 </div>
 
-                <div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-muted mb-3">Your Feedback</div>
+                {/* Feedback Input */}
+                <div style={{ marginBottom: 24 }}>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: isDark ? "#dfeafc" : "#10213b", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 8 }}>
+                    Feedback & Comments
+                  </span>
                   <textarea
                     className="w-full rounded-2xl border border-border bg-surface2/60 p-4 text-sm text-fg outline-none focus:border-primary/45 focus:bg-surface transition"
                     rows={4}
-                    placeholder="Tell us what you learned..."
+                    placeholder="Tell us what you learned during your session..."
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
+                    required
                   />
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <Button onClick={submitReview} loading={submittingReview} disabled={submittingReview} size="lg" className="rounded-2xl px-10">Submit Review</Button>
-                  {reviewMsg && <span className="text-sm font-bold text-success animate-scale-in">{reviewMsg}</span>}
-                </div>
+                {/* Error Banner */}
+                {reviewMsg && !reviewMsg.includes("successfully") && (
+                  <div style={{
+                    padding: "10px 14px",
+                    borderRadius: 12,
+                    marginBottom: 16,
+                    background: isDark ? "rgba(239,68,68,0.1)" : "rgba(239,68,68,0.06)",
+                    border: "1px solid rgba(239,68,68,0.3)",
+                    color: "#ef4444",
+                    fontSize: 12,
+                    fontWeight: 700,
+                  }}>
+                    ⚠️ {reviewMsg}
+                  </div>
+                )}
+
+                {/* Submit Action */}
+                <Button
+                  onClick={async () => {
+                    await submitReview();
+                  }}
+                  loading={submittingReview}
+                  disabled={submittingReview}
+                  className="w-full rounded-xl py-3.5 font-black text-sm tracking-wide shadow-hero"
+                >
+                  Submit Review & End Session
+                </Button>
               </div>
-            </Card>
+            </div>
           )}
         </div>
       )}

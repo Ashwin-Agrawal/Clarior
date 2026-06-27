@@ -41,7 +41,7 @@ function Privacy() {
               <ul className="list-disc pl-6 text-muted text-sm space-y-1">
                 <li>Verify your enrollment status and identity for senior applications.</li>
                 <li>Process payments and payouts via secure payment gateways (Razorpay).</li>
-                <li>Facilitate Google Meet session link generation.</li>
+                <li>Facilitate secure in-app video session calls.</li>
                 <li>Send transactional updates regarding your bookings and payouts.</li>
                 <li>Ensure safety, platform integrity, and prevent fraudulent actions.</li>
               </ul>
@@ -50,7 +50,7 @@ function Privacy() {
             <section className="space-y-3">
               <h2 className="text-xl font-bold">3. Data Sharing & Third-Party Services</h2>
               <p className="text-muted text-sm">
-                We do not sell your personal data. We share your information only with essential service providers like payment gateways (Razorpay) to process transactions, and Google OAuth to schedule Google Meet links for calls.
+                We do not sell your personal data. We share your information only with essential service providers like payment gateways (Razorpay) to process transactions.
               </p>
             </section>
 

@@ -201,24 +201,11 @@ function MyBookings() {
                       <div className="text-fg font-medium">{formatDateTime(b.startTime)} → {formatTimeOnly(b.endTime)}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted font-bold uppercase tracking-widest text-[9px] mb-1">Meet Link</div>
-                      {b.meetLink ? (
-                        <div className="truncate">
-                          <a 
-                            href={b.meetLink} 
-                            target="_blank" 
-                            rel="noreferrer" 
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-bold hover:bg-primary/20 transition-all"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
-                            </svg>
-                            Open Meet
-                          </a>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-muted font-semibold italic">Generated soon</span>
-                      )}
+                      <div className="text-muted font-bold uppercase tracking-widest text-[9px] mb-1">Video Call</div>
+                      <div className="text-fg font-medium flex items-center gap-1.5 pt-1 text-xs">
+                        <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
+                        <span className="font-bold text-fg">In-App Room Ready</span>
+                      </div>
                     </div>
                   </div>
 

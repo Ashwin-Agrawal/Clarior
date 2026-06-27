@@ -77,20 +77,6 @@ class BookingService {
       await session.commitTransaction();
       const bookingObj = booking[0].toObject();
 
-      // Create Meet link immediately (platform account), if connected.
-      // This runs AFTER the DB transaction to avoid holding DB locks while calling Google APIs.
-      try {
-        const { createMeetForBooking } = require("../controllers/google.controller");
-        const { meetLink } = await createMeetForBooking(bookingObj, {
-          summary: "Clarior Mentorship Session",
-          description: `Booking ${bookingObj._id}`,
-        });
-        await Booking.updateOne({ _id: bookingObj._id }, { $set: { meetLink } });
-        bookingObj.meetLink = meetLink;
-      } catch (e) {
-        // If Google isn't connected/configured, booking still succeeds; meetLink stays null.
-      }
-
       return bookingObj;
     } catch (error) {
       await session.abortTransaction();

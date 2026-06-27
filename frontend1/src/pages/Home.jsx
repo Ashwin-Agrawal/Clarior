@@ -603,7 +603,7 @@ function Home() {
               </h1>
               
               <p className="scroll-reveal reveal-up stagger-2 mt-6 text-xl md:text-2xl text-muted max-w-4xl mx-auto leading-tight font-medium tracking-tight">
-                1:1 calls with verified seniors for <span className="text-primary font-black animated-underline revealed">₹69</span>.
+                1:1 calls with verified seniors for just <span className="text-primary font-black animated-underline revealed">₹69</span>.
               </p>
 
               {/* Magnetic CTA Buttons */}
@@ -796,7 +796,7 @@ function Home() {
                   {[
                     { t: "Verified Identity", d: "We manually verify every senior's college ID.", i: "shield" },
                     { t: "Fixed Price Fairness", d: "Talk to any senior for the same transparent price of ₹69.", i: "gem" },
-                    { t: "Live 1:1 Calls", d: "Get direct, face-to-face clarity on Google Meet.", i: "call" },
+                    { t: "Live 1:1 Calls", d: "Get direct, face-to-face clarity with live in-app video calls.", i: "call" },
                   ].map((f, fi) => (
                     <div key={f.t} className={`scroll-reveal reveal-left stagger-${fi + 3} flex gap-4 group`}>
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-surface border border-border text-primary shadow-soft group-hover:bg-primary group-hover:text-white transition-all duration-300">
@@ -913,7 +913,7 @@ function Home() {
                     features: [
                       "20-minute focused 1:1 session", 
                       "Verified senior profiles", 
-                      "Direct Google Meet connection",
+                      "Premium in-app video calling",
                       "Ask anything about college life"
                     ] 
                   },

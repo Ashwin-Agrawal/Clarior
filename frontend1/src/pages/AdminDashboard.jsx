@@ -332,35 +332,11 @@ function AdminDashboard() {
         ))}
       </div>
 
-      {/* activeTab == queue: Split layout */}
+      {/* activeTab == queue: Full-width list */}
       {activeTab === "queue" && (
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Google Status */}
-          <div className="lg:col-span-1">
-            <Card className="p-6 space-y-6 animate-fade-up">
-              <div>
-                <h3 className="heading-display text-lg font-extrabold text-fg">Google Meet Account</h3>
-                <p className="text-xs text-muted mt-1 leading-relaxed">Required for generating automated session links.</p>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <span className={`h-2 w-2 rounded-full ${googleStatus?.connected ? "bg-success shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-warning"}`} />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-fg">
-                  {googleStatus?.connected ? "System Connected" : "Connection Required"}
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                <Button onClick={connectGoogle} loading={googleLoading} className="w-full rounded-2xl" variant={googleStatus?.connected ? "secondary" : "primary"}>
-                  {googleStatus?.connected ? "Reconnect Account" : "Connect Google"}
-                </Button>
-                <Button variant="ghost" onClick={loadGoogleStatus} className="w-full text-xs font-bold">Refresh Status</Button>
-              </div>
-            </Card>
-          </div>
-
+        <div className="space-y-12 max-w-4xl mx-auto">
           {/* Verification, Payouts, Releases column */}
-          <div className="lg:col-span-2 space-y-12">
+          <div className="space-y-12">
             
             {/* Pending Seniors */}
             <div className="space-y-6">
