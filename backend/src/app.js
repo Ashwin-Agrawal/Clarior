@@ -3,6 +3,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const compression = require("compression");
 
 const slotRoutes = require("./routes/slot.routes");
 const bookingRoutes = require("./routes/booking.routes");
@@ -78,6 +79,9 @@ const corsOptions = {
 
 // Handle preflight (OPTIONS) for ALL routes handled by cors middleware
 app.use(cors(corsOptions));
+
+// 📦 COMPRESSION (Gzip)
+app.use(compression());
 
 // 🔐 Security — configured to NOT conflict with CORS
 app.use(

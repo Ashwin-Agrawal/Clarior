@@ -26,10 +26,10 @@ exports.getAllColleges = async (req, res) => {
     }
 
     // Fetch colleges
-    const colleges = await College.find(query).sort({ name: 1 });
+    const colleges = await College.find(query).sort({ name: 1 }).lean();
 
     // Optimize: Fetch all verified seniors and count in memory to avoid N+1 queries
-    const verifiedSeniors = await User.find({ role: "senior", isVerified: true }).select("college");
+    const verifiedSeniors = await User.find({ role: "senior", isVerified: true }).select("college").lean();
     const seniorCountMap = {};
 
     for (const s of verifiedSeniors) {
@@ -42,7 +42,7 @@ exports.getAllColleges = async (req, res) => {
     const collegesWithSeniors = colleges.map((c) => {
       const key = (c.name && typeof c.name === "string") ? c.name.trim().toLowerCase() : "";
       return {
-        ...c.toObject(),
+        ...c,
         seniorCount: key ? (seniorCountMap[key] || 0) : 0
       };
     });
@@ -80,25 +80,40 @@ exports.getCollegeById = async (req, res) => {
       role: "senior",
       isVerified: true,
       college: { $regex: `^${college.name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, $options: "i" }
-    }).select("name college affiliatedCollege branch domain bio rating numReviews isVerified year linkedin sessionsCompleted");
+    }).select("name college affiliatedCollege branch domain bio rating numReviews isVerified year linkedin sessionsCompleted").lean();
 
-    // Fetch active slot count for each senior
+    // Fetch active slot count for each senior in a single database aggregation query (fixes N+1 database call bottleneck)
     const now = new Date();
     now.setHours(0, 0, 0, 0);
 
-    const seniorsWithSlots = await Promise.all(
-      seniors.map(async (s) => {
-        const count = await Slot.countDocuments({
-          senior: s._id,
+    const seniorIds = seniors.map((s) => s._id);
+    const slotCounts = await Slot.aggregate([
+      {
+        $match: {
+          senior: { $in: seniorIds },
           isBooked: false,
           date: { $gte: now }
-        });
-        return {
-          ...s.toObject(),
-          activeSlotsCount: count
-        };
-      })
-    );
+        }
+      },
+      {
+        $group: {
+          _id: "$senior",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const countMap = {};
+    slotCounts.forEach((item) => {
+      countMap[item._id.toString()] = item.count;
+    });
+
+    const seniorsWithSlots = seniors.map((s) => {
+      return {
+        ...s,
+        activeSlotsCount: countMap[s._id.toString()] || 0
+      };
+    });
 
     res.status(200).json({
       success: true,
