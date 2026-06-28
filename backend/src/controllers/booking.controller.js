@@ -280,7 +280,17 @@ exports.getBookingById = async (req, res) => {
 
     // Attach existing review if present
     const Review = require("../models/Review");
-    const review = await Review.findOne({ booking: id }).lean();
+    const bookingObjectId = new mongoose.Types.ObjectId(id);
+    let review = await Review.findOne({ booking: bookingObjectId }).lean();
+    
+    if (!review && booking.student && booking.senior) {
+      // Fallback for older reviews created without booking ID
+      review = await Review.findOne({
+        student: new mongoose.Types.ObjectId(booking.student._id),
+        senior: new mongoose.Types.ObjectId(booking.senior._id),
+      }).lean();
+    }
+    
     booking.review = review;
 
     return res.json({ booking });
