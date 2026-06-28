@@ -118,9 +118,11 @@ app.use((req, res, next) => {
 });
 
 // 🛡️ RATE LIMITING
+const isDev = process.env.NODE_ENV !== "production" || !process.env.NODE_ENV;
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: isDev ? 10000 : 300,
   message: {
     success: false,
     message: "Too many requests from this IP, please try again later."
@@ -131,7 +133,7 @@ const limiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: isDev ? 1000 : 15,
   message: {
     success: false,
     message: "Too many login attempts. Please try again later."
@@ -141,7 +143,7 @@ const authLimiter = rateLimit({
 
 const paymentLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: 10,
+  max: isDev ? 1000 : 30,
   message: {
     success: false,
     message: "Too many payment attempts. Please try again later."

@@ -330,3 +330,26 @@ exports.hideBooking = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
+
+// 📝 UPDATE PREP NOTES
+exports.updateBookingNotes = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { notes } = req.body;
+
+    const booking = await Booking.findById(id);
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    const userId = req.user.id;
+    if (booking.student.toString() !== userId && booking.senior.toString() !== userId) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    booking.notes = notes || "";
+    await booking.save();
+
+    return res.json({ message: "Notes updated successfully", booking });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};

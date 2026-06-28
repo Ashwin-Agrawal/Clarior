@@ -917,3 +917,98 @@ html.dark .testimonial-card:hover {
               0 0 0 1px rgba(var(--primary), 0.2),
               0 8px 16px -8px rgba(var(--accent), 0.15) !important;
 }
+
+/* ─── Premium UI Overhaul Utilities ─────────────────────────── */
+
+/* 3D Glassmorphism Cards */
+.glass-panel {
+  background: rgba(var(--surface), 0.65) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(var(--border), 0.35) !important;
+  box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.05),
+              inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+}
+
+html.dark .glass-panel {
+  background: rgba(var(--surface), 0.55) !important;
+  border: 1px solid rgba(var(--border), 0.2) !important;
+  box-shadow: 0 16px 48px -10px rgba(0, 0, 0, 0.3),
+              inset 0 1px 0px rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Text Gradients */
+.text-gradient-primary {
+  background: linear-gradient(135deg, rgb(var(--primary)) 0%, rgb(var(--accent)) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-amber {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Floating Animations */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(3deg); }
+}
+
+@keyframes float-medium {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(-2deg); }
+}
+
+.animate-float-slow {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float-medium 6s ease-in-out infinite;
+}
+
+/* Shimmer Loading Effect */
+@keyframes shimmer-loader {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-element {
+  background: linear-gradient(90deg, 
+    rgba(var(--surface-2), 0.6) 25%, 
+    rgba(var(--border), 0.4) 50%, 
+    rgba(var(--surface-2), 0.6) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-loader 1.5s infinite linear;
+}
+
+/* Confetti CSS Celebration Particles */
+@keyframes confetti-pop {
+  0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(120vh) scale(0.6) rotate(360deg); opacity: 0; }
+}
+
+.confetti-particle {
+  position: fixed;
+  top: -20px;
+  z-index: 9999;
+  pointer-events: none;
+  border-radius: 4px;
+  animation: confetti-pop 4s linear forwards;
+}
+
+/* Live Active Pulse Ring */
+@keyframes active-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(var(--success), 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(var(--success), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--success), 0); }
+}
+
+.live-pulse-active {
+  animation: active-pulse 2s infinite;
+}

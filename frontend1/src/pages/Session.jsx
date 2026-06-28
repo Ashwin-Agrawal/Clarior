@@ -107,6 +107,23 @@ function useIsDark() {
   return dark;
 }
 
+function triggerConfettiCelebration() {
+  const colors = ["#2563eb", "#3b82f6", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6"];
+  for (let i = 0; i < 75; i++) {
+    const p = document.createElement("div");
+    p.className = "confetti-particle";
+    p.style.left = Math.random() * 100 + "vw";
+    p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    p.style.width = Math.random() * 8 + 6 + "px";
+    p.style.height = Math.random() * 14 + 8 + "px";
+    p.style.animationDelay = Math.random() * 1.5 + "s";
+    p.style.opacity = Math.random() * 0.8 + 0.2;
+    document.body.appendChild(p);
+    
+    setTimeout(() => p.remove(), 5500);
+  }
+}
+
 function Session() {
   useSEO({ title: "Live Session Room", description: "Join your live 1:1 call with a verified mentor on Clarior." });
   const { bookingId } = useParams();
@@ -115,6 +132,28 @@ function Session() {
   const isDark = useIsDark();
 
   const [booking, setBooking] = useState(null);
+  const [sessionNotes, setSessionNotes] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
+
+  useEffect(() => {
+    if (booking) {
+      setSessionNotes(booking.notes || "");
+    }
+  }, [booking]);
+
+  const handleSaveSessionNotes = async () => {
+    if (!bookingId) return;
+    try {
+      setSavingNotes(true);
+      await api.patch(`/bookings/${bookingId}/notes`, { notes: sessionNotes });
+      setBooking((prev) => ({ ...prev, notes: sessionNotes }));
+    } catch (err) {
+      console.error("Failed to save notes during session", err);
+    } finally {
+      setSavingNotes(false);
+    }
+  };
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [joinedLobby, setJoinedLobby] = useState(false);
@@ -360,6 +399,7 @@ function Session() {
       const seniorId = typeof booking.senior === "string" ? booking.senior : booking.senior?._id;
       await api.post("/reviews", { bookingId, seniorId, rating: Number(rating), comment });
       setReviewMsg("Review submitted successfully.");
+      triggerConfettiCelebration();
       setShowReviewModal(false); // Only close modal on success
       load(); // Reload booking details to sync status
     } catch (e) {
@@ -475,12 +515,12 @@ function Session() {
                   <h3 className="text-[10px] font-black uppercase tracking-widest text-muted pl-0.5">Join Guidelines</h3>
                   <ul className="space-y-3.5">
                     {[
-                      { emoji: "🎧", title: "Headphones Suggested", desc: "Filters background noise and prevents audio echoes." },
-                      { emoji: "📝", title: "Focused Session", desc: "Keep questions prioritized to fit the 20-minute limit." },
-                      { emoji: "📶", title: "Connection Quality", desc: "Join from a quiet spot with a stable network link." }
+                      { icon: <svg className="w-5 h-5 text-primary shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>, title: "Headphones Suggested", desc: "Filters background noise and prevents audio echoes." },
+                      { icon: <svg className="w-5 h-5 text-primary shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>, title: "Focused Session", desc: "Keep questions prioritized to fit the 20-minute limit." },
+                      { icon: <svg className="w-5 h-5 text-primary shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.284 16.284A3 3 0 0012 21a3 3 0 003.716-4.716m-7.432-1.136A6 6 0 0112 15a6 6 0 013.716 1.136m-7.432-1.136a9 9 0 0114.864 0M1.657 7.057a15 15 0 0120.686 0" /></svg>, title: "Connection Quality", desc: "Join from a quiet spot with a stable network link." }
                     ].map((item, idx) => (
                       <li key={idx} className="flex items-start gap-3">
-                        <span className="text-lg select-none shrink-0 pt-0.5">{item.emoji}</span>
+                        <span className="shrink-0 pt-0.5">{item.icon}</span>
                         <div>
                           <div className="text-xs font-black text-fg leading-none">{item.title}</div>
                           <div className="text-[11px] text-muted font-semibold mt-1 leading-normal">{item.desc}</div>
@@ -489,6 +529,20 @@ function Session() {
                     ))}
                   </ul>
                 </div>
+
+                {user?.role === "senior" && (
+                  <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 space-y-2">
+                    <h4 className="text-xs font-black text-primary uppercase tracking-wider flex items-center gap-1.5 select-none">
+                      <svg className="w-4 h-4 text-primary shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                      Student Prep Notes
+                    </h4>
+                    <p className="text-[11px] font-semibold text-fg whitespace-pre-wrap leading-relaxed">
+                      {booking.notes ? booking.notes : (
+                        <span className="text-muted/65 italic select-none">No preparation notes written by student yet.</span>
+                      )}
+                    </p>
+                  </div>
+                )}
 
                 <div className="pt-2">
                   <Button
@@ -816,6 +870,48 @@ function Session() {
                     )}
                   </div>
                 </div>
+              </Card>
+
+              {/* Prep Notes Card */}
+              <Card className="p-6 md:p-8 space-y-4 hover:shadow-lift hover:border-primary/20 transition-all duration-300">
+                <div>
+                  <h3 className="text-lg font-black text-fg tracking-tight flex items-center gap-2">
+                    <svg className="w-5 h-5 text-primary shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                    Prep Notes & Questions
+                  </h3>
+                  <p className="text-xs text-muted font-semibold mt-1">Shared pre-call prep details</p>
+                </div>
+
+                {user?.role === "student" ? (
+                  <div className="space-y-3">
+                    <textarea
+                      rows={5}
+                      placeholder="Write your questions here so the senior can prepare in advance. You can also edit them during the call."
+                      value={sessionNotes}
+                      onChange={(e) => setSessionNotes(e.target.value)}
+                      className="w-full p-4 rounded-2xl border border-border bg-surface2/60 outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-xs font-bold text-fg hover:border-primary/25 placeholder:text-muted/60"
+                    />
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase text-muted tracking-wider">
+                        {sessionNotes.length} characters
+                      </span>
+                      <Button
+                        size="sm"
+                        onClick={handleSaveSessionNotes}
+                        loading={savingNotes}
+                        className="rounded-xl font-black px-5 py-2 cursor-pointer text-xs"
+                      >
+                        Save Notes
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-2xl bg-surface2/60 border border-border/60 text-xs font-bold text-fg whitespace-pre-wrap leading-relaxed">
+                    {booking.notes ? booking.notes : (
+                      <span className="text-muted/65 italic select-none">No preparation notes written by student yet.</span>
+                    )}
+                  </div>
+                )}
               </Card>
             </div>
           </div>

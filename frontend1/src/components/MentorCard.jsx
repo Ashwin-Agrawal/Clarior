@@ -117,6 +117,36 @@ function MentorCard({ mentor }) {
               Verified
             </span>
           )}
+          {sessions > 0 && (
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border ${
+              sessions >= 30 ? "bg-amber-500/10 border-amber-500/25 text-amber-600 dark:text-amber-400" :
+              sessions >= 15 ? "bg-purple-500/10 border-purple-500/25 text-purple-600 dark:text-purple-400" :
+              sessions >= 5  ? "bg-cyan-500/10 border-cyan-500/25 text-cyan-600 dark:text-cyan-400" :
+                               "bg-slate-500/10 border-slate-500/25 text-slate-600 dark:text-slate-400"
+            }`}>
+              {sessions >= 30 ? (
+                <>
+                  <svg className="w-3 h-3 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                  <span>Star Mentor</span>
+                </>
+              ) : sessions >= 15 ? (
+                <>
+                  <svg className="w-3 h-3 fill-current shrink-0" viewBox="0 0 24 24"><path d="M11.5 2L2 13h9v9l9.5-11h-9V2z"/></svg>
+                  <span>Rising Star</span>
+                </>
+              ) : sessions >= 5 ? (
+                <>
+                  <svg className="w-3 h-3 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5.89 12.5L12 15.82l6.11-3.32V16l-6.11 3.32L5.89 16v-3.5z"/></svg>
+                  <span>Expert Guide</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-3 h-3 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                  <span>Active Guide</span>
+                </>
+              )}
+            </span>
+          )}
           {mentor.activeSlotsCount === 0 ? (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger/10 border border-danger/25 text-danger text-xs font-semibold">
               No Slots Available

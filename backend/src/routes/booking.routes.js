@@ -14,6 +14,7 @@ const {
   confirmByStudent,
   getBookingById,
   hideBooking,
+  updateBookingNotes,
 } = require("../controllers/booking.controller");
 
 
@@ -59,6 +60,9 @@ router.patch(
 
 // Fix 11: GET single booking by ID — must be AFTER /my and /meet-link to avoid conflicts
 router.get("/:id", authMiddleware, getBookingById);
+
+// 📝 UPDATE PREP NOTES
+router.patch("/:id/notes", authMiddleware, updateBookingNotes);
 
 // 🗑️ HIDE SESSION FROM HISTORY (soft delete) — must be BEFORE /:bookingId to avoid route conflict
 router.delete("/history/:bookingId", authMiddleware, hideBooking);

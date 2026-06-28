@@ -36,6 +36,23 @@ function StatIcon({ children, tint = "bg-primary/10 text-primary" }) {
   );
 }
 
+function MiniSparkline({ points, strokeColor = "rgb(var(--primary))" }) {
+  return (
+    <div className="h-6 w-20 overflow-hidden shrink-0 select-none opacity-85">
+      <svg className="h-full w-full" viewBox="0 0 100 30" preserveAspectRatio="none">
+        <path
+          d={points}
+          fill="none"
+          stroke={strokeColor}
+          strokeWidth="3.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
+  );
+}
+
 function EmptyState({ title, description }) {
   return (
     <div className="flex min-h-[280px] flex-col items-center justify-center rounded-[32px] border border-dashed border-border/80 bg-surface2/30 px-6 py-10 text-center animate-fade-in relative overflow-hidden group">
@@ -274,6 +291,41 @@ function Dashboard() {
     };
   }, [bookings, currentTime]);
 
+  // Prep Notes Workspace State & Logic
+  const [notesText, setNotesText] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
+  const [activePrepBookingId, setActivePrepBookingId] = useState(null);
+
+  const soonestBooking = upcoming?.[0];
+
+  useEffect(() => {
+    if (soonestBooking) {
+      if (activePrepBookingId !== soonestBooking._id) {
+        setActivePrepBookingId(soonestBooking._id);
+        setNotesText(soonestBooking.notes || "");
+      }
+    } else {
+      setActivePrepBookingId(null);
+      setNotesText("");
+    }
+  }, [soonestBooking, activePrepBookingId]);
+
+  const handleSaveNotes = async () => {
+    if (!activePrepBookingId) return;
+    try {
+      setSavingNotes(true);
+      await api.patch(`/bookings/${activePrepBookingId}/notes`, { notes: notesText });
+      showSuccess("Preparation notes saved successfully!");
+      setBookings((prev) =>
+        prev.map((b) => (b._id === activePrepBookingId ? { ...b, notes: notesText } : b))
+      );
+    } catch (err) {
+      showError(err?.response?.data?.message || "Failed to save notes");
+    } finally {
+      setSavingNotes(false);
+    }
+  };
+
   const firstName = user?.name?.split(" ")[0] || "there";
   const today = useMemo(() => new Date(), []);
   const isUnverifiedSenior = user?.role === "senior" && !user?.isVerified;
@@ -409,10 +461,16 @@ function Dashboard() {
                 <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
               </StatIcon>
             </div>
-            <div className="mt-6 pt-4 border-t border-border/50 text-xs font-semibold leading-relaxed text-muted">
-              {user?.role === "student" && "Authorized to book 1:1 calls with verified seniors."}
-              {user?.role === "senior" && (user?.isVerified ? "Verified Senior: active slot creation enabled." : "Verification pending profile approval.")}
-              {user?.role === "admin" && "Superuser control center access active."}
+            <div className="mt-4 pt-3 border-t border-border/50 text-[11px] font-semibold leading-relaxed text-muted flex flex-col justify-between h-full">
+              <div>
+                {user?.role === "student" && "Authorized to book 1:1 calls with verified seniors."}
+                {user?.role === "senior" && (user?.isVerified ? "Verified Senior: active slot creation enabled." : "Verification pending profile approval.")}
+                {user?.role === "admin" && "Superuser control center access active."}
+              </div>
+              <div className="flex justify-between items-end mt-4 pt-1">
+                <span className="text-[9px] font-black uppercase text-muted tracking-wider">Aesthetics & Level</span>
+                <MiniSparkline points="M 0,25 C 20,5 30,30 50,10 C 70,5 80,25 100,5" strokeColor="rgb(var(--primary))" />
+              </div>
             </div>
           </Card>
 
@@ -443,27 +501,38 @@ function Dashboard() {
             </div>
             
             {user?.role === "senior" ? (
-              <div className="mt-6 pt-4 border-t border-border/50 flex items-center justify-between text-xs">
-                <span className="font-semibold text-muted">Pending: ₹{user?.pendingEarnings ?? 0}</span>
-                <span className="font-black text-success bg-success/10 px-2 py-0.5 rounded-full text-[9px] uppercase tracking-wider">Active</span>
+              <div className="mt-4 pt-3 border-t border-border/50 text-xs flex flex-col justify-between h-full">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-muted">Pending: ₹{user?.pendingEarnings ?? 0}</span>
+                  <span className="font-black text-success bg-success/10 px-2 py-0.5 rounded-full text-[9px] uppercase tracking-wider">Active</span>
+                </div>
+                <div className="flex justify-between items-end mt-4 pt-1">
+                  <span className="text-[9px] font-black uppercase text-muted tracking-wider">Earnings Trend</span>
+                  <MiniSparkline points="M 0,15 C 15,25 30,5 50,20 C 70,10 85,25 100,2" strokeColor="rgb(var(--success))" />
+                </div>
               </div>
             ) : (
-              <div className="mt-6 space-y-2">
-                {/* Credit progress meter */}
-                <div className="h-1.5 w-full rounded-full bg-border/40 overflow-hidden">
-                  <div 
-                    className={`h-full transition-all duration-500 ${
-                      (user?.callCredits ?? 0) >= 3 ? "bg-cyan-500" :
-                      (user?.callCredits ?? 0) > 0 ? "bg-amber-500" : "bg-danger"
-                    }`}
-                    style={{ width: `${Math.min((user?.callCredits ?? 0) * 33.3, 100)}%` }}
-                  />
+              <div className="mt-4 pt-3 border-t border-border/50 text-xs flex flex-col justify-between h-full">
+                <div className="space-y-2">
+                  <div className="h-1.5 w-full rounded-full bg-border/40 overflow-hidden">
+                    <div 
+                      className={`h-full transition-all duration-500 ${
+                        (user?.callCredits ?? 0) >= 3 ? "bg-cyan-500" :
+                        (user?.callCredits ?? 0) > 0 ? "bg-amber-500" : "bg-danger"
+                      }`}
+                      style={{ width: `${Math.min((user?.callCredits ?? 0) * 33.3, 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between font-semibold">
+                    <span className="text-muted">1 credit = 1 call</span>
+                    <Link to="/buy-credits" className="font-black text-primary hover:text-accent transition-colors flex items-center gap-0.5">
+                      Add credits <span className="text-xs">→</span>
+                    </Link>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between text-xs font-semibold">
-                  <span className="text-muted">1 credit = 1 call</span>
-                  <Link to="/buy-credits" className="font-black text-primary hover:text-accent transition-colors flex items-center gap-0.5">
-                    Add credits <span className="text-xs">→</span>
-                  </Link>
+                <div className="flex justify-between items-end mt-4 pt-1">
+                  <span className="text-[9px] font-black uppercase text-muted tracking-wider">Credits Volatility</span>
+                  <MiniSparkline points="M 0,25 C 20,5 30,30 50,10 C 70,5 80,25 100,5" strokeColor="rgb(var(--accent))" />
                 </div>
               </div>
             )}
@@ -481,32 +550,93 @@ function Dashboard() {
               </StatIcon>
             </div>
             
-            <div className="mt-6 space-y-2">
-              {/* Visual status share bar */}
-              <div className="h-1.5 w-full rounded-full bg-border/40 overflow-hidden flex">
-                <div 
-                  className="h-full bg-success transition-all duration-500" 
-                  style={{ width: `${bookings.length ? (bookings.filter(b => b.status === "completed").length / bookings.length) * 100 : 0}%` }}
-                  title="Completed"
-                />
-                <div 
-                  className="h-full bg-primary transition-all duration-500" 
-                  style={{ width: `${bookings.length ? (bookings.filter(b => b.status === "confirmed").length / bookings.length) * 100 : 0}%` }}
-                  title="Confirmed"
-                />
-                <div 
-                  className="h-full bg-danger/55 transition-all duration-500" 
-                  style={{ width: `${bookings.length ? (bookings.filter(b => b.status === "cancelled").length / bookings.length) * 100 : 0}%` }}
-                  title="Cancelled"
-                />
+            <div className="mt-4 pt-3 border-t border-border/50 text-xs flex flex-col justify-between h-full">
+              <div className="space-y-2">
+                <div className="h-1.5 w-full rounded-full bg-border/40 overflow-hidden flex">
+                  <div 
+                    className="h-full bg-success transition-all duration-500" 
+                    style={{ width: `${bookings.length ? (bookings.filter(b => b.status === "completed").length / bookings.length) * 100 : 0}%` }}
+                    title="Completed"
+                  />
+                  <div 
+                    className="h-full bg-primary transition-all duration-500" 
+                    style={{ width: `${bookings.length ? (bookings.filter(b => b.status === "confirmed").length / bookings.length) * 100 : 0}%` }}
+                    title="Confirmed"
+                  />
+                  <div 
+                    className="h-full bg-danger/55 transition-all duration-500" 
+                    style={{ width: `${bookings.length ? (bookings.filter(b => b.status === "cancelled").length / bookings.length) * 100 : 0}%` }}
+                    title="Cancelled"
+                  />
+                </div>
+                <div className="flex items-center justify-between text-[10px] font-black text-muted uppercase tracking-wider">
+                  <span>Completed: {bookings.filter(b => b.status === "completed").length}</span>
+                  <span>Confirmed: {bookings.filter(b => b.status === "confirmed").length}</span>
+                </div>
               </div>
-              <div className="flex items-center justify-between text-[10px] font-black text-muted uppercase tracking-wider">
-                <span>Completed: {bookings.filter(b => b.status === "completed").length}</span>
-                <span>Confirmed: {bookings.filter(b => b.status === "confirmed").length}</span>
+              <div className="flex justify-between items-end mt-4 pt-1">
+                <span className="text-[9px] font-black uppercase text-muted tracking-wider">Engagement Rate</span>
+                <MiniSparkline points="M 0,20 C 15,10 30,25 45,15 C 60,30 80,5 100,10" strokeColor="rgb(var(--accent))" />
               </div>
             </div>
           </Card>
         </div>
+
+        {/* Prep Notes Workspace */}
+        {soonestBooking && (
+          <section className="animate-fade-up">
+            <Card className="p-6 md:p-8 border-t-4 border-t-primary shadow-soft hover:shadow-lift transition-all relative overflow-hidden group">
+              <div className="absolute -right-16 -top-16 h-36 w-36 bg-primary/5 blur-2xl pointer-events-none rounded-full" />
+              <div className="flex flex-col md:flex-row gap-6 justify-between">
+                <div className="space-y-3 flex-1">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary live-pulse-active" />
+                    Next Call Prep Workspace
+                  </div>
+                  <h3 className="text-xl font-black text-fg tracking-tight">
+                    Session Prep Notes with {user?.role === "student" ? soonestBooking.senior?.name : soonestBooking.student?.name}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-4 text-xs font-bold text-muted uppercase tracking-wider">
+                    <span className="flex items-center gap-1.5">
+                      <svg className="w-3.5 h-3.5 text-primary shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                      {formatDateTime(soonestBooking.startTime)}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <svg className="w-3.5 h-3.5 text-accent shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      20 min call
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted max-w-xl leading-relaxed">
+                    Write down any questions you want to ask, links to your LinkedIn, or career concerns below. These notes will be saved and visible to both parties during the live call window.
+                  </p>
+                </div>
+                
+                <div className="w-full md:w-[380px] space-y-3">
+                  <textarea
+                    rows={4}
+                    placeholder="E.g., What are the placement statistics for CSE? How difficult is it to maintain a 9+ CGPA here?"
+                    value={notesText}
+                    onChange={(e) => setNotesText(e.target.value)}
+                    className="w-full p-4 rounded-2xl border border-border bg-surface2/60 outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-xs font-bold text-fg hover:border-primary/25 placeholder:text-muted/60"
+                  />
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase text-muted tracking-wider">
+                      {notesText.length} characters
+                    </span>
+                    <Button
+                      size="sm"
+                      onClick={handleSaveNotes}
+                      loading={savingNotes}
+                      className="rounded-xl font-black px-5 py-2 cursor-pointer text-xs"
+                    >
+                      Save Prep Notes
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </section>
+        )}
 
 
         {/* Sessions Section */}

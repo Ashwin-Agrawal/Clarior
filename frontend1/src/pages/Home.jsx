@@ -8,6 +8,7 @@ import Button from "../components/ui/Button";
 import CollegeCard from "../components/CollegeCard";
 import SiteContainer from "../components/layout/SiteContainer";
 import useSEO from "../hooks/useSEO";
+import { ValueSlider, SpeedBookingBoard, FAQAccordion } from "../components/home/InteractiveWidgets";
 
 
 const motivationTips = [
@@ -316,6 +317,7 @@ function Home() {
   const [pulseLoading, setPulseLoading] = useState(true);
   const [activeTip, setActiveTip] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [activeHubTab, setActiveHubTab] = useState("value");
   const [collegesList, setCollegesList] = useState([]);
   const [collegesLoading, setCollegesLoading] = useState(true);
   const [globalStats, setGlobalStats] = useState({
@@ -991,37 +993,55 @@ function Home() {
         {/* ═══════════════════════════════════════════════════════
             CTA — Particles + Scroll Reveal + Gradient Shimmer
             ═══════════════════════════════════════════════════════ */}
-        <section className="py-24">
+        {/* ═══════════════════════════════════════════════════════
+            CLARITY HUB — Risk Slider, Real Live Board & FAQ Accordion
+            ═══════════════════════════════════════════════════════ */}
+        <section className="py-24 relative overflow-hidden bg-surface-2/40 border-t border-border/10">
+          <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-primary/5 blur-3xl pointer-events-none" />
+          
           <SiteContainer>
-            <div ref={ctaRevealRef} className="relative overflow-hidden rounded-3xl border border-border/70 bg-surface/95 p-8 text-center shadow-soft md:p-20">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(37,99,235,0.10),transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,rgba(96,165,250,0.18),transparent_65%)]" />
-              <div className="absolute inset-0 opacity-70" style={{ background: "var(--hero-gradient)" }} />
+            <div className="text-center max-w-xl mx-auto space-y-3 mb-10">
+              <h2 className="text-xs font-black text-primary uppercase tracking-[0.25em] flex justify-center items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                Clarity Hub
+              </h2>
+              <h2 className="text-3xl font-black text-fg tracking-tight sm:text-5xl leading-tight">
+                Start connecting. Stop overthinking.
+              </h2>
+              <p className="text-sm text-muted max-w-md mx-auto leading-relaxed">
+                Calculate tuition/career risks, view live active slots directly, and get clear answers to build your future.
+              </p>
+            </div>
 
-              <div className="relative z-10 space-y-8">
-                <div className="scroll-reveal reveal-scale mb-2 inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface2/80 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-primary shadow-sm">
-                  <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
-                  5000+ students already inside
-                </div>
-                <h2 className="scroll-reveal reveal-up stagger-1 heading-display text-4xl font-black leading-tight text-fg md:text-7xl">
-                  Stop overthinking. <br />Start <span className="gradient-text-animated">connecting.</span>
-                </h2>
-                <p className="scroll-reveal reveal-up stagger-2 mx-auto max-w-2xl text-lg leading-relaxed text-muted md:text-xl">
-                  Join the platform where real conversations lead to real careers. Your future self will thank you.
-                </p>
-                <div className="scroll-reveal reveal-up stagger-3 flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
-                  <Link to="/register">
-                    <Button size="xl" className="rounded-full px-12 shadow-lift group">
-                      Get Started Now
-                      <svg className="ml-2 transition-transform group-hover:translate-x-1" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                    </Button>
-                  </Link>
-                  <Link to="/explore">
-                    <Button variant="secondary" size="xl" className="rounded-full px-12">
-                      Explore Seniors
-                    </Button>
-                  </Link>
-                </div>
+            {/* Tab Switchers */}
+            <div className="flex justify-center mb-10">
+              <div className="inline-flex rounded-full bg-surface border border-border p-1.5 shadow-sm max-w-full overflow-x-auto scrollbar-hide">
+                {[
+                  { id: "value", label: "Regret Calculator" },
+                  { id: "live", label: "Live Board" },
+                  { id: "faq", label: "Interactive FAQ" }
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveHubTab(tab.id)}
+                    className={`px-6 py-2.5 rounded-full text-xs font-black tracking-wider transition-all duration-300 cursor-pointer uppercase ${
+                      activeHubTab === tab.id
+                        ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white border-transparent shadow-md shadow-blue-500/20 scale-[1.02]"
+                        : "text-muted hover:text-fg"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
               </div>
+            </div>
+
+            {/* Active Widget View */}
+            <div className="transition-all duration-500 transform">
+              {activeHubTab === "value" && <ValueSlider />}
+              {activeHubTab === "live" && <SpeedBookingBoard />}
+              {activeHubTab === "faq" && <FAQAccordion />}
             </div>
           </SiteContainer>
         </section>
