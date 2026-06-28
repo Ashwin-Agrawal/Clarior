@@ -62,18 +62,19 @@ function SeniorSlots() {
   const [activeTab, setActiveTab] = useState("Open");
 
   const getSlotStatus = (s, isPast) => {
+    if (isPast) return "Past";
     if (s.isBooked) {
       if (s.booking?.status === "completed" || s.booking?.status === "cancelled") {
         return "Past";
       }
       return "Booked";
     }
-    return isPast ? "Past" : "Open";
+    return "Open";
   };
 
   const filteredSlots = useMemo(() => {
     return mySlots.filter((s) => {
-      const dt = parseSlotDateTime(s.date, s.time);
+      const dt = s.dateTime ? new Date(s.dateTime) : parseSlotDateTime(s.date, s.time);
       const isPast = dt ? dt.getTime() < now : false;
       const status = getSlotStatus(s, isPast);
       return status === activeTab;
@@ -91,7 +92,7 @@ function SeniorSlots() {
   }, [user?._id]);
 
   useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 60000);
+    const interval = setInterval(() => setNow(Date.now()), 15000); // Poll every 15s instead of 60s for snappier UI updates
     return () => clearInterval(interval);
   }, []);
 
@@ -172,7 +173,7 @@ function SeniorSlots() {
           <div className="flex gap-4 border-b border-border/60 pb-px">
             {["Open", "Booked", "Past"].map((tab) => {
               const count = mySlots.filter((s) => {
-                const dt = parseSlotDateTime(s.date, s.time);
+                const dt = s.dateTime ? new Date(s.dateTime) : parseSlotDateTime(s.date, s.time);
                 const isPast = dt ? dt.getTime() < now : false;
                 const status = getSlotStatus(s, isPast);
                 return status === tab;
@@ -199,7 +200,7 @@ function SeniorSlots() {
               [1, 2, 3, 4].map((i) => <Skeleton.Slot key={i} />)
             ) : (
               filteredSlots.map((s, idx) => {
-                const dt = parseSlotDateTime(s.date, s.time);
+                const dt = s.dateTime ? new Date(s.dateTime) : parseSlotDateTime(s.date, s.time);
                 const isPast = dt ? dt.getTime() < now : false;
                 const status = getSlotStatus(s, isPast);
                 const isOpen = openSlotId === s._id;
