@@ -747,12 +747,12 @@ function Session() {
               </Card>
 
               {/* Timer Widget */}
-              {booking.isCallStarted && (
+              {booking.isCallStarted && booking.status !== "completed" && booking.status !== "cancelled" && (
                 <SessionTimer actualStart={actualStart} />
               )}
 
               {/* Jitsi In-App Video Call Screen */}
-              {booking.isCallStarted && (
+              {booking.isCallStarted && booking.status !== "completed" && booking.status !== "cancelled" && (
                 <div className="space-y-3">
                   <div className="flex justify-between items-center px-2">
                     <span className="text-[10px] font-black uppercase text-muted tracking-widest">In-App Calling Active</span>
