@@ -61,6 +61,7 @@ exports.createOrder = async (req, res) => {
       order,
     });
   } catch (err) {
+    console.error("[Razorpay Order Error]:", err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -141,6 +142,7 @@ exports.verifyPayment = async (req, res) => {
       creditsAdded: credits,
     });
   } catch (err) {
+    console.error("[Razorpay Verification Error]:", err);
     res.status(500).json({ message: err.message });
   }
 };
