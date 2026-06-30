@@ -895,7 +895,7 @@ function Home() {
                 <div className="space-y-2">
                   <div className="inline-block px-3 py-1 rounded-full bg-primary/5 border border-primary/20 text-[9px] font-black text-primary uppercase tracking-widest">Testimonials</div>
                   <h2 className="heading-display text-2xl md:text-3xl font-black text-fg tracking-tight">
-                    What Students Say
+                    What Seniors Say
                   </h2>
                 </div>
 
