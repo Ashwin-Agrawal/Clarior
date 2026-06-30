@@ -740,20 +740,20 @@ function Home() {
 
                 <div 
                   ref={sliderRef}
-                  className="w-full overflow-x-auto scrollbar-hide py-6 px-4 flex gap-8 cursor-grab active:cursor-grabbing"
+                  className="w-full overflow-x-auto scrollbar-hide py-6 px-4 flex gap-6 snap-x snap-mandatory md:snap-none cursor-grab active:cursor-grabbing"
                   style={{ scrollBehavior: "auto" }}
                 >
                   {collegesLoading ? (
                     <div className="flex gap-6 w-full">
                       {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="w-[280px] sm:w-[320px] h-[340px] rounded-[28px] bg-surface2 animate-pulse flex-shrink-0" />
+                        <div key={i} className="w-[calc(100vw-80px)] md:w-[320px] h-[340px] rounded-[28px] bg-surface2 animate-pulse flex-shrink-0" />
                       ))}
                     </div>
                   ) : repeatedList.length > 0 ? (
                     repeatedList.map((college, idx) => (
                       <div 
                         key={`${college._id}-${idx}`} 
-                        className="w-[280px] sm:w-[320px] flex-shrink-0 transition-transform duration-300 hover:scale-[1.02] hover:-translate-y-0.5"
+                        className="w-[calc(100vw-80px)] md:w-[320px] flex-shrink-0 snap-center transition-transform duration-300 hover:scale-[1.02] hover:-translate-y-0.5"
                       >
                         <CollegeCard college={college} index={idx} />
                       </div>
@@ -778,77 +778,157 @@ function Home() {
         <WaveDivider flip color="rgb(var(--bg))" />
 
         {/* ═══════════════════════════════════════════════════════
-            WHY CLARIOR — Scroll Reveal + 3D Tilt Testimonials
+            WHY CLARIOR — Bento Box features grid
             ═══════════════════════════════════════════════════════ */}
         <section className="py-32 relative">
-          {/* Background accent glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-primary/5 blur-[120px] pointer-events-none section-glow" />
 
           <SiteContainer>
-            <div ref={featuresRevealRef} className="grid lg:grid-cols-2 gap-20 items-center">
-              <div className="space-y-8">
-                <div className="scroll-reveal reveal-left inline-block px-4 py-1.5 rounded-full bg-accent/5 border border-accent/20 text-[10px] font-black text-accent uppercase tracking-widest">The Clarior Edge</div>
-                <h2 className="scroll-reveal reveal-left stagger-1 heading-display text-4xl md:text-6xl font-black text-fg leading-tight">
+            <div ref={featuresRevealRef} className="space-y-16">
+              <div className="text-center max-w-3xl mx-auto space-y-4">
+                <div className="scroll-reveal reveal-up inline-block px-4 py-1.5 rounded-full bg-accent/5 border border-accent/20 text-[10px] font-black text-accent uppercase tracking-widest">The Clarior Edge</div>
+                <h2 className="scroll-reveal reveal-up stagger-1 heading-display text-4xl md:text-6xl font-black text-fg leading-tight">
                   Because Every Question <br /> <span className="gradient-text-animated">Deserves an Answer.</span>
                 </h2>
-                <p className="scroll-reveal reveal-left stagger-2 text-lg text-muted leading-relaxed">
+                <p className="scroll-reveal reveal-up stagger-2 text-lg text-muted leading-relaxed">
                   Most platforms give you generic advice. We give you a direct line to the people who&apos;ve actually been there. No hidden costs, no long-term commitments.
                 </p>
-                <div className="space-y-6">
-                  {[
-                    { t: "Verified Identity", d: "We manually verify every senior's college ID.", i: "shield" },
-                    { t: "Fixed Price Fairness", d: "Talk to any senior for the same transparent price of ₹69.", i: "gem" },
-                    { t: "Live 1:1 Calls", d: "Get direct, face-to-face clarity with live in-app video calls.", i: "call" },
-                  ].map((f, fi) => (
-                    <div key={f.t} className={`scroll-reveal reveal-left stagger-${fi + 3} flex gap-4 group`}>
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-surface border border-border text-primary shadow-soft group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                        <LineIcon name={f.i} />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-fg">{f.t}</h4>
-                        <p className="text-sm text-muted mt-1 leading-relaxed">{f.d}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </div>
 
-              {/* Testimonials with 3D perspective */}
-              <div className="relative w-full max-w-lg mx-auto scroll-reveal reveal-right">
-                {/* Glow behind the slider */}
-                <div className="absolute -inset-4 bg-gradient-to-tr from-primary/10 to-accent/20 rounded-[48px] blur-3xl pointer-events-none opacity-80 section-glow" />
+              {/* Bento Grid */}
+              <div className="grid md:grid-cols-3 gap-6 auto-rows-[220px]">
                 
-                <div className="relative overflow-hidden rounded-[32px] border border-border/40 shadow-card">
-                  <div 
-                    className="flex transition-transform duration-700 ease-out"
-                    style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}
-                  >
-                    {testimonials.map((t) => (
-                      <div key={t.name} className="w-full flex-shrink-0 p-2">
-                        <div className={`testimonial-card relative p-7 rounded-[28px] border border-border/50 bg-surface/90 dark:bg-surface/80 backdrop-blur-md shadow-soft hover:shadow-lift h-[260px] flex flex-col justify-between group overflow-hidden ${t.borderGlow}`}>
-                          {/* Inner subtle gradient overlay */}
-                          <div className={`absolute inset-0 bg-gradient-to-tr ${t.glow} opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`} />
-                          
-                          <div className="relative z-10">
-                            <div className="flex items-center gap-4 mb-4">
-                              <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr border text-base font-black uppercase shadow-inner group-hover:scale-110 transition-transform duration-500 ${t.avatarGlow}`}>
+                {/* Bento Card 1: Live 1:1 Guided Video Calls (Wide: Col-span-2, Row-span-1) */}
+                <div className="scroll-reveal reveal-up stagger-3 md:col-span-2 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-primary/5 p-6 flex flex-col justify-between shadow-soft hover:shadow-lift transition-all duration-300 relative overflow-hidden group">
+                  <div className="absolute -right-10 -bottom-10 h-32 w-32 bg-primary/5 blur-2xl rounded-full group-hover:bg-primary/10 transition-colors" />
+                  <div className="flex gap-4">
+                    <div className="h-12 w-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                      <LineIcon name="call" className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-fg">Live 1:1 Video Calls</h3>
+                      <p className="text-xs font-semibold text-muted mt-1 leading-relaxed">
+                        Get face-to-face clarity with live, high-definition video calls hosted securely in our application. No Zoom links required.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2.5 items-center bg-surface2/60 border border-border/40 p-2.5 rounded-xl text-[10px] font-black text-muted uppercase tracking-wider w-fit mt-3">
+                    <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
+                    Secure In-App Room Active
+                  </div>
+                </div>
+
+                {/* Bento Card 2: Transparent ₹69 Credits (Small: Col-span-1, Row-span-1) */}
+                <div className="scroll-reveal reveal-up stagger-4 md:col-span-1 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-accent/5 p-6 flex flex-col justify-between shadow-soft hover:shadow-lift transition-all duration-300 relative overflow-hidden group">
+                  <div className="absolute -right-10 -bottom-10 h-32 w-32 bg-accent/5 blur-2xl rounded-full group-hover:bg-accent/10 transition-colors" />
+                  <div className="flex gap-4">
+                    <div className="h-12 w-12 rounded-2xl bg-accent/10 text-accent flex items-center justify-center shrink-0">
+                      <LineIcon name="gem" className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-fg">₹69 Call Pass</h3>
+                      <p className="text-xs font-semibold text-muted mt-1 leading-relaxed">
+                        Flat pricing for all seniors. No subscription traps, pay as you go.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-xs font-black text-primary uppercase tracking-wider">
+                    No Consultancies Fee
+                  </div>
+                </div>
+
+                {/* Bento Card 3: 100% Manual Verification (Small: Col-span-1, Row-span-1) */}
+                <div className="scroll-reveal reveal-up stagger-5 md:col-span-1 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-success/5 p-6 flex flex-col justify-between shadow-soft hover:shadow-lift transition-all duration-300 relative overflow-hidden group">
+                  <div className="absolute -right-10 -bottom-10 h-32 w-32 bg-success/5 blur-2xl rounded-full group-hover:bg-success/10 transition-colors" />
+                  <div className="flex gap-4">
+                    <div className="h-12 w-12 rounded-2xl bg-success/10 text-success flex items-center justify-center shrink-0">
+                      <LineIcon name="shield" className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-fg">Verified Insiders Only</h3>
+                      <p className="text-xs font-semibold text-muted mt-1 leading-relaxed">
+                        Every senior&apos;s identity and college ID are verified manually by our team.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-xs font-black text-success uppercase tracking-wider flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-success" />
+                    ID Checks Required
+                  </div>
+                </div>
+
+                {/* Bento Card 4: Prep Notes Workspace (Wide: Col-span-2, Row-span-1) */}
+                <div className="scroll-reveal reveal-up stagger-6 md:col-span-2 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-amber-500/5 p-6 flex flex-col justify-between shadow-soft hover:shadow-lift transition-all duration-300 relative overflow-hidden group">
+                  <div className="absolute -right-10 -bottom-10 h-32 w-32 bg-amber-500/5 blur-2xl rounded-full group-hover:bg-amber-500/10 transition-colors" />
+                  <div className="flex gap-4">
+                    <div className="h-12 w-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9z" /></svg>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-fg">Pre-Call Prep Workspace</h3>
+                      <p className="text-xs font-semibold text-muted mt-1 leading-relaxed">
+                        List questions or placement concerns before the call. The senior reviews your notes in advance to make every minute of your session productive.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-xs font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                    Zero Wasted Time
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </SiteContainer>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════
+            SOCIAL PROOF & TRUST — Testimonials & Comparison Side-by-Side
+            ═══════════════════════════════════════════════════════ */}
+        <section className="py-24 bg-surface2/35 border-y border-border/40 relative overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-primary/5 blur-[100px] pointer-events-none" />
+
+          <SiteContainer>
+            <div className="grid lg:grid-cols-5 gap-10 items-start">
+              
+              {/* Left Column (2/5 width): Testimonials Slider */}
+              <div className="lg:col-span-2 space-y-6">
+                <div className="space-y-2">
+                  <div className="inline-block px-3 py-1 rounded-full bg-primary/5 border border-primary/20 text-[9px] font-black text-primary uppercase tracking-widest">Testimonials</div>
+                  <h2 className="heading-display text-2xl md:text-3xl font-black text-fg tracking-tight">
+                    What Students Say
+                  </h2>
+                </div>
+
+                <div className="relative w-full">
+                  <div className="absolute -inset-4 bg-gradient-to-tr from-primary/5 to-accent/10 rounded-[48px] blur-3xl pointer-events-none opacity-60" />
+                  
+                  <div className="relative overflow-hidden rounded-[28px] border border-border/40 bg-surface/90 shadow-card">
+                    <div 
+                      className="flex transition-transform duration-700 ease-out"
+                      style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}
+                    >
+                      {testimonials.map((t) => (
+                        <div key={t.name} className="w-full flex-shrink-0 p-5 flex flex-col justify-between group min-h-[250px]">
+                          <div>
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr border text-sm font-black uppercase shadow-inner transition-transform duration-500 ${t.avatarGlow}`}>
                                 {t.initials}
                               </div>
                               <div>
-                                <div className="font-bold text-fg text-base leading-tight">{t.name}</div>
-                                <div className="text-[10px] font-bold text-muted uppercase tracking-wider mt-0.5">{t.role}</div>
+                                <div className="font-bold text-fg text-sm leading-tight">{t.name}</div>
+                                <div className="text-[9px] font-bold text-muted uppercase tracking-wider mt-0.5">{t.role}</div>
                               </div>
                             </div>
                             
-                            <div className="flex gap-2 items-start mt-3">
-                              <span className={`text-3xl font-serif leading-none select-none -mt-1 transition-colors duration-500 ${t.quoteColor}`}>&ldquo;</span>
-                              <p className="text-[14px] text-fg/80 italic leading-relaxed pt-0.5">
+                            <div className="flex gap-2 items-start">
+                              <span className={`text-3xl font-serif leading-none select-none -mt-2 transition-colors duration-500 ${t.quoteColor}`}>&ldquo;</span>
+                              <p className="text-xs md:text-sm text-fg/80 italic leading-relaxed pt-0.5">
                                 {t.quote}
                               </p>
                             </div>
                           </div>
                           
-                          <div className="mt-4 flex justify-between items-center pt-3 border-t border-border/20 relative z-10">
+                          <div className="mt-6 flex justify-between items-center pt-3 border-t border-border/20">
                             <div className="flex gap-0.5 text-amber-500 drop-shadow-[0_2px_8px_rgba(245,158,11,0.25)]">
                               {[1,2,3,4,5].map(i => <svg key={i} width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
                             </div>
@@ -857,26 +937,77 @@ function Home() {
                             </div>
                           </div>
                         </div>
-                      </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Navigation Dots */}
+                  <div className="mt-4 flex justify-center gap-1.5">
+                    {testimonials.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setActiveTestimonial(idx)}
+                        className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                          activeTestimonial === idx 
+                            ? "w-5 bg-primary" 
+                            : "w-1.5 bg-muted/40 hover:bg-muted/60"
+                        }`}
+                      />
                     ))}
                   </div>
                 </div>
+              </div>
 
-                {/* Sliding Navigation Dots */}
-                <div className="mt-6 flex justify-center gap-1.5">
-                  {testimonials.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setActiveTestimonial(idx)}
-                      className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                        activeTestimonial === idx 
-                          ? "w-6 bg-primary" 
-                          : "w-2 bg-muted/40 hover:bg-muted/60"
-                      }`}
-                    />
+              {/* Right Column (3/5 width): Comparison Matrix */}
+              <div className="lg:col-span-3 space-y-6">
+                <div className="space-y-2">
+                  <div className="inline-block px-3 py-1 rounded-full bg-success/5 border border-success/20 text-[9px] font-black text-success uppercase tracking-widest">Compare & Decide</div>
+                  <h2 className="heading-display text-2xl md:text-3xl font-black text-fg tracking-tight">
+                    No Sales Pitch. Just Raw Clarity.
+                  </h2>
+                </div>
+
+                <div className="rounded-[28px] border border-border/60 bg-surface/90 shadow-card overflow-hidden backdrop-blur-xl">
+                  <div className="grid grid-cols-2 md:grid-cols-3 border-b border-border bg-surface2/60 p-4 text-center font-black text-[10px] uppercase tracking-widest text-muted">
+                    <div className="hidden md:block text-left pl-3">Decision Factor</div>
+                    <div>Traditional Advice</div>
+                    <div className="text-primary">Clarior Difference</div>
+                  </div>
+
+                  {[
+                    {
+                      factor: "Credibility",
+                      traditional: "Sponsored reviews, biased rankings, admission agents.",
+                      clarior: "Direct uncensored talk with real students inside campus."
+                    },
+                    {
+                      factor: "Cost & Terms",
+                      traditional: "Up to ₹50,000 package trap, non-refundable.",
+                      clarior: "Flat ₹69 credit pass per session. Refund if no-show."
+                    },
+                    {
+                      factor: "Incentives",
+                      traditional: "Commissions for pushing specific admissions.",
+                      clarior: "Seniors have zero commissions or stakes in choice."
+                    },
+                    {
+                      factor: "Time",
+                      traditional: "Spam phone calls, sales visits, hours of pitching.",
+                      clarior: "Instant 20-min focused check-in. Safe, in-app call."
+                    }
+                  ].map((row, idx) => (
+                    <div key={idx} className="grid grid-cols-2 md:grid-cols-3 p-4 items-center border-b border-border/30 last:border-0 hover:bg-surface2/20 transition-colors text-center md:text-left">
+                      <div className="hidden md:block font-bold text-fg text-xs pl-3">{row.factor}</div>
+                      <div className="text-xs text-muted px-1.5 md:px-0 font-medium md:text-center leading-relaxed">{row.traditional}</div>
+                      <div className="text-xs text-fg font-semibold bg-primary/5 border border-primary/10 p-2.5 rounded-xl md:bg-transparent md:border-0 md:p-0 md:text-center text-primary-fg md:text-primary">
+                        <span className="md:hidden block text-[8px] font-black uppercase tracking-wider text-primary mb-0.5">Clarior Difference</span>
+                        {row.clarior}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
+
             </div>
           </SiteContainer>
         </section>

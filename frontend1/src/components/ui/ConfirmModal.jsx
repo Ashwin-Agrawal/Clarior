@@ -68,11 +68,11 @@ export default function ConfirmModal({
           {message}
         </p>
 
-        <div className="flex gap-3 justify-end">
+        <div className="flex flex-col-reverse sm:flex-row gap-3 justify-end mt-6">
           <Button
             type="button"
             variant="secondary"
-            className="rounded-xl px-5"
+            className="w-full sm:w-auto rounded-xl px-5"
             onClick={onCancel}
             disabled={loading}
           >
@@ -81,7 +81,7 @@ export default function ConfirmModal({
           <Button
             type="button"
             variant={variant}
-            className="rounded-xl px-6 font-bold"
+            className="w-full sm:w-auto rounded-xl px-6 font-bold"
             onClick={onConfirm}
             loading={loading}
           >

@@ -761,27 +761,27 @@ function Session() {
                 <div className="flex flex-wrap gap-4">
                   {user?.role === "student" && booking.status === "confirmed" && !booking.isCallStarted && (
                     !booking.isStudentStarted ? (
-                      <Button onClick={startCall} size="lg" className="rounded-2xl flex-1 sm:flex-none py-3.5 px-8">Confirm Start (Check In)</Button>
+                      <Button onClick={startCall} size="lg" className="rounded-2xl flex-1 sm:flex-none py-3 px-6 text-sm md:text-base">Confirm Start</Button>
                     ) : (
-                      <Button disabled size="lg" className="rounded-2xl flex-1 sm:flex-none bg-muted/20 text-muted border border-border/80">
-                        Waiting for Senior to start...
+                      <Button disabled size="lg" className="rounded-2xl flex-1 sm:flex-none bg-muted/20 text-muted border border-border/80 text-sm">
+                        Waiting for Senior...
                       </Button>
                     )
                   )}
                   {user?.role === "senior" && booking.status === "confirmed" && !booking.isCallStarted && (
                     !booking.isSeniorStarted ? (
-                      <Button onClick={startCall} size="lg" className="rounded-2xl flex-1 sm:flex-none py-3.5 px-8">Confirm Start (Check In)</Button>
+                      <Button onClick={startCall} size="lg" className="rounded-2xl flex-1 sm:flex-none py-3 px-6 text-sm md:text-base">Confirm Start</Button>
                     ) : (
-                      <Button disabled size="lg" className="rounded-2xl flex-1 sm:flex-none bg-muted/20 text-muted border border-border/80">
-                        Waiting for Student to start...
+                      <Button disabled size="lg" className="rounded-2xl flex-1 sm:flex-none bg-muted/20 text-muted border border-border/80 text-sm">
+                        Waiting for Student...
                       </Button>
                     )
                   )}
                   {user?.role === "senior" && booking.isCallStarted && !booking.isSeniorMarkedDone && (
-                    <Button onClick={seniorComplete} size="lg" className="rounded-2xl flex-1 sm:flex-none py-3.5 px-8">Mark Completed (End Call)</Button>
+                    <Button onClick={seniorComplete} size="lg" className="rounded-2xl flex-1 sm:flex-none py-3 px-6 text-sm md:text-base">Mark Completed</Button>
                   )}
                   {user?.role === "student" && booking.isSeniorMarkedDone && !booking.isStudentConfirmed && (
-                    <Button onClick={studentConfirm} size="lg" className="rounded-2xl flex-1 sm:flex-none py-3.5 px-8">Confirm Completion</Button>
+                    <Button onClick={studentConfirm} size="lg" className="rounded-2xl flex-1 sm:flex-none py-3 px-6 text-sm md:text-base">Confirm Completion</Button>
                   )}
                   
                   {/* Status Badges within Controls */}
@@ -817,7 +817,7 @@ function Session() {
                       🔄 Refresh Video Call
                     </button>
                   </div>
-                  <Card className="p-2 overflow-hidden bg-slate-950 border border-border/80 rounded-[32px] shadow-hero aspect-video w-full min-h-[480px] relative">
+                  <Card className="p-2 overflow-hidden bg-slate-950 border border-border/80 rounded-[32px] shadow-hero w-full h-[320px] md:h-[480px] relative">
                     {!jitsiLoaded && (
                       <div className="absolute inset-0 flex items-center justify-center bg-slate-900/90 backdrop-blur-md rounded-[28px] z-10 animate-fade-in">
                         <div className="text-center space-y-3">

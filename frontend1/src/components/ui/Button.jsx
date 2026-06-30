@@ -30,7 +30,7 @@ function Button({
   ...props
 }) {
   const base =
-    "group relative isolate inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-transparent font-semibold leading-none tracking-[0.01em] transition-all duration-300 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary focus-visible:ring-offset-bg disabled:pointer-events-none disabled:opacity-55 overflow-hidden shadow-[0_8px_24px_rgba(15,23,42,0.08)]";
+    "group relative isolate inline-flex min-h-10 items-center justify-center gap-2 whitespace-normal sm:whitespace-nowrap text-center rounded-full border border-transparent font-semibold leading-tight tracking-[0.01em] transition-all duration-300 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary focus-visible:ring-offset-bg disabled:pointer-events-none disabled:opacity-55 overflow-hidden shadow-[0_8px_24px_rgba(15,23,42,0.08)]";
 
   const sizes = {
     sm: "px-3.5 py-2 text-xs",
