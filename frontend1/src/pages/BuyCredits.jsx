@@ -54,7 +54,7 @@ function BuyCredits() {
     setLoadingPlan(plan);
 
     try {
-      const key = import.meta.env.VITE_RAZORPAY_KEY;
+      const key = import.meta.env.VITE_RAZORPAY_KEY || "rzp_live_T78Fl8Wept0E2X";
       if (!key) {
         setStatus({ type: "error", text: "Payment config missing. Please contact support." });
         return;
