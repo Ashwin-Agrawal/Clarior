@@ -142,6 +142,15 @@ function BecomeMentor() {
       }
     }
 
+    if (!form.cgpa) {
+      errs.cgpa = "CGPA is required";
+    } else {
+      const val = Number(form.cgpa);
+      if (isNaN(val) || val < 0 || val > 10) {
+        errs.cgpa = "Enter a valid CGPA (0.00-10.00)";
+      }
+    }
+
     if (!form.linkedin.trim()) {
       errs.linkedin = "LinkedIn URL is required";
     } else if (!/^https?:\/\/.+/i.test(form.linkedin.trim())) {
@@ -212,6 +221,14 @@ function BecomeMentor() {
                 <div className="text-center">
                   <h2 className="heading-display text-3xl md:text-4xl font-extrabold text-fg">Application Form</h2>
                   <p className="text-lg text-muted mt-2">Tell us about your background and experience.</p>
+                </div>
+
+                <div className="p-6 rounded-3xl bg-primary/10 border border-primary/20 text-fg text-sm leading-relaxed max-w-2xl mx-auto text-left flex items-start gap-4 shadow-sm animate-scale-in">
+                  <div className="text-2xl mt-0.5 select-none">💡</div>
+                  <div>
+                    <span className="font-extrabold block text-primary uppercase tracking-wide text-xs mb-1">Official Student Email ID Required</span>
+                    Seniors must register and apply using their official college-issued student email ID. Verification will be processed exclusively through your student ID credentials.
+                  </div>
                 </div>
 
                 {(message || alreadyVerifiedMessage) && <div className="p-6 rounded-2xl bg-success/5 border border-success/20 text-success font-bold animate-scale-in text-center">{message || alreadyVerifiedMessage}</div>}
@@ -290,6 +307,7 @@ function BecomeMentor() {
                       </div>
                       <Input label="Branch/Department *" placeholder="CSE, MBBS..." value={form.branch} onChange={(e) => update("branch", e.target.value)} error={fieldErrors.branch} className="rounded-2xl" />
                       <Input label="Current Year *" type="number" placeholder="3" value={form.year} onChange={(e) => update("year", e.target.value)} error={fieldErrors.year} className="rounded-2xl" />
+                      <Input label="CGPA *" type="number" step="0.01" min="0" max="10" placeholder="8.50" value={form.cgpa} onChange={(e) => update("cgpa", e.target.value)} error={fieldErrors.cgpa} className="rounded-2xl" />
                     </div>
                   </div>
 

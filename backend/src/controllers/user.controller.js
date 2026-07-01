@@ -163,7 +163,7 @@ exports.applySenior = async (req, res) => {
 // ✏️ UPDATE PROFILE
 exports.updateProfile = async (req, res) => {
   try {
-    const { college, domain, branch, bio, linkedin, isAnonymous, year, avatar } = req.body;
+    const { college, domain, branch, bio, linkedin, isAnonymous, year, avatar, cgpa } = req.body;
 
     // 🔒 Validate input lengths
     if (college && college.length > 100) {
@@ -190,6 +190,12 @@ exports.updateProfile = async (req, res) => {
         return res.status(400).json({ message: "Invalid year. Must be between 1 and 6." });
       }
     }
+    if (cgpa !== undefined && cgpa !== null && cgpa !== "") {
+      const cgpaNum = Number(cgpa);
+      if (isNaN(cgpaNum) || cgpaNum < 0 || cgpaNum > 10) {
+        return res.status(400).json({ message: "Invalid CGPA. Must be between 0 and 10." });
+      }
+    }
     if (avatar && !["initials", "avatar-1", "avatar-2", "avatar-3", "avatar-4", "avatar-5", "avatar-6"].includes(avatar)) {
       return res.status(400).json({ message: "Invalid avatar selection" });
     }
@@ -206,6 +212,7 @@ exports.updateProfile = async (req, res) => {
     if (bio) user.bio = bio.trim();
     if (linkedin) user.linkedin = linkedin.trim();
     if (year !== undefined && year !== null && year !== "") user.year = Number(year);
+    if (cgpa !== undefined && cgpa !== null && cgpa !== "") user.cgpa = Number(cgpa);
     if (avatar) user.avatar = avatar;
     if (typeof isAnonymous === "boolean") user.isAnonymous = isAnonymous;
 

@@ -232,6 +232,7 @@ function UserProfile() {
   const [linkedin, setLinkedin] = useState(user?.linkedin || "");
   const [upiId, setUpiId] = useState(user?.upiId || "");
   const [bio, setBio] = useState(user?.bio || "");
+  const [cgpa, setCgpa] = useState(user?.cgpa || "");
   const [selectedAvatar, setSelectedAvatar] = useState(user?.avatar || "initials");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -242,6 +243,7 @@ function UserProfile() {
       setLinkedin(user.linkedin || "");
       setUpiId(user.upiId || "");
       setBio(user.bio || "");
+      setCgpa(user.cgpa || "");
       setSelectedAvatar(user.avatar || "initials");
     }
   }, [user]);
@@ -260,6 +262,7 @@ function UserProfile() {
       setLinkedin(user.linkedin || "");
       setUpiId(user.upiId || "");
       setBio(user.bio || "");
+      setCgpa(user.cgpa || "");
       setSelectedAvatar(user.avatar || "initials");
     }
     setIsEditModalOpen(true);
@@ -273,18 +276,21 @@ function UserProfile() {
     e.preventDefault();
     setIsSaving(true);
     try {
-      if (linkedin && (!linkedin.startsWith("http") || !linkedin.includes("linkedin.com"))) {
-        showError("Invalid LinkedIn URL format");
-        setIsSaving(false);
-        return;
+      if (cgpa !== undefined && cgpa !== null && cgpa !== "") {
+        const cgpaNum = Number(cgpa);
+        if (isNaN(cgpaNum) || cgpaNum < 0 || cgpaNum > 10) {
+          showError("Invalid CGPA. Must be between 0.00 and 10.00.");
+          setIsSaving(false);
+          return;
+        }
       }
 
-      // 1. Update basic profile fields (bio, linkedin, year, avatar)
+      // 1. Update basic profile fields (bio, year, avatar, cgpa)
       await api.patch("/users/profile", {
         bio: bio.trim(),
-        linkedin: linkedin.trim(),
         year: year ? Number(year) : undefined,
         avatar: selectedAvatar,
+        cgpa: cgpa ? Number(cgpa) : undefined,
       });
 
       // 2. Update UPI ID (if senior role and changed)
@@ -587,6 +593,15 @@ function UserProfile() {
                     {user?.year ? `${user.year} Year` : <span className="text-muted/50 italic font-medium">Not specified</span>}
                   </div>
                 </div>
+
+                {user?.role === "senior" && (
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black text-muted uppercase tracking-wider block pl-1">CGPA</span>
+                    <div className="text-sm font-semibold text-fg bg-surface/50 px-4 py-3 rounded-xl border border-border/40">
+                      {user?.cgpa ? Number(user.cgpa).toFixed(2) : <span className="text-muted/50 italic font-medium">Not specified</span>}
+                    </div>
+                  </div>
+                )}
 
                 <div className="space-y-1">
                   <span className="text-[10px] font-black text-muted uppercase tracking-wider block pl-1">LinkedIn Profile</span>
@@ -944,18 +959,23 @@ function UserProfile() {
                 </select>
               </div>
 
-              {/* LinkedIn URL Input */}
-              <div style={{ marginBottom: 14 }}>
-                <span style={labelStyle}>LinkedIn Profile Link</span>
-                <input 
-                  type="text" 
-                  value={linkedin} 
-                  onChange={(e) => setLinkedin(e.target.value)} 
-                  placeholder="https://linkedin.com/in/yourprofile"
-                  style={inputStyle}
-                  className="focus:border-primary/60 font-medium placeholder:text-muted/60"
-                />
-              </div>
+              {/* CGPA Input (Only visible for seniors) */}
+              {user?.role === "senior" && (
+                <div style={{ marginBottom: 14 }}>
+                  <span style={labelStyle}>CGPA</span>
+                  <input 
+                    type="number" 
+                    step="0.01"
+                    min="0"
+                    max="10"
+                    value={cgpa} 
+                    onChange={(e) => setCgpa(e.target.value)} 
+                    placeholder="e.g. 8.50"
+                    style={inputStyle}
+                    className="focus:border-primary/60 placeholder:text-muted/60 font-semibold"
+                  />
+                </div>
+              )}
 
               {/* UPI ID input (Only visible for seniors) */}
               {user?.role === "senior" && (
