@@ -163,7 +163,7 @@ exports.applySenior = async (req, res) => {
 // ✏️ UPDATE PROFILE
 exports.updateProfile = async (req, res) => {
   try {
-    const { college, domain, branch, bio, linkedin, isAnonymous, year, avatar, cgpa } = req.body;
+    const { college, domain, branch, bio, isAnonymous, year, avatar, cgpa } = req.body;
 
     // 🔒 Validate input lengths
     if (college && college.length > 100) {
@@ -177,12 +177,6 @@ exports.updateProfile = async (req, res) => {
     }
     if (bio && bio.length > 500) {
       return res.status(400).json({ message: "Bio too long (max 500 chars)" });
-    }
-    if (linkedin && (!linkedin.startsWith("http") || !linkedin.includes("linkedin.com"))) {
-      return res.status(400).json({ message: "Invalid LinkedIn URL" });
-    }
-    if (linkedin && linkedin.length > 255) {
-      return res.status(400).json({ message: "LinkedIn URL too long" });
     }
     if (year !== undefined && year !== null && year !== "") {
       const yearNum = Number(year);
@@ -210,7 +204,6 @@ exports.updateProfile = async (req, res) => {
     if (domain) user.domain = domain.trim();
     if (branch) user.branch = branch.trim();
     if (bio) user.bio = bio.trim();
-    if (linkedin) user.linkedin = linkedin.trim();
     if (year !== undefined && year !== null && year !== "") user.year = Number(year);
     if (cgpa !== undefined && cgpa !== null && cgpa !== "") user.cgpa = Number(cgpa);
     if (avatar) user.avatar = avatar;
