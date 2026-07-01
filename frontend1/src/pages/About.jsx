@@ -37,7 +37,7 @@ function About() {
                 Choosing a college or branch is one of the most critical decisions of a student's life. Yet, most information available online is either marketing brochures, generic articles, or highly biased forums.
               </p>
               <p className="text-muted">
-                Clarior was built to change that. We connect college aspirants and juniors directly with verified seniors from top institutions worldwide. This allows for honest, peer-to-peer conversations where you can get answers to your specific doubts.
+                Clarior was built to change that. We connect college aspirants and juniors directly with verified seniors from institutions worldwide. This allows for honest, peer-to-peer conversations where you can get answers to your specific doubts.
               </p>
             </section>
 

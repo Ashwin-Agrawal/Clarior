@@ -17,7 +17,7 @@ function Footer() {
               </span>
             </Link>
             <p className="mt-6 text-sm text-muted leading-relaxed max-w-xs">
-              Talk to verified seniors from top colleges worldwide. Get real clarity, honest advice, and personalized guidance for your academic journey.
+              Talk to verified seniors from colleges worldwide. Get real clarity, honest advice, and personalized guidance for your academic journey.
             </p>
             {/* Social Links */}
             <div className="mt-8 flex gap-3">

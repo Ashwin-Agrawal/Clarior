@@ -377,7 +377,7 @@ function Dashboard() {
                 <p className="max-w-xl text-sm font-semibold leading-relaxed text-muted">
                   {user?.role === "senior" 
                     ? "Your senior portal is ready. Track your earnings, manage your availability, and clear doubts."
-                    : "Ready to get some clarity? Book a session with top seniors or manage your upcoming calls here."}
+                    : "Ready to get some clarity? Book a session with seniors worldwide or manage your upcoming calls here."}
                 </p>
 
                 {user?.role === "senior" && (

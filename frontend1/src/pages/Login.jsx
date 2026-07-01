@@ -8,7 +8,7 @@ import { Logo } from "../components/layout/icons";
 import useSEO from "../hooks/useSEO";
 
 const trustPoints = [
-  "Verified seniors from top colleges worldwide",
+  "Verified seniors from colleges worldwide",
   "Honest, experience-based guidance only",
   "20-minute focused sessions, timer-tracked",
 ];
