@@ -85,7 +85,7 @@ function MentorGuidelines() {
               <li>At the start, the student confirms session initiation on the platform</li>
               <li>The session is conducted normally</li>
               <li>After completion, both student and mentor submit feedback and rating</li>
-              <li>Payment is processed within 2 hours to the registered UPI ID or bank account</li>
+              <li>Payment is processed within 4 hours to the registered UPI ID or bank account</li>
             </ol>
           </section>
 

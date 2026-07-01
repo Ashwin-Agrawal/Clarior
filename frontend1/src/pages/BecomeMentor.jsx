@@ -40,6 +40,7 @@ function BecomeMentor() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const [colleges, setColleges] = useState([]);
   const [showCollegesDropdown, setShowCollegesDropdown] = useState(false);
@@ -167,6 +168,10 @@ function BecomeMentor() {
       setError("Your senior application is already under review.");
       return;
     }
+    if (!acceptedTerms) {
+      setError("You must accept the Senior Guidelines and Terms of Service to proceed.");
+      return;
+    }
     if (!validate()) return;
     setError(""); setMessage(""); setLoading(true);
     try {
@@ -174,6 +179,7 @@ function BecomeMentor() {
       await fetchUser?.();
       setMessage("Application submitted. Our team will verify your profile within 48 hours.");
       setForm({ phone: "", college: "", domain: "", branch: "", year: "", cgpa: "", bio: "", linkedin: "", upiId: "", affiliatedCollege: "" });
+      setAcceptedTerms(false);
     } catch (err) { setError(err?.response?.data?.message || "Submission failed"); } finally { setLoading(false); }
   };
 
@@ -307,8 +313,34 @@ function BecomeMentor() {
                     </div>
                   </div>
 
-                  <div className="flex justify-center pt-4">
-                    <Button type="submit" loading={loading} className="w-full sm:w-auto px-16 rounded-full shadow-hero" size="xl">Submit Application</Button>
+                  <div className="flex flex-col items-center gap-6 pt-4">
+                    <label className="flex items-start gap-3 max-w-md cursor-pointer select-none text-left">
+                      <input 
+                        type="checkbox" 
+                        checked={acceptedTerms} 
+                        onChange={(e) => {
+                          setAcceptedTerms(e.target.checked);
+                          setError("");
+                        }}
+                        className="mt-1 h-4.5 w-4.5 rounded border-border bg-surface text-primary focus:ring-primary/20 cursor-pointer"
+                      />
+                      <span className="text-xs font-bold text-muted leading-relaxed">
+                        I agree to the{" "}
+                        <Link to="/mentor-guidelines" target="_blank" className="text-primary font-black hover:underline">
+                          Senior Guidelines and Terms of Service
+                        </Link>.
+                      </span>
+                    </label>
+
+                    <Button 
+                      type="submit" 
+                      loading={loading} 
+                      disabled={!acceptedTerms}
+                      className="w-full sm:w-auto px-16 rounded-full shadow-hero" 
+                      size="xl"
+                    >
+                      Submit Application
+                    </Button>
                   </div>
                 </form>
               </Card>
