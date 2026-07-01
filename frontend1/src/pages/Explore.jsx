@@ -23,7 +23,7 @@ const TYPES = ["All", "Government", "Private", "New-Gen"];
 function Explore() {
   useSEO(
     "Explore Colleges",
-    "Browse top Indian colleges and connect with verified seniors studying there. Get clear guidance on admissions, branches, and career paths."
+    "Browse top colleges worldwide and connect with verified seniors studying there. Get clear guidance on admissions, branches, and career paths."
   );
 
   const [colleges, setColleges] = useState([]);

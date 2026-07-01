@@ -37,7 +37,7 @@ function About() {
                 Choosing a college or branch is one of the most critical decisions of a student's life. Yet, most information available online is either marketing brochures, generic articles, or highly biased forums.
               </p>
               <p className="text-muted">
-                Clarior was built to change that. We connect college aspirants and juniors directly with verified seniors from top Indian institutions. This allows for honest, peer-to-peer conversations where you can get answers to your specific doubts.
+                Clarior was built to change that. We connect college aspirants and juniors directly with verified seniors from top institutions worldwide. This allows for honest, peer-to-peer conversations where you can get answers to your specific doubts.
               </p>
             </section>
 
@@ -60,7 +60,7 @@ function About() {
             <section className="space-y-4">
               <h2 className="text-2xl font-bold">How it started</h2>
               <p className="text-muted">
-                Founded by students who realized how difficult it is to get genuine college feedback, Clarior is on a mission to build the largest community of student mentors in India.
+                Founded by students who realized how difficult it is to get genuine college feedback, Clarior is on a mission to build the largest community of student mentors globally.
               </p>
             </section>
           </div>

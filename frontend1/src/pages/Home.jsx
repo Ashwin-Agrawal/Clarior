@@ -503,7 +503,7 @@ function Home() {
     };
   }, [collegesLoading, repeatedList]);
 
-  useSEO("Home", "Talk to verified seniors from top Indian colleges for ₹69. Get clarity on college, branch, placements and more.");
+  useSEO("Home", "Talk to verified seniors from top colleges worldwide for ₹69. Get clarity on college, branch, placements and more.");
 
   useEffect(() => {
     const fetchColleges = async () => {

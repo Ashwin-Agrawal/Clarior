@@ -8,7 +8,7 @@ import { Logo } from "../components/layout/icons";
 import useSEO from "../hooks/useSEO";
 
 const trustPoints = [
-  "Verified seniors from top Indian colleges",
+  "Verified seniors from top colleges worldwide",
   "Honest, experience-based guidance only",
   "20-minute focused sessions, timer-tracked",
 ];
@@ -143,9 +143,8 @@ function Login() {
             </div>
           </div>
   
-          {/* Bottom note */}
           <div className="relative text-blue-200 text-xs">
-            © {currentYear} Clarior. Trusted by students across India.
+            © {currentYear} Clarior. Trusted by students worldwide.
           </div>
         </div>
   

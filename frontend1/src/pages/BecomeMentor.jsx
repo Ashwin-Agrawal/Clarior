@@ -227,7 +227,7 @@ function BecomeMentor() {
               Share your <span className="gradient-text">journey.</span>
             </h1>
             <p className="mt-10 text-2xl text-muted max-w-3xl mx-auto leading-relaxed font-medium tracking-tight">
-              Help future students navigate college life while earning for your time. Join a community of top seniors from across India.
+              Help future students navigate college life while earning for your time. Join a community of top seniors worldwide.
             </p>
           </SiteContainer>
         </div>
