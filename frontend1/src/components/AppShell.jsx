@@ -216,27 +216,6 @@ function AppShell({ title, subtitle, children }) {
             {children}
           </SiteContainer>
         </div>
-
-        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/90 backdrop-blur-md px-3 py-2 shadow-lift lg:hidden" aria-label="Primary">
-          <div className="mx-auto grid max-w-md gap-1" style={{ gridTemplateColumns: `repeat(${Math.min(nav.length, 4)}, minmax(0, 1fr))` }}>
-            {nav.slice(0, 4).map((item) => {
-              const active = location.pathname === item.to;
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={cx(
-                    "flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[10px] font-bold transition",
-                    active ? "bg-primary/10 text-primary" : "text-muted hover:bg-surface2 hover:text-fg"
-                  )}
-                >
-                  {item.icon}
-                  <span className="leading-none">{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
       </main>
     </div>
   );

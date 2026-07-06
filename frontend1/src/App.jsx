@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import ScrollToHash from "./components/ScrollToHash";
 import { ToastContainer } from "./components/Toast";
+import MobileBottomNav from "./components/MobileBottomNav";
 
 
 import Home from "./pages/Home";
@@ -134,6 +135,7 @@ function App() {
         />
 
       </Routes>
+      <MobileBottomNav />
     </>
   );
 }

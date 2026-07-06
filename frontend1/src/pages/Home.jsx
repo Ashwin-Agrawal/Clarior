@@ -435,6 +435,7 @@ function Home() {
   };
 
   const handleTouchStart = (e) => {
+    if (window.innerWidth < 768) return; // Disable custom touch tracking on mobile
     isMouseDownRef.current = true;
     targetSpeedRef.current = 0;
     velocityRef.current = 0;
@@ -446,6 +447,7 @@ function Home() {
   };
 
   const handleTouchMove = (e) => {
+    if (window.innerWidth < 768) return; // Disable custom touch tracking on mobile
     if (!isMouseDownRef.current) return;
     const touch = e.touches[0];
     const x = touch.pageX - sliderRef.current.offsetLeft;
@@ -468,6 +470,10 @@ function Home() {
 
     const container = sliderRef.current;
     if (!container) return;
+
+    // Check if device is mobile - if so, skip auto-scrolling ticker loop
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) return;
 
     const animate = () => {
       if (!container) return;
@@ -941,19 +947,41 @@ function Home() {
                     </div>
                   </div>
 
-                  {/* Navigation Dots */}
-                  <div className="mt-4 flex justify-center gap-1.5">
-                    {testimonials.map((_, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setActiveTestimonial(idx)}
-                        className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                          activeTestimonial === idx 
-                            ? "w-5 bg-primary" 
-                            : "w-1.5 bg-muted/40 hover:bg-muted/60"
-                        }`}
-                      />
-                    ))}
+                  {/* Navigation Controls */}
+                  <div className="mt-5 flex items-center justify-between px-1">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTestimonial(prev => (prev === 0 ? testimonials.length - 1 : prev - 1))}
+                      className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface text-muted hover:text-fg hover:border-primary/30 active:scale-95 transition-all shadow-sm cursor-pointer"
+                      aria-label="Previous Testimonial"
+                    >
+                      <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+                    </button>
+
+                    {/* Navigation Dots */}
+                    <div className="flex gap-1.5">
+                      {testimonials.map((_, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setActiveTestimonial(idx)}
+                          className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                            activeTestimonial === idx 
+                              ? "w-5 bg-primary" 
+                              : "w-1.5 bg-muted/40 hover:bg-muted/60"
+                          }`}
+                        />
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setActiveTestimonial(prev => (prev === testimonials.length - 1 ? 0 : prev + 1))}
+                      className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface text-muted hover:text-fg hover:border-primary/30 active:scale-95 transition-all shadow-sm cursor-pointer"
+                      aria-label="Next Testimonial"
+                    >
+                      <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -967,9 +995,10 @@ function Home() {
                   </h2>
                 </div>
 
-                <div className="rounded-[28px] border border-border/60 bg-surface/90 shadow-card overflow-hidden backdrop-blur-xl">
-                  <div className="grid grid-cols-2 md:grid-cols-3 border-b border-border bg-surface2/60 p-4 text-center font-black text-[10px] uppercase tracking-widest text-muted">
-                    <div className="hidden md:block text-left pl-3">Decision Factor</div>
+                {/* Desktop & Tablet Matrix View */}
+                <div className="hidden md:block rounded-[28px] border border-border/60 bg-surface/90 shadow-card overflow-hidden backdrop-blur-xl">
+                  <div className="grid grid-cols-3 border-b border-border bg-surface2/60 p-4 text-center font-black text-[10px] uppercase tracking-widest text-muted">
+                    <div className="text-left pl-3">Decision Factor</div>
                     <div>Traditional Advice</div>
                     <div className="text-primary">Clarior Difference</div>
                   </div>
@@ -996,12 +1025,55 @@ function Home() {
                       clarior: "Instant 20-min focused check-in. Safe, in-app call."
                     }
                   ].map((row, idx) => (
-                    <div key={idx} className="grid grid-cols-2 md:grid-cols-3 p-4 items-center border-b border-border/30 last:border-0 hover:bg-surface2/20 transition-colors text-center md:text-left">
-                      <div className="hidden md:block font-bold text-fg text-xs pl-3">{row.factor}</div>
-                      <div className="text-xs text-muted px-1.5 md:px-0 font-medium md:text-center leading-relaxed">{row.traditional}</div>
-                      <div className="text-xs text-fg font-semibold bg-primary/5 border border-primary/10 p-2.5 rounded-xl md:bg-transparent md:border-0 md:p-0 md:text-center text-primary-fg md:text-primary">
-                        <span className="md:hidden block text-[8px] font-black uppercase tracking-wider text-primary mb-0.5">Clarior Difference</span>
+                    <div key={idx} className="grid grid-cols-3 p-4 items-center border-b border-border/30 last:border-0 hover:bg-surface2/20 transition-colors text-left">
+                      <div className="font-bold text-fg text-xs pl-3">{row.factor}</div>
+                      <div className="text-xs text-muted font-medium leading-relaxed">{row.traditional}</div>
+                      <div className="text-xs text-primary font-semibold leading-relaxed">
                         {row.clarior}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Mobile View: High-fidelity Comparison Cards */}
+                <div className="block md:hidden space-y-4">
+                  {[
+                    {
+                      factor: "Credibility",
+                      traditional: "Sponsored reviews, biased rankings, admission agents.",
+                      clarior: "Direct uncensored talk with real students inside campus."
+                    },
+                    {
+                      factor: "Cost & Terms",
+                      traditional: "Up to ₹50,000 package trap, non-refundable.",
+                      clarior: "Flat ₹69 credit pass per session. Refund if no-show."
+                    },
+                    {
+                      factor: "Incentives",
+                      traditional: "Commissions for pushing specific admissions.",
+                      clarior: "Seniors have zero commissions or stakes in choice."
+                    },
+                    {
+                      factor: "Time",
+                      traditional: "Spam phone calls, sales visits, hours of pitching.",
+                      clarior: "Instant 20-min focused check-in. Safe, in-app call."
+                    }
+                  ].map((row, idx) => (
+                    <div key={idx} className="rounded-2xl border border-border/60 bg-surface/90 p-5 space-y-3 shadow-sm">
+                      <div className="flex items-center justify-between border-b border-border/30 pb-2">
+                        <span className="text-xs font-black text-fg uppercase tracking-widest">{row.factor}</span>
+                        <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-[8px] font-black uppercase tracking-wider text-primary">Clarior Difference</span>
+                      </div>
+                      
+                      <div className="space-y-2.5 pt-1">
+                        <div>
+                          <span className="text-[8px] font-black uppercase text-muted tracking-wider block mb-1">Traditional Advice</span>
+                          <p className="text-xs text-muted leading-relaxed font-semibold">{row.traditional}</p>
+                        </div>
+                        <div>
+                          <span className="text-[8px] font-black uppercase text-primary tracking-wider block mb-1">Clarior Difference</span>
+                          <p className="text-xs text-fg font-black leading-relaxed">{row.clarior}</p>
+                        </div>
                       </div>
                     </div>
                   ))}
