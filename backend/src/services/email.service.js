@@ -273,3 +273,61 @@ exports.sendCancellationEmail = async (booking, student, senior, slot) => {
     return false;
   }
 };
+
+// @desc Send Session Reminder email
+exports.sendReminderEmail = async (booking, student, senior) => {
+  try {
+    const transporter = getTransporter();
+    if (!transporter) return false;
+
+    const fromEmail = process.env.SUPPORT_EMAIL_USER || "support.clarior@gmail.com";
+    const timeStr = new Date(booking.startTime).toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" });
+
+    // Send to Student
+    const studentMail = {
+      from: `"Clarior Reminders" <${fromEmail}>`,
+      to: student.email,
+      subject: `⏰ Session Reminder: Starting in 5 minutes with ${senior.name} - Clarior`,
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+          <div style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 24px; text-align: center;">
+            <h2 style="margin: 0; font-size: 22px;">Upcoming Session Reminder</h2>
+          </div>
+          <div style="padding: 24px;">
+            <p>Hi <b>${student.name}</b>,</p>
+            <p>This is a quick reminder that your guidance session with <b>${senior.name}</b> starts in <b>5 minutes (${timeStr})</b>.</p>
+            <p>Please log in and join the Jitsi call room from your dashboard.</p>
+            <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard" style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 15px;">Go to Dashboard</a>
+          </div>
+        </div>
+      `
+    };
+
+    // Send to Senior
+    const seniorMail = {
+      from: `"Clarior Reminders" <${fromEmail}>`,
+      to: senior.email,
+      subject: `⏰ Session Reminder: Starting in 5 minutes with ${student.name} - Clarior`,
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+          <div style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 24px; text-align: center;">
+            <h2 style="margin: 0; font-size: 22px;">Upcoming Session Reminder</h2>
+          </div>
+          <div style="padding: 24px;">
+            <p>Hi <b>${senior.name}</b>,</p>
+            <p>This is a quick reminder that your guidance session with student <b>${student.name}</b> starts in <b>5 minutes (${timeStr})</b>.</p>
+            <p>Please log in and join the call to share your valuable perspective.</p>
+            <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard" style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 15px;">Go to Dashboard</a>
+          </div>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(studentMail);
+    await transporter.sendMail(seniorMail);
+    return true;
+  } catch (error) {
+    console.error("❌ [EMAIL] Reminder email failed:", error.message);
+    return false;
+  }
+};

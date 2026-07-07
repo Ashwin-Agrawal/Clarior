@@ -61,6 +61,12 @@ const bookingSchema = new mongoose.Schema(
       default: false,
     },
 
+    isReminderSent: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+
     // 🗑️ SOFT DELETE — user can hide from their session history
     hiddenBy: [
       {
