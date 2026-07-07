@@ -76,6 +76,21 @@ exports.verifySenior = async (req, res) => {
     user.applicationStatus = "approved";
     await user.save();
 
+    // Trigger in-app notification in background
+    (async () => {
+      try {
+        const Notification = require("../models/Notification");
+        await Notification.create({
+          recipient: user._id,
+          title: "Application Approved",
+          message: `Congratulations! Your senior application has been approved. You can now define your availability slots and guide students.`,
+          type: "system"
+        });
+      } catch (err) {
+        console.error("Error sending approval notification:", err.message);
+      }
+    })();
+
     const userObj = user.toObject();
     delete userObj.password;
 
@@ -278,6 +293,22 @@ exports.releaseEarnings = async (req, res) => {
       $inc: { sessionsCompleted: 1 }
     });
 
+    // Trigger in-app notification in background
+    (async () => {
+      try {
+        const Notification = require("../models/Notification");
+        const payout = parseInt(process.env.PAYOUT_AMOUNT) || 52;
+        await Notification.create({
+          recipient: booking.senior._id,
+          title: "Earnings Credited",
+          message: `Earnings credited! ₹${payout} has been added to your available balance for your session with student.`,
+          type: "earnings"
+        });
+      } catch (err) {
+        console.error("Error sending earnings release notification:", err.message);
+      }
+    })();
+
     res.json({
       success: true,
       message: "Earnings released successfully",
@@ -335,6 +366,27 @@ exports.rejectEarnings = async (req, res) => {
     booking.isSeniorMarkedDone = false;
     booking.status = "cancelled";
     await booking.save({ session });
+
+    // Trigger notifications in background
+    (async () => {
+      try {
+        const Notification = require("../models/Notification");
+        await Notification.create({
+          recipient: booking.student,
+          title: "Session Refunded",
+          message: `Your credit has been refunded by the admin for your session with senior ${booking.senior.name}.`,
+          type: "cancellation"
+        });
+        await Notification.create({
+          recipient: booking.senior._id,
+          title: "Earnings Rejected",
+          message: `Earnings rejected by admin for your session with student. Your pending earnings were adjusted.`,
+          type: "cancellation"
+        });
+      } catch (err) {
+        console.error("Error sending reject notification:", err.message);
+      }
+    })();
 
     await session.commitTransaction();
 

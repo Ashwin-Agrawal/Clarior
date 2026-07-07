@@ -77,6 +77,36 @@ class BookingService {
       await session.commitTransaction();
       const bookingObj = booking[0].toObject();
 
+      // Trigger notifications in the background
+      (async () => {
+        try {
+          const Notification = require("../models/Notification");
+          const EmailService = require("./email.service");
+          const studentUser = await User.findById(studentId);
+          const seniorUser = await User.findById(slot.senior);
+
+          // 1. Create In-app notifications
+          await Notification.create({
+            recipient: studentId,
+            title: "Booking Confirmed",
+            message: `Session confirmed! You booked a session with ${seniorUser.name} on ${new Date(slot.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} at ${slot.time}.`,
+            type: "booking"
+          });
+
+          await Notification.create({
+            recipient: slot.senior,
+            title: "New Booking Alert",
+            message: `New booking! ${studentUser.name} has booked your slot on ${new Date(slot.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} at ${slot.time}.`,
+            type: "booking"
+          });
+
+          // 2. Send emails
+          await EmailService.sendBookingEmail(bookingObj, studentUser, seniorUser, slot);
+        } catch (err) {
+          console.error("Error sending booking notifications:", err.message);
+        }
+      })();
+
       return bookingObj;
     } catch (error) {
       await session.abortTransaction();
@@ -142,6 +172,41 @@ class BookingService {
       }
 
       await session.commitTransaction();
+
+      // Trigger notifications in the background
+      (async () => {
+        try {
+          const Notification = require("../models/Notification");
+          const EmailService = require("./email.service");
+          
+          const studentUser = await User.findById(booking.student);
+          const seniorUser = await User.findById(booking.senior);
+          const slotDetails = await Slot.findById(booking.slot);
+
+          // 1. Create In-app notifications
+          await Notification.create({
+            recipient: booking.student,
+            title: "Session Cancelled",
+            message: `Session cancelled. Your session with ${seniorUser.name} was cancelled and 1 credit has been refunded to your wallet.`,
+            type: "cancellation"
+          });
+
+          await Notification.create({
+            recipient: booking.senior,
+            title: "Session Cancelled",
+            message: `Session cancelled. The booking with student ${studentUser.name} on ${new Date(booking.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} was cancelled.`,
+            type: "cancellation"
+          });
+
+          // 2. Send emails
+          if (slotDetails) {
+            await EmailService.sendCancellationEmail(booking, studentUser, seniorUser, slotDetails);
+          }
+        } catch (err) {
+          console.error("Error sending cancellation notifications:", err.message);
+        }
+      })();
+
       return booking;
     } catch (error) {
       await session.abortTransaction();

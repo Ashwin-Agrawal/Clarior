@@ -17,8 +17,8 @@ const googleRoutes = require("./routes/google.routes");
 const collegeRoutes = require("./routes/college.routes");
 const supportRoutes = require("./routes/support.routes");
 const globalErrorHandler = require("./middleware/errorHandler.middleware");
-
 const paymentRoutes = require("./routes/payments.routes");
+const notificationRoutes = require("./routes/notification.routes");
 
 const app = express();
 
@@ -192,6 +192,7 @@ app.use("/api/colleges", collegeRoutes);
 app.use("/api/support", supportRoutes);
 
 app.use("/api/payment", paymentRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // ❗ 404
 app.use((req, res) => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
@@ -34,6 +34,158 @@ function SunIcon() {
       <line x1="4.22" y1="19.78"  x2="5.64" y2="18.36" />
       <line x1="18.36" y1="5.64"  x2="19.78" y2="4.22" />
     </svg>
+  );
+}
+
+function NotificationBell() {
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const { user } = useAuth();
+
+  const loadNotifications = async () => {
+    try {
+      const res = await api.get("/notifications");
+      setNotifications(res.data.notifications || []);
+      setUnreadCount(res.data.unreadCount || 0);
+    } catch (err) {
+      console.error("Error loading notifications:", err.message);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      loadNotifications();
+      // Poll notifications every 45 seconds for real-time updates
+      const interval = setInterval(loadNotifications, 45000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleMarkRead = async (id) => {
+    try {
+      await api.patch(`/notifications/${id}/read`);
+      setNotifications(prev =>
+        prev.map(n => (n._id === id ? { ...n, isRead: true } : n))
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (err) {
+      console.error("Error marking read:", err.message);
+    }
+  };
+
+  const handleMarkAllRead = async () => {
+    try {
+      await api.patch("/notifications/read-all");
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      setUnreadCount(0);
+    } catch (err) {
+      console.error("Error marking all read:", err.message);
+    }
+  };
+
+  if (!user) return null;
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="relative group flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface text-muted hover:text-primary hover:bg-primary/10 hover:border-primary/20 focus:outline-none focus:bg-primary/10 focus:text-primary active:scale-95 transition duration-300 shadow-sm cursor-pointer"
+        aria-label="View notifications"
+      >
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+        {unreadCount > 0 && (
+          <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-danger opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-danger"></span>
+          </span>
+        )}
+      </button>
+
+      {open && (
+        <div className="absolute right-[-40px] sm:right-0 mt-3.5 w-80 sm:w-96 rounded-[24px] border border-border/70 bg-surface/98 backdrop-blur-xl shadow-hero p-4 space-y-3 z-[110] animate-slide-down">
+          <div className="flex items-center justify-between pb-2 border-b border-border/40">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-black text-fg uppercase tracking-wide">Notifications</span>
+              {unreadCount > 0 && (
+                <span className="text-[10px] font-black bg-primary/10 border border-primary/20 text-primary px-2 py-0.5 rounded-full uppercase tracking-wider">{unreadCount} New</span>
+              )}
+            </div>
+            {unreadCount > 0 && (
+              <button
+                type="button"
+                onClick={handleMarkAllRead}
+                className="text-[10px] font-black text-primary uppercase tracking-wider hover:underline bg-transparent border-0 cursor-pointer"
+              >
+                Mark all read
+              </button>
+            )}
+          </div>
+
+          <div className="max-h-[320px] overflow-y-auto space-y-2.5 pr-1 scrollbar-hide">
+            {notifications.length === 0 ? (
+              <div className="text-center py-8 text-muted">
+                <div className="text-2xl mb-2">🔔</div>
+                <div className="text-xs font-bold uppercase tracking-wider">No notifications yet</div>
+              </div>
+            ) : (
+              notifications.map((n) => {
+                const badgeColor = 
+                  n.type === "earnings" ? "bg-success/10 text-success border-success/20" :
+                  n.type === "cancellation" ? "bg-danger/10 text-danger border-danger/20" :
+                  "bg-primary/10 text-primary border-primary/20";
+                
+                return (
+                  <div
+                    key={n._id}
+                    onClick={() => !n.isRead && handleMarkRead(n._id)}
+                    className={cx(
+                      "p-3 rounded-2xl border transition duration-200 text-left cursor-pointer flex gap-3 relative overflow-hidden group",
+                      n.isRead
+                        ? "bg-surface border-border/40 hover:bg-surface2/50"
+                        : "bg-primary/5 border-primary/20 hover:bg-primary/8 shadow-sm"
+                    )}
+                  >
+                    <div className={cx(
+                      "h-8 w-8 rounded-xl border shrink-0 flex items-center justify-center text-xs font-black uppercase",
+                      badgeColor
+                    )}>
+                      {n.type === "earnings" ? "₹" : n.type === "cancellation" ? "✕" : "✓"}
+                    </div>
+                    <div className="space-y-0.5 min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-black text-fg truncate">{n.title}</span>
+                        <span className="text-[9px] font-semibold text-muted shrink-0">
+                          {new Date(n.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-muted leading-relaxed font-semibold block">{n.message}</p>
+                    </div>
+                    {!n.isRead && (
+                      <span className="absolute top-3.5 right-3 h-1.5 w-1.5 rounded-full bg-primary" />
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -147,6 +299,8 @@ function Navbar() {
                 {dark ? <SunIcon /> : <MoonIcon />}
               </span>
             </button>
+
+            <NotificationBell />
 
             {user ? (
               <button

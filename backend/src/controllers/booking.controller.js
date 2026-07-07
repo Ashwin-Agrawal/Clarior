@@ -117,6 +117,23 @@ exports.markCompletedBySenior = async (req, res) => {
       $inc: { pendingEarnings: payout },
     });
 
+    // Trigger notification in background
+    (async () => {
+      try {
+        const Notification = require("../models/Notification");
+        const seniorUser = await User.findById(booking.senior);
+        
+        await Notification.create({
+          recipient: booking.student,
+          title: "Session Marked Completed",
+          message: `${seniorUser.name} has marked your session as completed. Please confirm and leave a review.`,
+          type: "booking"
+        });
+      } catch (err) {
+        console.error("Error sending completed notification:", err.message);
+      }
+    })();
+
     res.json({
       message: "Marked complete. Waiting for student confirmation.",
     });

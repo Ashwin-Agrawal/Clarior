@@ -105,6 +105,21 @@ exports.approveWithdraw = async (req, res) => {
     withdraw.status = "approved";
     await withdraw.save();
 
+    // Trigger in-app notification in background
+    (async () => {
+      try {
+        const Notification = require("../models/Notification");
+        await Notification.create({
+          recipient: withdraw.senior,
+          title: "Withdrawal Approved",
+          message: `Your withdrawal request of ₹${withdraw.amount} has been approved and processed to UPI ID: ${withdraw.upiId || "your default UPI ID"}.`,
+          type: "earnings"
+        });
+      } catch (err) {
+        console.error("Error sending withdraw approval notification:", err.message);
+      }
+    })();
+
     res.json({
       message: "Approved & paid",
     });
@@ -133,6 +148,21 @@ exports.rejectWithdraw = async (req, res) => {
     await User.findByIdAndUpdate(withdraw.senior, {
       $inc: { availableBalance: withdraw.amount },
     });
+
+    // Trigger in-app notification in background
+    (async () => {
+      try {
+        const Notification = require("../models/Notification");
+        await Notification.create({
+          recipient: withdraw.senior,
+          title: "Withdrawal Request Rejected",
+          message: `Your withdrawal request of ₹${withdraw.amount} was rejected. The reserved funds have been refunded back to your available balance.`,
+          type: "system"
+        });
+      } catch (err) {
+        console.error("Error sending withdraw reject notification:", err.message);
+      }
+    })();
 
     res.json({
       message: "Rejected",
