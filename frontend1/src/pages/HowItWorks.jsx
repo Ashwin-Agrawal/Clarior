@@ -6,7 +6,7 @@ import useSEO from "../hooks/useSEO";
 
 const studentSteps = [
   {  title: "Browse senior profiles", desc: "Filter by college, domain, and branch. Read bios, check ratings, and find a senior who's been exactly where you are." },
-  { title: "Pick a time slot", desc: "Book an open slot directly from the senior's profile. One credit = one 20-minute guided session." },
+  { title: "Pick or request a slot", desc: "Book an open slot directly from the senior's profile. If their availability doesn't fit your schedule, tap 'Request Custom Slot' to suggest a custom date and time." },
   { title: "Confirm & start the session", desc: "When your session begins, confirm it on the platform to start the 20-minute timer." },
   { title: "20-minute live call", desc: "Join the call, ask your questions, and get honest answers from someone who's been through it." },
   { title: "Rate your experience", desc: "After the session, submit a review. Your rating keeps quality high for everyone." },
@@ -14,7 +14,7 @@ const studentSteps = [
 
 const seniorSteps = [
   {  title: "Apply and get verified", desc: "Submit your profile and college details. Our team reviews and approves verified seniors within 48 hours." },
-  { title: "Set your availability", desc: "Add open time slots whenever you're free. Students book directly from your profile." },
+  { title: "Set availability & approve requests", desc: "Add open slots whenever you're free, and review incoming custom slot requests from students directly on your dashboard. Accept to open slots automatically." },
   { title: "Guide a student", desc: "Join the call and share your honest, experience-based perspective. No scripts, just real talk." },
   { title: "Earn per session", desc: "Earn ₹52 per completed session. Once you hit the payout threshold, request a withdrawal anytime." },
 ];
@@ -50,6 +50,7 @@ const faqItems = [
   { group: "general", q: "What is Clarior?", a: "Clarior is a peer mentorship platform connecting students with verified college seniors for 1-on-1 counseling calls. Seniors share their honest, firsthand experience about college selection, branches, and placement preparation." },
   { group: "general", q: "How long is each guidance session?", a: "Each scheduled session is exactly 20 minutes long. This keeps the conversation focused, highly efficient, and productive." },
   { group: "students", q: "How do I book a session?", a: "Go to 'Buy Credits' to purchase a session pass (1 credit = 1 session). Then browse the 'Colleges' directory, select a verified senior's profile, choose an available time slot, and click Book." },
+  { group: "students", q: "What if a senior has no slots available that fit my schedule?", a: "No problem! You can request a custom slot directly from their profile page. Simply choose a date, a time period (Morning/Afternoon/Evening), and add optional prep notes. The senior will receive an alert and can accept the request, automatically creating the slot for you to book." },
   { group: "students", q: "What happens if a senior cancels or misses a call?", a: "If a senior cancels a session or fails to show up, the credit is immediately refunded back to your account wallet so you can book another slot." },
   { group: "seniors", q: "How do I earn on Clarior?", a: "You earn ₹52 per completed 20-minute guidance call. Once your application is verified, you can set your open time slots and accept bookings." },
   { group: "seniors", q: "When can I withdraw my earnings?", a: "Once your session is marked complete, you can request a withdrawal via UPI directly from your dashboard balance. Withdrawals are processed within 24 hours." }
