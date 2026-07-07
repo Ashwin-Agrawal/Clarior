@@ -139,6 +139,7 @@ function Profile() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [slotToBook, setSlotToBook] = useState(null);
   const [requestModalOpen, setRequestModalOpen] = useState(false);
+  const [showAllReviews, setShowAllReviews] = useState(false);
 
   const slotsByDay = useMemo(() => {
     const groups = {};
@@ -495,7 +496,7 @@ function Profile() {
                             <h4 className="font-black text-fg text-sm uppercase tracking-wider">No reviews yet</h4>
                             <p className="text-xs text-muted mt-1 font-semibold">Be the first to share your experience after booking!</p>
                           </Card>
-                        ) : reviews.map((rev, idx) => {
+                        ) : (showAllReviews ? reviews : reviews.slice(0, 2)).map((rev, idx) => {
                           const revInitials = rev.student?.name?.trim().split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase() || "S";
                           return (
                             <Card key={rev._id || idx} className="p-6 border border-border/40 hover:border-primary/20 hover:shadow-soft transition-all duration-300 bg-surface/90">
@@ -527,6 +528,18 @@ function Profile() {
                             </Card>
                           );
                         })}
+
+                        {reviews.length > 2 && (
+                          <div className="text-center pt-2">
+                            <button
+                              type="button"
+                              onClick={() => setShowAllReviews(!showAllReviews)}
+                              className="px-5 py-2.5 rounded-full border border-border bg-surface hover:bg-surface2 text-xs font-black text-muted hover:text-fg uppercase tracking-wider transition cursor-pointer"
+                            >
+                              {showAllReviews ? "Show Less" : `View All Reviews (${reviews.length})`}
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </section>
                   </div>
@@ -604,34 +617,35 @@ function Profile() {
                               const renderSlotGroup = (title, items) => {
                                 if (items.length === 0) return null;
                                 return (
-                                  <div className="space-y-2.5 mt-5 animate-fade-up">
+                                  <div className="space-y-3 mt-6 animate-fade-up">
                                     <h4 className="text-[10px] font-black text-muted uppercase tracking-[0.2em] flex items-center gap-2 pl-1">
                                       <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                                       {title}
                                     </h4>
-                                    <div className="grid grid-cols-1 gap-2.5">
+                                    <div className="grid grid-cols-2 min-[400px]:grid-cols-3 gap-3">
                                       {items.map((slot) => (
                                         <div
                                           key={slot._id}
-                                          className={`group flex items-center justify-between p-3.5 rounded-2xl border border-border/40 bg-surface2/60 dark:bg-surface-2/20 hover:border-primary/30 hover:bg-surface transition-all duration-300 ${
-                                            bookingSlot === slot._id || isOwnProfile ? "opacity-60 pointer-events-none" : ""
+                                          onClick={() => !(bookingSlot === slot._id || isOwnProfile) && triggerBooking(slot._id)}
+                                          className={`group relative flex flex-col items-center justify-center p-4 rounded-[22px] border bg-surface/80 dark:bg-surface-2/20 backdrop-blur-sm transition-all duration-300 ${
+                                            bookingSlot === slot._id || isOwnProfile
+                                              ? "border-border/30 opacity-50 pointer-events-none"
+                                              : "border-border/60 hover:border-primary/45 hover:shadow-soft hover:-translate-y-0.5 active:scale-95 cursor-pointer"
                                           }`}
                                         >
-                                          <div className="flex items-center gap-2.5 text-xs font-black text-fg pl-1">
-                                            <span className="text-primary flex-shrink-0">
-                                              <StatIcon type="clock" />
-                                            </span>
-                                            <span>{slot.time || slot.startTime}</span>
+                                          {/* Time Icon background decoration */}
+                                          <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-primary/5 text-primary group-hover:scale-110 transition-transform">
+                                            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                              <circle cx="12" cy="12" r="10" />
+                                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" />
+                                            </svg>
                                           </div>
-                                          <Button
-                                            disabled={bookingSlot === slot._id || isOwnProfile}
-                                            onClick={() => triggerBooking(slot._id)}
-                                            variant="primary"
-                                            size="sm"
-                                            className="rounded-xl shadow-sm hover:scale-[1.03] text-xs font-black uppercase tracking-wider"
-                                          >
-                                            Book
-                                          </Button>
+                                          
+                                          <span className="text-xs font-black text-fg tracking-tight font-mono">{slot.time || slot.startTime}</span>
+                                          
+                                          <span className="text-[9px] font-extrabold uppercase tracking-widest text-primary mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            Book Now
+                                          </span>
                                         </div>
                                       ))}
                                     </div>
@@ -661,47 +675,59 @@ function Profile() {
                             )}
                           </>
                         ) : (
-                          <Card className="p-8 text-center border-dashed border-2 border-border/70 bg-surface">
-                            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-danger/10 text-danger">
-                              <StatIcon type="calendar" />
-                            </div>
-                            <h4 className="font-black text-fg text-sm uppercase tracking-widest">Fully Booked</h4>
-                            <p className="text-xs text-muted mt-2 font-bold uppercase tracking-wider">No availability right now — check back soon!</p>
+                          <Card className="p-6 text-center border border-border/50 bg-gradient-to-b from-surface to-surface2/40 rounded-[28px] relative overflow-hidden shadow-soft">
+                            {/* Orbs background decoration */}
+                            <div className="absolute -right-10 -top-10 w-24 h-24 rounded-full bg-primary/5 blur-xl pointer-events-none" />
+                            <div className="absolute -left-10 -bottom-10 w-24 h-24 rounded-full bg-accent/5 blur-xl pointer-events-none" />
                             
-                            <div className="mt-6 flex flex-col items-center gap-3">
-                              <Button 
-                                variant="primary" 
-                                className="rounded-full px-6 py-2.5 text-xs font-black uppercase tracking-widest shadow-soft hover:shadow-lift active:scale-95 transition"
-                                onClick={() => {
-                                  showSuccess("Interest noted! We'll notify you as soon as this senior adds new slots.");
-                                }}
-                              >
-                                🔔 Notify me when slots open
-                              </Button>
+                            <div className="relative z-10 space-y-4">
+                              <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-danger/10 text-danger border border-danger/20">
+                                <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                  <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                                  <line x1="16" y1="2" x2="16" y2="6" />
+                                  <line x1="8" y1="2" x2="8" y2="6" />
+                                  <line x1="3" y1="10" x2="21" y2="10" />
+                                  <path d="m14 14-4 4 4 4" />
+                                </svg>
+                              </div>
                               
-                              <div className="flex items-center gap-4 mt-2">
-                                {!isOwnProfile && (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      if (!user) return navigate("/login");
-                                      setRequestModalOpen(true);
-                                    }}
-                                    className="text-xs font-black text-primary hover:underline uppercase tracking-wider cursor-pointer bg-transparent border-0"
-                                  >
-                                    📅 Request Slot
-                                  </button>
-                                )}
-                                
-                                {!isOwnProfile && <span className="text-muted/40 font-bold select-none text-xs">|</span>}
-                                
-                                <button
-                                  type="button"
-                                  onClick={() => navigate("/explore")}
-                                  className="text-xs font-black text-muted hover:text-fg hover:underline uppercase tracking-wider cursor-pointer bg-transparent border-0"
+                              <div className="space-y-1">
+                                <h4 className="font-black text-fg text-sm uppercase tracking-widest">Fully Booked</h4>
+                                <p className="text-[10px] text-muted font-bold uppercase tracking-wider">No availability right now — check back soon!</p>
+                              </div>
+
+                              <div className="pt-2 space-y-2.5">
+                                <Button 
+                                  variant="primary" 
+                                  className="rounded-full w-full py-3 text-[10px] font-black uppercase tracking-widest shadow-soft hover:shadow-lift transition active:scale-95 cursor-pointer"
+                                  onClick={() => {
+                                    showSuccess("Interest noted! We'll notify you as soon as this senior adds new slots.");
+                                  }}
                                 >
-                                  Explore Others
-                                </button>
+                                  Notify when slots open
+                                </Button>
+                                
+                                <div className="flex gap-2">
+                                  {!isOwnProfile && (
+                                    <Button 
+                                      variant="secondary"
+                                      onClick={() => {
+                                        if (!user) return navigate("/login");
+                                        setRequestModalOpen(true);
+                                      }}
+                                      className="w-1/2 rounded-full py-2.5 text-[9px] font-black uppercase tracking-wider cursor-pointer border border-border/70 hover:border-primary/30"
+                                    >
+                                      📅 Request Slot
+                                    </Button>
+                                  )}
+                                  <Button 
+                                    variant="secondary"
+                                    onClick={() => navigate("/explore")}
+                                    className={`${isOwnProfile ? "w-full" : "w-1/2"} rounded-full py-2.5 text-[9px] font-black uppercase tracking-wider cursor-pointer border border-border/70`}
+                                  >
+                                    Explore Others
+                                  </Button>
+                                </div>
                               </div>
                             </div>
                           </Card>
