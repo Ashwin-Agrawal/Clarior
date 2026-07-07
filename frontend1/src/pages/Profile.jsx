@@ -667,30 +667,43 @@ function Profile() {
                             </div>
                             <h4 className="font-black text-fg text-sm uppercase tracking-widest">Fully Booked</h4>
                             <p className="text-xs text-muted mt-2 font-bold uppercase tracking-wider">No availability right now — check back soon!</p>
-                            <Button 
-                              variant="primary" 
-                              className="mt-6 rounded-2xl w-full font-black uppercase tracking-wide"
-                              onClick={() => {
-                                showSuccess("Interest noted! We'll notify you as soon as this senior adds new slots.");
-                              }}
-                            >
-                              🔔 Notify me when slots open
-                            </Button>
-                            {!isOwnProfile && (
+                            
+                            <div className="mt-6 flex flex-col items-center gap-3">
                               <Button 
-                                variant="secondary" 
-                                className="mt-2 rounded-2xl w-full font-black uppercase tracking-wide cursor-pointer"
+                                variant="primary" 
+                                className="rounded-full px-6 py-2.5 text-xs font-black uppercase tracking-widest shadow-soft hover:shadow-lift active:scale-95 transition"
                                 onClick={() => {
-                                  if (!user) return navigate("/login");
-                                  setRequestModalOpen(true);
+                                  showSuccess("Interest noted! We'll notify you as soon as this senior adds new slots.");
                                 }}
                               >
-                                📅 Request Custom Slot
+                                🔔 Notify me when slots open
                               </Button>
-                            )}
-                            <Button variant="secondary" className="mt-2 rounded-2xl w-full font-black uppercase tracking-wide" onClick={() => navigate("/explore")}>
-                              Explore Others
-                            </Button>
+                              
+                              <div className="flex items-center gap-4 mt-2">
+                                {!isOwnProfile && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (!user) return navigate("/login");
+                                      setRequestModalOpen(true);
+                                    }}
+                                    className="text-xs font-black text-primary hover:underline uppercase tracking-wider cursor-pointer bg-transparent border-0"
+                                  >
+                                    📅 Request Slot
+                                  </button>
+                                )}
+                                
+                                {!isOwnProfile && <span className="text-muted/40 font-bold select-none text-xs">|</span>}
+                                
+                                <button
+                                  type="button"
+                                  onClick={() => navigate("/explore")}
+                                  className="text-xs font-black text-muted hover:text-fg hover:underline uppercase tracking-wider cursor-pointer bg-transparent border-0"
+                                >
+                                  Explore Others
+                                </button>
+                              </div>
+                            </div>
                           </Card>
                         )}
                       </div>
