@@ -11,6 +11,7 @@ import SiteContainer from "../components/layout/SiteContainer";
 import useSEO from "../hooks/useSEO";
 import { useToast } from "../context/ToastContext";
 import ConfirmModal from "../components/ui/ConfirmModal";
+import RequestSlotModal from "../components/RequestSlotModal";
 
 function getGradient(domain = "", name = "") {
   const domainLower = domain?.toLowerCase() || "";
@@ -137,6 +138,7 @@ function Profile() {
   const isOwnProfile = user && (user.id === id || user._id === id);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [slotToBook, setSlotToBook] = useState(null);
+  const [requestModalOpen, setRequestModalOpen] = useState(false);
 
   const slotsByDay = useMemo(() => {
     const groups = {};
@@ -645,6 +647,18 @@ function Profile() {
                                 </div>
                               );
                             })()}
+                            {!isOwnProfile && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (!user) return navigate("/login");
+                                  setRequestModalOpen(true);
+                                }}
+                                className="w-full text-center text-xs font-black text-primary hover:underline mt-6 uppercase tracking-wider bg-transparent border-0 cursor-pointer"
+                              >
+                                📅 Request a custom slot time
+                              </button>
+                            )}
                           </>
                         ) : (
                           <Card className="p-8 text-center border-dashed border-2 border-border/70 bg-surface">
@@ -662,6 +676,18 @@ function Profile() {
                             >
                               🔔 Notify me when slots open
                             </Button>
+                            {!isOwnProfile && (
+                              <Button 
+                                variant="secondary" 
+                                className="mt-2 rounded-2xl w-full font-black uppercase tracking-wide cursor-pointer"
+                                onClick={() => {
+                                  if (!user) return navigate("/login");
+                                  setRequestModalOpen(true);
+                                }}
+                              >
+                                📅 Request Custom Slot
+                              </Button>
+                            )}
                             <Button variant="secondary" className="mt-2 rounded-2xl w-full font-black uppercase tracking-wide" onClick={() => navigate("/explore")}>
                               Explore Others
                             </Button>
@@ -716,6 +742,13 @@ function Profile() {
         onConfirm={handleConfirmBooking}
         onCancel={() => { setConfirmOpen(false); setSlotToBook(null); }}
         loading={!!bookingSlot}
+      />
+
+      <RequestSlotModal
+        isOpen={requestModalOpen}
+        onClose={() => setRequestModalOpen(false)}
+        seniorId={id}
+        seniorName={mentor?.name || ""}
       />
       
       <Footer />

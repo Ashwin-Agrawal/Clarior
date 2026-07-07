@@ -165,7 +165,7 @@ function SessionList({ items, userRole, actionLabel, emptyTitle, emptyDescriptio
   );
 }
 
-async function loadDashboardData({ user, showError, setDataLoading, setBookings, setSlots }) {
+async function loadDashboardData({ user, showError, setDataLoading, setBookings, setSlots, setSlotRequests }) {
   setDataLoading(true);
 
   try {
@@ -177,6 +177,13 @@ async function loadDashboardData({ user, showError, setDataLoading, setBookings,
       setSlots(slotResponse.data?.slots || []);
     } else {
       setSlots([]);
+    }
+
+    if (user && (user.role === "student" || user.role === "senior")) {
+      const requestsResponse = await api.get("/slot-requests");
+      setSlotRequests(requestsResponse.data?.requests || []);
+    } else {
+      setSlotRequests([]);
     }
   } catch (err) {
     if (showError) {
@@ -196,8 +203,22 @@ function Dashboard() {
   const [withdrawUpi, setWithdrawUpi] = useState("");
   const [bookings, setBookings] = useState([]);
   const [slots, setSlots] = useState([]);
+  const [slotRequests, setSlotRequests] = useState([]);
   const [dataLoading, setDataLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(() => Date.now());
+
+  const handleUpdateStatus = async (id, status) => {
+    try {
+      setLoading(true);
+      await api.patch(`/slot-requests/${id}/status`, { status });
+      showSuccess(`Slot request ${status} successfully.`);
+      refresh();
+    } catch (err) {
+      showError(err?.response?.data?.message || "Failed to update slot request");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const upcomingSlots = useMemo(() => {
     return slots.filter((slot) => {
@@ -251,18 +272,18 @@ function Dashboard() {
   };
 
   const refresh = async () => {
-    await loadDashboardData({ user, showError, setDataLoading, setBookings, setSlots });
+    await loadDashboardData({ user, showError, setDataLoading, setBookings, setSlots, setSlotRequests });
   };
 
   useEffect(() => {
     if (!user) return;
-    loadDashboardData({ user, showError, setDataLoading, setBookings, setSlots });
+    loadDashboardData({ user, showError, setDataLoading, setBookings, setSlots, setSlotRequests });
   }, [user]);
 
   useEffect(() => {
     if (!user) return;
     const interval = setInterval(() => {
-      loadDashboardData({ user, showError: null, setDataLoading: () => {}, setBookings, setSlots });
+      loadDashboardData({ user, showError: null, setDataLoading: () => {}, setBookings, setSlots, setSlotRequests });
     }, 60000);
     return () => clearInterval(interval);
   }, [user]);
@@ -817,6 +838,126 @@ function Dashboard() {
                 </div>
               </div>
             </Card>
+          </div>
+        )}
+
+        {/* Student Slot Requests Tracker */}
+        {user?.role === "student" && (
+          <div className="mt-8 space-y-4 animate-fade-up">
+            <h3 className="text-xl font-black text-fg tracking-tight px-2">Requested Custom Slots</h3>
+            
+            {slotRequests.length === 0 ? (
+              <Card className="p-8 text-center border-dashed border-2 border-border/70 bg-surface/40">
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary text-xl">
+                  📅
+                </div>
+                <h4 className="font-black text-fg text-sm uppercase tracking-wider">No custom requests yet</h4>
+                <p className="text-xs text-muted mt-1 font-semibold">Need a slot? Go to a senior's profile and request a custom time.</p>
+              </Card>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+                {slotRequests.slice(0, 6).map((req) => {
+                  const statusColors = 
+                    req.status === "accepted" ? "bg-success/10 text-success border-success/20" :
+                    req.status === "rejected" ? "bg-danger/10 text-danger border-danger/20" :
+                    "bg-warning/10 text-warning border-warning/20";
+                    
+                  return (
+                    <Card key={req._id} className="p-4.5 border border-border/50 hover:border-primary/20 hover:shadow-soft transition-all duration-300 bg-surface">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-start gap-2">
+                          <div>
+                            <div className="font-black text-fg text-sm">{req.senior?.name || "Senior"}</div>
+                            <div className="text-[10px] text-muted font-bold mt-0.5 truncate max-w-[180px]">{req.senior?.college || "Top College"}</div>
+                          </div>
+                          
+                          <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[8px] font-black uppercase tracking-wider ${statusColors}`}>
+                            {req.status}
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-fg bg-surface2/60 border border-border/40 px-2.5 py-1.5 rounded-xl">
+                          <span>📅 {new Date(req.preferredDate).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
+                          <span className="h-1 w-1 rounded-full bg-primary" />
+                          <span className="capitalize">🕒 {req.preferredTime}</span>
+                        </div>
+                        
+                        {req.status === "accepted" && (
+                          <Link to={`/senior/${req.senior?._id}`} className="block">
+                            <Button variant="primary" size="sm" className="w-full rounded-xl text-[10px] font-black uppercase tracking-wider cursor-pointer">
+                              Book Slot Now
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Senior Slot Requests Panel */}
+        {user?.role === "senior" && (
+          <div className="mt-8 space-y-4 animate-fade-up">
+            <h3 className="text-xl font-black text-fg tracking-tight px-2">Custom Slot Requests</h3>
+            
+            {slotRequests.filter(r => r.status === "pending").length === 0 ? (
+              <Card className="p-8 text-center border-dashed border-2 border-border/70 bg-surface/40">
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary text-xl">
+                  📅
+                </div>
+                <h4 className="font-black text-fg text-sm uppercase tracking-wider">No pending requests</h4>
+                <p className="text-xs text-muted mt-1 font-semibold">Custom slot requests from students will appear here.</p>
+              </Card>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2">
+                {slotRequests.filter(r => r.status === "pending").map((req) => (
+                  <Card key={req._id} className="p-5 border border-border/50 hover:border-primary/20 hover:shadow-soft transition-all duration-300 bg-surface">
+                    <div className="flex justify-between items-start gap-4">
+                      <div>
+                        <div className="font-black text-fg text-sm">{req.student?.name || "Student"}</div>
+                        <div className="text-[10px] text-muted font-bold mt-1 uppercase tracking-wider">{req.student?.college || "Top College"}</div>
+                        
+                        <div className="flex items-center gap-2 text-xs font-semibold text-fg mt-3.5 bg-surface2/60 border border-border/40 px-3 py-1.5 rounded-xl">
+                          <span>📅 {new Date(req.preferredDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                          <span className="capitalize">🕒 {req.preferredTime}</span>
+                        </div>
+                        
+                        {req.notes && (
+                          <div className="mt-3 text-xs text-muted italic font-medium bg-surface2/30 p-2.5 rounded-lg border border-border/20 leading-relaxed">
+                            "{req.notes}"
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="flex flex-col gap-2 shrink-0">
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          className="rounded-xl px-4 py-2 font-black uppercase tracking-wider text-[10px]"
+                          onClick={() => handleUpdateStatus(req._id, "accepted")}
+                          disabled={loading}
+                        >
+                          Accept
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="rounded-xl px-4 py-2 font-black uppercase tracking-wider text-[10px]"
+                          onClick={() => handleUpdateStatus(req._id, "rejected")}
+                          disabled={loading}
+                        >
+                          Decline
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
