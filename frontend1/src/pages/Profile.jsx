@@ -696,10 +696,10 @@ function Profile() {
                                 <p className="text-[10px] text-muted font-bold uppercase tracking-wider">No availability right now — check back soon!</p>
                               </div>
 
-                              <div className="pt-2 space-y-2.5">
+                              <div className="pt-2 flex flex-col items-center gap-3">
                                 <Button 
                                   variant="primary" 
-                                  className="rounded-full w-full py-3 text-[10px] font-black uppercase tracking-widest shadow-soft hover:shadow-lift transition active:scale-95 cursor-pointer"
+                                  className="rounded-full px-5 py-2.5 text-[10px] font-black uppercase tracking-widest shadow-soft hover:shadow-lift transition active:scale-95 cursor-pointer"
                                   onClick={() => {
                                     showSuccess("Interest noted! We'll notify you as soon as this senior adds new slots.");
                                   }}
@@ -707,7 +707,7 @@ function Profile() {
                                   Notify when slots open
                                 </Button>
                                 
-                                <div className="flex gap-2">
+                                <div className="flex flex-wrap justify-center gap-2 mt-1">
                                   {!isOwnProfile && (
                                     <Button 
                                       variant="secondary"
@@ -715,7 +715,7 @@ function Profile() {
                                         if (!user) return navigate("/login");
                                         setRequestModalOpen(true);
                                       }}
-                                      className="w-1/2 rounded-full py-2.5 text-[9px] font-black uppercase tracking-wider cursor-pointer border border-border/70 hover:border-primary/30"
+                                      className="rounded-full px-4 py-2.5 text-[9px] font-black uppercase tracking-wider cursor-pointer border border-border/70 hover:border-primary/30"
                                     >
                                       📅 Request Slot
                                     </Button>
@@ -723,7 +723,7 @@ function Profile() {
                                   <Button 
                                     variant="secondary"
                                     onClick={() => navigate("/explore")}
-                                    className={`${isOwnProfile ? "w-full" : "w-1/2"} rounded-full py-2.5 text-[9px] font-black uppercase tracking-wider cursor-pointer border border-border/70`}
+                                    className="rounded-full px-4 py-2.5 text-[9px] font-black uppercase tracking-wider cursor-pointer border border-border/70"
                                   >
                                     Explore Others
                                   </Button>
