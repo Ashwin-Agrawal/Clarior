@@ -223,10 +223,10 @@ function BecomeMentor() {
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-[10px] font-bold text-primary uppercase tracking-widest mb-4">
               Mentorship Program
             </div>
-            <h1 className="heading-display text-5xl md:text-8xl lg:text-[100px] font-black text-fg tracking-tighter leading-[0.85]">
+            <h1 className="heading-display text-4xl sm:text-6xl md:text-8xl lg:text-[100px] font-black text-fg tracking-tighter leading-[0.85]">
               Share your <span className="gradient-text">journey.</span>
             </h1>
-            <p className="mt-10 text-2xl text-muted max-w-3xl mx-auto leading-relaxed font-medium tracking-tight">
+            <p className="mt-6 md:mt-10 text-lg md:text-2xl text-muted max-w-3xl mx-auto leading-relaxed font-medium tracking-tight">
               Help future students navigate college life while earning for your time. Join a community of seniors worldwide.
             </p>
           </SiteContainer>
@@ -236,7 +236,7 @@ function BecomeMentor() {
           <div className="space-y-12">
             {/* Form */}
             <div className="animate-fade-up delay-100">
-              <Card className="p-12 md:p-20 space-y-12 glass shadow-2xl rounded-[64px]">
+              <Card className="p-6 sm:p-12 md:p-20 space-y-8 sm:space-y-12 glass shadow-2xl rounded-[32px] sm:rounded-[48px] md:rounded-[64px]">
                 <div className="text-center">
                   <h2 className="heading-display text-3xl md:text-4xl font-extrabold text-fg">Application Form</h2>
                   <p className="text-lg text-muted mt-2">Tell us about your background and experience.</p>

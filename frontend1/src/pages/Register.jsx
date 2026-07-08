@@ -151,7 +151,7 @@ function Register() {
       </div>
 
       {/* Form panel */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 bg-bg">
+      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 pb-28 md:pb-12 bg-bg">
         <Link to="/" className="lg:hidden flex items-center gap-2.5 mb-8 transition hover:opacity-90">
           <Logo size="navbar" />
           <span className="font-extrabold text-xl text-fg" style={{ fontFamily: "'Playfair Display', serif" }}>Clarior</span>

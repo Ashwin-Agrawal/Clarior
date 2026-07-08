@@ -593,115 +593,255 @@ function Home() {
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
           <SiteContainer className="relative">
-            <div ref={heroRevealRef} className="text-center max-w-4xl mx-auto">
-
-              {/* Trust Badge */}
-              <div className="scroll-reveal reveal-up inline-flex items-center gap-2 rounded-full border border-primary/20 bg-surface/90 px-4 py-2 text-[11px] font-black text-primary uppercase tracking-[0.18em] mb-6 shadow-[0_10px_35px_rgba(37,99,235,0.12)] mx-auto backdrop-blur">
-                <span className="h-2 w-2 rounded-full bg-success shadow-[0_0_0_4px_rgba(16,185,129,0.14)]" />
-                Trusted by 5000+ students
-              </div>
+            <div ref={heroRevealRef} className="max-w-7xl mx-auto space-y-16">
               
-              {/* Hero Title — Static "Stop" + animated word */}
-              <h1 className="scroll-reveal reveal-up stagger-1 heading-display text-4xl sm:text-5xl md:text-7xl lg:text-[92px] font-black text-fg leading-[0.95] tracking-tighter">
-                <DynamicSlogan />
-                <br />
-                <span className="gradient-text-animated inline-block mt-1">
-                  <WordReveal text="Ask someone inside." baseDelay={0.4} />
-                </span>
-              </h1>
-              
-              <p className="scroll-reveal reveal-up stagger-2 mt-6 text-xl md:text-2xl text-muted max-w-4xl mx-auto leading-tight font-medium tracking-tight">
-                1:1 calls with verified seniors for just <span className="text-primary font-black animated-underline revealed">₹69</span>.
-              </p>
-
-              {/* Magnetic CTA Buttons */}
-              <div className="scroll-reveal reveal-up stagger-3 mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link to="/explore">
-                  <Button size="xl" className="relative w-full sm:w-auto overflow-hidden rounded-full px-10 shadow-[0_18px_45px_rgba(37,99,235,0.24)] group hover:-translate-y-1 transition-transform">
-                    <span className="relative z-10 flex items-center gap-2">
-                      Explore Seniors
-                      <LineIcon name="arrow" className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+              {/* Top Row: Split grid for headline & mockup preview */}
+              <div className="grid lg:grid-cols-12 gap-12 items-center">
+                
+                {/* Left Column: Headline and Actions */}
+                <div className="lg:col-span-7 text-center lg:text-left flex flex-col items-center lg:items-start max-w-3xl mx-auto lg:mx-0">
+                  {/* Trust Badge */}
+                  <div className="scroll-reveal reveal-up inline-flex items-center gap-2 rounded-full border border-primary/20 bg-surface/90 px-4 py-2 text-[11px] font-black text-primary uppercase tracking-[0.18em] mb-6 shadow-[0_10px_35px_rgba(37,99,235,0.12)] backdrop-blur">
+                    <span className="h-2 w-2 rounded-full bg-success shadow-[0_0_0_4px_rgba(16,185,129,0.14)]" />
+                    Trusted by 5000+ students
+                  </div>
+                  
+                  {/* Hero Title — Static "Stop" + animated word */}
+                  <h1 className="scroll-reveal reveal-up stagger-1 heading-display text-4xl sm:text-5xl md:text-7xl lg:text-[76px] xl:text-[84px] font-black text-fg leading-[0.95] tracking-tighter">
+                    <DynamicSlogan />
+                    <br />
+                    <span className="gradient-text-animated inline-block mt-1">
+                      <WordReveal text="Ask someone inside." baseDelay={0.4} />
                     </span>
-                    <span className="absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.3)_50%,transparent_100%)] translate-x-[-180%] group-hover:translate-x-[180%] transition-transform duration-700" />
-                  </Button>
-                </Link>
-                <Link to="/become-mentor">
-                  <Button variant="secondary" size="xl" className="w-full sm:w-auto rounded-full px-10 hover:-translate-y-1 transition-transform shadow-[0_12px_30px_rgba(15,23,42,0.08)]">
-                    Become a Senior
-                  </Button>
-                </Link>
-              </div>
+                  </h1>
+                  
+                  <p className="scroll-reveal reveal-up stagger-2 mt-6 text-xl md:text-2xl text-muted leading-tight font-medium tracking-tight">
+                    1:1 calls with verified seniors for just <span className="text-primary font-black animated-underline revealed">₹69</span>
+                  </p>
 
-              {/* Animated Stats with Counter */}
-              <div className="scroll-reveal reveal-up stagger-4 mt-8 flex flex-nowrap overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide sm:overflow-visible sm:pb-0 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 gap-4 max-w-5xl mx-auto">
-                {stats.map((s, index) => (
-                  <div key={s.label} className={`group relative min-w-[220px] flex-shrink-0 flex-grow overflow-hidden rounded-[28px] border border-border/70 bg-gradient-to-br from-surface via-surface/90 to-primary/5 p-5 text-center shadow-[0_20px_70px_-30px_rgba(37,99,235,0.28)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_90px_-35px_rgba(37,99,235,0.32)] sm:min-w-0 scroll-reveal reveal-scale stagger-${index + 5}`}>
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.12),transparent_60%)] opacity-80 transition-opacity duration-500 group-hover:opacity-100" />
-                    <div className="relative z-10">
-                      <div className="mb-4 mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-500 group-hover:bg-primary group-hover:text-white">
-                        <LineIcon name={s.icon} className="h-7 w-7" />
-                      </div>
-                      <div className="text-3xl md:text-4xl font-black text-fg tracking-tighter">
-                        <AnimatedCounter target={s.numericValue} suffix={s.suffix} displayAs={s.displayAs} />
-                      </div>
-                      <div className="mt-2 text-[11px] font-black uppercase tracking-[0.28em] text-muted">{s.label}</div>
-                    </div>
+                  {/* Magnetic CTA Buttons */}
+                  <div className="scroll-reveal reveal-up stagger-3 mt-8 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                    <Link to="/explore" className="w-full sm:w-auto">
+                      <Button size="xl" className="relative w-full sm:w-auto overflow-hidden rounded-full px-10 shadow-[0_18px_45px_rgba(37,99,235,0.24)] group hover:-translate-y-1 transition-transform">
+                        <span className="relative z-10 flex items-center gap-2 justify-center">
+                          Explore Seniors
+                          <LineIcon name="arrow" className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                        </span>
+                        <span className="absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.3)_50%,transparent_100%)] translate-x-[-180%] group-hover:translate-x-[180%] transition-transform duration-700" />
+                      </Button>
+                    </Link>
+                    <Link to="/become-mentor" className="w-full sm:w-auto">
+                      <Button variant="secondary" size="xl" className="w-full sm:w-auto rounded-full px-10 hover:-translate-y-1 transition-transform shadow-[0_12px_30px_rgba(15,23,42,0.08)]">
+                        Become a Senior
+                      </Button>
+                    </Link>
                   </div>
-                ))}
-              </div>
+                </div>
 
-              {/* Motivation Tips Card */}
-              <div className="scroll-reveal reveal-up stagger-6 mt-8 mx-auto max-w-4xl">
-                <div className="rounded-[32px] border border-border/80 bg-surface/75 p-5 md:p-7 shadow-[0_24px_80px_-25px_rgba(37,99,235,0.18)] dark:shadow-[0_24px_80px_-25px_rgba(96,165,250,0.08)] backdrop-blur-xl transition-all duration-300">
-                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-2 pb-2">
-                    <div>
-                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-primary/8 to-accent/8 border border-primary/15 dark:border-primary/25 text-xs font-black uppercase tracking-[0.2em] text-primary shadow-sm hover:scale-[1.02] transition-transform select-none mb-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                        Why students book
-                      </div>
-                      <div className="mt-1 text-sm font-semibold text-muted">Short, honest guidance that feels worth way more than ₹69.</div>
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {motivationTips.map((_, index) => (
-                        <button
-                          key={index}
-                          type="button"
-                          aria-label={`Show tip ${index + 1}`}
-                          onClick={() => setActiveTip(index)}
-                          className={`h-1.5 rounded-full transition-all duration-300 ${activeTip === index ? "w-6 bg-gradient-to-r from-primary to-accent shadow-soft" : "w-2 bg-muted/40 hover:bg-muted/60"}`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Highly Engaging Quote Ticker Card */}
-                  <div className="mt-4 relative rounded-3xl bg-gradient-to-br from-primary/8 via-surface to-accent/8 border border-primary/20 p-6 md:p-8 min-h-[170px] flex flex-col justify-between overflow-hidden shadow-inner">
+                {/* Right Column: Extraordinary Interactive Connection Bridge HUD */}
+                <div className="lg:col-span-5 relative flex items-center justify-center h-[520px] w-full mt-12 lg:mt-0 select-none overflow-hidden rounded-[40px] border border-border/40 bg-surface/30 dark:bg-surface-2/5 backdrop-blur-md shadow-card group/hud hover:border-primary/30 transition-all duration-500">
+                  <style>{`
+                    @keyframes flowLeft {
+                      0% { left: 95%; opacity: 0; transform: scale(0.6); }
+                      15% { opacity: 1; transform: scale(1.2); }
+                      85% { opacity: 1; transform: scale(1.2); }
+                      100% { left: 5%; opacity: 0; transform: scale(0.6); }
+                    }
+                    @keyframes floatUpQuestion {
+                      0% { transform: translateY(50px) scale(0.85); opacity: 0; }
+                      15% { opacity: 1; }
+                      85% { opacity: 1; }
+                      100% { transform: translateY(-75px) scale(1); opacity: 0; }
+                    }
+                    .animate-flow-1 { animation: flowLeft 4s linear infinite; }
+                    .animate-flow-2 { animation: flowLeft 4s linear infinite 1.3s; }
+                    .animate-flow-3 { animation: flowLeft 4s linear infinite 2.6s; }
+                    .animate-question-1 { animation: floatUpQuestion 7s ease-in-out infinite; }
+                    .animate-question-2 { animation: floatUpQuestion 7s ease-in-out infinite 2.3s; }
+                    .animate-question-3 { animation: floatUpQuestion 7s ease-in-out infinite 4.6s; }
+                  `}</style>
+                  
+                  {/* Responsive scale wrapper for mobile sizing */}
+                  <div className="relative w-full h-full flex items-center justify-center scale-[0.84] xs:scale-[0.9] sm:scale-100 origin-center">
                     
-                    <div key={activeTip} className="relative z-10 animate-quote-slide space-y-4">
-                      <div>
-                        <div className="text-lg md:text-xl font-black text-fg tracking-tight leading-snug">{motivationTips[activeTip].title}</div>
-                        <div className="mt-2 text-sm md:text-base text-muted font-medium leading-relaxed">{motivationTips[activeTip].text}</div>
-                      </div>
+                    {/* Glowing background orbs for deep contrast */}
+                    <div className="absolute -inset-4 bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.08),transparent_70%)] pointer-events-none" />
+                    <div className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-primary/10 blur-[80px] pointer-events-none" />
+                    <div className="absolute bottom-1/4 right-1/4 w-32 h-32 rounded-full bg-success/10 blur-[80px] pointer-events-none" />
 
-                      <div className="mt-4 pt-4 border-t border-primary/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${motivationTips[activeTip].tagColor}`}>
-                            {motivationTips[activeTip].badge}
-                          </span>
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface/85 text-muted border border-border/60 text-[10px] font-black uppercase tracking-wider">
-                            ⚡️ ₹69 Fixed Price
-                          </span>
+                    {/* Left Node: Student Radar */}
+                    <div className="absolute left-[8%] flex flex-col items-center space-y-3.5 z-20">
+                      <div className="relative flex h-22 w-22 items-center justify-center rounded-full border-2 border-primary/40 bg-surface/90 backdrop-blur shadow-[0_20px_50px_rgba(37,99,235,0.15)] group-hover/hud:scale-105 transition-transform duration-500">
+                        {/* Pulse rings */}
+                        <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping opacity-30" />
+                        <div className="absolute -inset-4 rounded-full border border-primary/10 animate-pulse opacity-40" />
+                        {/* Modern Student Profile Vector Icon */}
+                        <svg className="h-7 w-7 text-primary" fill="none" stroke="currentColor" strokeWidth="2.25" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0zM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                        </svg>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <span className="text-[10px] font-black text-fg uppercase tracking-wider block">Student</span>
+                        <span className="text-[8px] font-bold text-muted uppercase tracking-widest mt-0.5">Seeking Clarity</span>
+                      </div>
+                    </div>
+
+                    {/* Connecting Neon Beam */}
+                    <div className="absolute inset-x-[26%] h-1 bg-gradient-to-r from-primary via-purple-500 to-success rounded-full opacity-50 group-hover/hud:opacity-80 transition-opacity z-10" />
+                    
+                    {/* Floating Light Packet Streams - Set overflow-visible to prevent edge cutoff */}
+                    <div className="absolute inset-x-[26%] h-8 -translate-y-4 overflow-visible pointer-events-none z-10">
+                      <div className="absolute w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_12px_rgb(37,99,235)] animate-flow-1" />
+                      <div className="absolute w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_10px_#a78bfa] animate-flow-2" />
+                      <div className="absolute w-2.5 h-2.5 rounded-full bg-success shadow-[0_0_12px_#10b981] animate-flow-3" />
+                    </div>
+
+                    {/* Right Node: Senior Radar */}
+                    <div className="absolute right-[8%] flex flex-col items-center space-y-3.5 z-20">
+                      <div className="relative flex h-22 w-22 items-center justify-center rounded-full border-2 border-success/40 bg-surface/90 backdrop-blur shadow-[0_20px_50px_rgba(16,185,129,0.15)] group-hover/hud:scale-105 transition-transform duration-500">
+                        {/* Pulse rings */}
+                        <div className="absolute inset-0 rounded-full border-2 border-success/20 animate-ping opacity-30" style={{ animationDelay: '0.7s' }} />
+                        <div className="absolute -inset-4 rounded-full border border-success/10 animate-pulse opacity-40" />
+                        <svg className="h-7 w-7 text-success" fill="none" stroke="currentColor" strokeWidth="2.25" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                        </svg>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <span className="text-[10px] font-black text-success uppercase tracking-wider block">NST Senior</span>
+                        <span className="text-[8px] font-bold text-muted uppercase tracking-widest mt-0.5">Verified Insider</span>
+                      </div>
+                    </div>
+
+                    {/* Shared Workspace of Prep Notes Header - Beautifully Alive */}
+                    <div className="absolute top-[6%] inset-x-[15%] flex flex-col items-center pointer-events-none z-20">
+                      <div className="bg-gradient-to-br from-surface/98 via-surface/95 to-amber-500/5 border border-amber-500/30 dark:border-amber-500/40 px-5 py-2.5 rounded-2xl shadow-[0_15px_40px_-10px_rgba(245,158,11,0.2)] text-center relative overflow-hidden backdrop-blur-md">
+                        {/* Pulse Indicator */}
+                        <span className="absolute top-2 right-2 flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                        </span>
+                        
+                        <div className="flex items-center justify-center gap-1.5">
+                          <svg className="h-3 w-3 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                          </svg>
+                          <span className="text-[8px] font-black uppercase tracking-[0.25em] text-amber-500">Shared Workspace</span>
+                        </div>
+                        <div className="text-[11px] font-black text-fg/90 mt-0.5 tracking-tight">Pre-Call Prep Notes</div>
+                      </div>
+                    </div>
+
+                    {/* Floating Question Badges - Structured vertically below the header card */}
+                    <div className="absolute inset-x-[15%] top-[25%] bottom-[25%] pointer-events-none z-10">
+                      <div className="absolute left-[1%] top-[30%] px-3.5 py-2 rounded-2xl border border-border/70 bg-surface/95 backdrop-blur-md shadow-lg text-[9px] font-black text-fg uppercase tracking-wider animate-question-1">
+                        CSE vs AI placements?
+                      </div>
+                      <div className="absolute right-[1%] top-[46%] px-3.5 py-2 rounded-2xl border border-border/70 bg-surface/95 backdrop-blur-md shadow-lg text-[9px] font-black text-fg uppercase tracking-wider animate-question-2">
+                        Hostel & Food review
+                      </div>
+                      <div className="absolute left-[22%] top-[60%] px-3.5 py-2 rounded-2xl border border-border/70 bg-surface/95 backdrop-blur-md shadow-lg text-[9px] font-black text-fg uppercase tracking-wider animate-question-3">
+                        CGPA requirements?
+                      </div>
+                    </div>
+
+                    {/* Active call HUD indicator */}
+                    <div className="absolute bottom-[10%] inset-x-0 flex flex-col items-center justify-center space-y-2 z-20">
+                      <div className="inline-flex items-center gap-2 bg-success/5 border border-success/15 px-3.5 py-2 rounded-2xl">
+                        <svg className="h-3.5 w-3.5 text-success animate-pulse shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                        </svg>
+                        <span className="text-[9px] font-black text-success uppercase tracking-wider leading-none">
+                          Secure In-App Room • 100% Anonymous
+                        </span>
+                      </div>
+                      
+                      {/* Simulated Voice wave indicator */}
+                      <div className="flex gap-1 items-end h-4 pt-1">
+                        <span className="w-0.5 h-2 bg-primary/60 rounded-full animate-pulse" />
+                        <span className="w-0.5 h-4.5 bg-primary/85 rounded-full animate-pulse" style={{ animationDelay: '0.1s' }} />
+                        <span className="w-0.5 h-3 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
+                        <span className="w-0.5 h-3.5 bg-primary/70 rounded-full animate-pulse" style={{ animationDelay: '0.35s' }} />
+                        <span className="w-0.5 h-2 bg-primary/50 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Row: Stats & Motivation Tips */}
+              <div className="space-y-12 pt-8 w-full flex flex-col items-center justify-center">
+                {/* Animated Stats with Counter */}
+                <div className="scroll-reveal reveal-up stagger-4 grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-5xl px-4 mx-auto">
+                  {stats.map((s, index) => (
+                    <div key={s.label} className={`group relative overflow-hidden rounded-[28px] border border-border/70 bg-gradient-to-br from-surface via-surface/90 to-primary/5 p-5 text-center shadow-[0_20px_70px_-30px_rgba(37,99,235,0.28)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_90px_-35px_rgba(37,99,235,0.32)] scroll-reveal reveal-scale stagger-${index + 5}`}>
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.12),transparent_60%)] opacity-80 transition-opacity duration-500 group-hover:opacity-100" />
+                      <div className="relative z-10">
+                        <div className="mb-4 mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-500 group-hover:bg-primary group-hover:text-white group-hover:scale-110 group-hover:rotate-6">
+                          <LineIcon name={s.icon} className="h-7 w-7" />
+                        </div>
+                        <div className="text-3xl md:text-4xl font-black text-fg tracking-tighter">
+                          <AnimatedCounter target={s.numericValue} suffix={s.suffix} displayAs={s.displayAs} />
+                        </div>
+                        <div className="mt-2 text-[11px] font-black uppercase tracking-[0.28em] text-muted">{s.label}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Motivation Tips Card */}
+                <div className="scroll-reveal reveal-up stagger-6 w-full max-w-4xl px-4 mx-auto">
+                  <div className="rounded-[32px] border border-border/80 bg-surface/75 p-5 md:p-7 shadow-[0_24px_80px_-25px_rgba(37,99,235,0.18)] dark:shadow-[0_24px_80px_-25px_rgba(96,165,250,0.08)] backdrop-blur-xl transition-all duration-300">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-2 pb-2">
+                      <div>
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-primary/8 to-accent/8 border border-primary/15 dark:border-primary/25 text-xs font-black uppercase tracking-[0.2em] text-primary shadow-sm hover:scale-[1.02] transition-transform select-none mb-2">
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                          Why students book
+                        </div>
+                        <div className="mt-1 text-sm font-semibold text-muted">Short, honest guidance that feels worth way more than ₹69.</div>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {motivationTips.map((_, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            aria-label={`Show tip ${index + 1}`}
+                            onClick={() => setActiveTip(index)}
+                            className={`h-1.5 rounded-full transition-all duration-300 ${activeTip === index ? "w-6 bg-gradient-to-r from-primary to-accent shadow-soft" : "w-2 bg-muted/40 hover:bg-muted/60"}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Highly Engaging Quote Ticker Card */}
+                    <div className="mt-4 relative rounded-3xl bg-gradient-to-br from-primary/8 via-surface to-accent/8 border border-primary/20 p-6 md:p-8 min-h-[170px] flex flex-col justify-between overflow-hidden shadow-inner">
+                      
+                      <div key={activeTip} className="relative z-10 animate-quote-slide space-y-4">
+                        <div>
+                          <div className="text-lg md:text-xl font-black text-fg tracking-tight leading-snug">{motivationTips[activeTip].title}</div>
+                          <div className="mt-2 text-sm md:text-base text-muted font-medium leading-relaxed">{motivationTips[activeTip].text}</div>
                         </div>
 
-                        <Link to="/explore">
-                          <Button
-                            size="sm"
-                            className="rounded-full cursor-pointer font-black"
-                            iconRight={<svg className="h-3.5 w-3.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>}
-                          >
-                            Get Clarity Now
-                          </Button>
-                        </Link>
+                        <div className="mt-4 pt-4 border-t border-primary/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${motivationTips[activeTip].tagColor}`}>
+                              {motivationTips[activeTip].badge}
+                            </span>
+                            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface/85 text-muted border border-border/60 text-[10px] font-black uppercase tracking-wider">
+                              ⚡️ ₹69 Fixed Price
+                            </span>
+                          </div>
+
+                          <Link to="/explore">
+                            <Button
+                              size="sm"
+                              className="rounded-full cursor-pointer font-black"
+                              iconRight={<svg className="h-3.5 w-3.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>}
+                            >
+                              Get Clarity Now
+                            </Button>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>

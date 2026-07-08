@@ -92,10 +92,10 @@ function MobileBottomNav() {
 
     if (user.role === "senior") {
       return [
-        { to: "/dashboard",    label: "Dashboard",    icon: <IconDashboard /> },
+        { to: "/",             label: "Home",         icon: <IconHome /> },
         { to: "/bookings",     label: "Sessions",     icon: <IconSessions /> },
         { to: "/availability", label: "Availability", icon: <IconCalendar /> },
-        { to: "/profile",      label: "Profile",      icon: <IconProfile /> }
+        { to: "/dashboard",    label: "Dashboard",    icon: <IconDashboard /> }
       ];
     }
 
@@ -104,7 +104,7 @@ function MobileBottomNav() {
       { to: "/",              label: "Home",         icon: <IconHome /> },
       { to: "/explore",       label: "Explore",      icon: <IconCompass /> },
       { to: "/bookings",      label: "Sessions",     icon: <IconSessions /> },
-      { to: "/profile",       label: "Profile",      icon: <IconProfile /> }
+      { to: "/dashboard",     label: "Dashboard",    icon: <IconDashboard /> }
     ];
   }, [user]);
 

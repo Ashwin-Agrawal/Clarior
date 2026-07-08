@@ -149,7 +149,7 @@ function Login() {
         </div>
   
         {/* ── Right Panel — Form ────────────────────────────────── */}
-        <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 bg-bg min-h-screen">
+        <div className="flex-1 flex flex-col justify-center items-center px-5 py-12 pb-28 md:pb-12 bg-bg min-h-screen">
           {/* Mobile logo */}
           <Link to="/" className="lg:hidden flex items-center gap-2.5 mb-8 transition hover:opacity-90">
             <Logo size="navbar" />
@@ -188,9 +188,19 @@ function Login() {
                   </svg>
                 }
               />
-              <div className="relative">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label htmlFor="login-password" className="text-sm font-bold text-fg">Password</label>
+                  <button 
+                    onClick={() => {
+                      setError("Password reset is not configured yet. Please contact support at support@clarior.in");
+                    }}
+                    className="text-xs font-semibold text-primary hover:underline cursor-pointer"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
                 <Input
-                  label="Password"
                   id="login-password"
                   type="password"
                   placeholder="••••••••"
@@ -205,15 +215,6 @@ function Login() {
                     </svg>
                   }
                 />
-                <button 
-                  onClick={() => {
-                    setError("Password reset is not configured yet. Please contact support at support@clarior.in");
-                  }}
-                  className="absolute right-0 top-0 text-xs font-semibold text-primary hover:underline cursor-pointer"
-                  style={{ zIndex: 10 }}
-                >
-                  Forgot password?
-                </button>
               </div>
             </div>
   

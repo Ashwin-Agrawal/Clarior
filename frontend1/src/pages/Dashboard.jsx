@@ -206,6 +206,8 @@ function Dashboard() {
   const [slotRequests, setSlotRequests] = useState([]);
   const [dataLoading, setDataLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(() => Date.now());
+  const [showHistoryMore, setShowHistoryMore] = useState(false);
+  const HISTORY_PREVIEW_COUNT = 3;
 
   const handleUpdateStatus = async (id, status) => {
     try {
@@ -684,14 +686,36 @@ function Dashboard() {
             <div className="space-y-4 animate-fade-up delay-200">
               <div className="flex items-center justify-between px-2">
                 <h3 className="text-xl font-black text-fg tracking-tight">Session History</h3>
+                {past.length > HISTORY_PREVIEW_COUNT && (
+                  <button
+                    onClick={() => setShowHistoryMore(v => !v)}
+                    className="flex items-center gap-1.5 text-xs font-black text-primary uppercase tracking-wider hover:underline transition-all"
+                  >
+                    <span>{showHistoryMore ? "View Less" : `View All (${past.length})`}</span>
+                    <svg className={`h-3.5 w-3.5 transition-transform duration-300 ${showHistoryMore ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </button>
+                )}
               </div>
               <SessionList
-                items={past.slice(0, 5)}
+                items={showHistoryMore ? past : past.slice(0, HISTORY_PREVIEW_COUNT)}
                 userRole={user?.role}
                 actionLabel="View Details"
                 emptyTitle="No history yet"
                 emptyDescription="Completed or cancelled sessions will appear here."
               />
+              {past.length > HISTORY_PREVIEW_COUNT && (
+                <button
+                  onClick={() => setShowHistoryMore(v => !v)}
+                  className="w-full mt-1 py-3 rounded-2xl border border-border/60 bg-surface/80 text-xs font-black text-primary uppercase tracking-wider hover:bg-primary/5 hover:border-primary/30 transition-all duration-200 flex items-center justify-center gap-2"
+                >
+                  <span>{showHistoryMore ? "View Less" : `View ${past.length - HISTORY_PREVIEW_COUNT} More Sessions`}</span>
+                  <svg className={`h-3.5 w-3.5 transition-transform duration-300 ${showHistoryMore ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
         )}

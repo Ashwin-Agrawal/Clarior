@@ -205,6 +205,8 @@ function HowItWorks() {
   const [faqSearch, setFaqSearch] = useState("");
   const [faqTab, setFaqTab] = useState("all");
   const [openFaq, setOpenFaq] = useState(null);
+  const [faqExpanded, setFaqExpanded] = useState(false);
+  const FAQ_PREVIEW_COUNT = 4;
 
   const filteredFaqs = faqItems.filter(item => {
     const matchesSearch = item.q.toLowerCase().includes(faqSearch.toLowerCase()) || item.a.toLowerCase().includes(faqSearch.toLowerCase());
@@ -366,27 +368,40 @@ function HowItWorks() {
                 No matching questions found. Try search query "refund" or "credits".
               </div>
             ) : (
-              filteredFaqs.map((faq, index) => {
-                const isOpen = openFaq === index;
-                return (
-                  <div key={index} className="rounded-2xl border border-border/70 bg-surface/90 overflow-hidden transition-all duration-350">
-                    <button
-                      onClick={() => setOpenFaq(isOpen ? null : index)}
-                      className="w-full flex items-center justify-between p-5 text-left font-bold text-fg text-sm sm:text-base cursor-pointer hover:bg-primary/5 transition-all"
-                    >
-                      <span>{faq.q}</span>
-                      <svg className={`h-4.5 w-4.5 text-primary transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                      </svg>
-                    </button>
-                    {isOpen && (
-                      <div className="px-5 pb-5 pt-1 text-xs sm:text-sm leading-relaxed text-muted border-t border-border/20 bg-surface-2/45 animate-slide-down">
-                        {faq.a}
-                      </div>
-                    )}
-                  </div>
-                );
-              })
+              <>
+                {(faqExpanded ? filteredFaqs : filteredFaqs.slice(0, FAQ_PREVIEW_COUNT)).map((faq, index) => {
+                  const isOpen = openFaq === index;
+                  return (
+                    <div key={index} className="rounded-2xl border border-border/70 bg-surface/90 overflow-hidden transition-all duration-350">
+                      <button
+                        onClick={() => setOpenFaq(isOpen ? null : index)}
+                        className="w-full flex items-center justify-between p-5 text-left font-bold text-fg text-sm sm:text-base cursor-pointer hover:bg-primary/5 transition-all"
+                      >
+                        <span>{faq.q}</span>
+                        <svg className={`h-4.5 w-4.5 text-primary transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                      </button>
+                      {isOpen && (
+                        <div className="px-5 pb-5 pt-1 text-xs sm:text-sm leading-relaxed text-muted border-t border-border/20 bg-surface-2/45 animate-slide-down">
+                          {faq.a}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+                {filteredFaqs.length > FAQ_PREVIEW_COUNT && (
+                  <button
+                    onClick={() => { setFaqExpanded(e => !e); setOpenFaq(null); }}
+                    className="w-full mt-2 py-3 rounded-2xl border border-border/60 bg-surface/80 text-xs font-black text-primary uppercase tracking-wider hover:bg-primary/5 hover:border-primary/30 transition-all duration-200 flex items-center justify-center gap-2"
+                  >
+                    <span>{faqExpanded ? "View Less" : `View ${filteredFaqs.length - FAQ_PREVIEW_COUNT} More`}</span>
+                    <svg className={`h-3.5 w-3.5 transition-transform duration-300 ${faqExpanded ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
