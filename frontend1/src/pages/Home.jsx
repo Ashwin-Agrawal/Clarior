@@ -186,7 +186,7 @@ function AnimatedCounter({ target, suffix = "", displayAs, duration = 1800 }) {
 }
 
 // ── Dynamic Slogan Component — Letter-by-Letter Word Reveal ────
-const SLOGAN_WORDS = ["guessing.", "overthinking.", "doubting.", "stressing."];
+const SLOGAN_WORDS = ["guessing", "overthinking", "doubting", "stressing"];
 
 function DynamicSlogan() {
   const [index, setIndex] = useState(0);
