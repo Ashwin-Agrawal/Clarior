@@ -708,7 +708,7 @@ function Home() {
                       </div>
                       <div className="flex flex-col items-center">
                         <span className="text-[10px] font-black text-success uppercase tracking-wider block">Verified Senior</span>
-                        <span className="text-[8px] font-bold text-muted uppercase tracking-widest mt-0.5">College Senior</span>
+                        <span className="text-[8px] font-bold text-muted uppercase tracking-widest mt-0.5">College Insider</span>
                       </div>
                     </div>
 
