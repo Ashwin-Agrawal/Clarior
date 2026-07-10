@@ -588,9 +588,23 @@ function Home() {
         {/* ═══════════════════════════════════════════════════════
             HERO SECTION — Animated Grid + Text Reveal
             ═══════════════════════════════════════════════════════ */}
-        <section className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-20 overflow-hidden bg-bg">
+        <section ref={heroRef} className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-20 overflow-hidden bg-bg">
           <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+
+          {/* Mouse-parallax premium glow blobs */}
+          <div 
+            className="absolute top-1/4 left-1/4 h-[350px] w-[350px] rounded-full bg-primary/8 dark:bg-primary/5 blur-[100px] pointer-events-none transition-transform duration-300 ease-out" 
+            style={{
+              transform: `translate(${mousePos.x * 45}px, ${mousePos.y * 45}px)`
+            }}
+          />
+          <div 
+            className="absolute bottom-1/4 right-1/4 h-[350px] w-[350px] rounded-full bg-accent/8 dark:bg-accent/5 blur-[100px] pointer-events-none transition-transform duration-300 ease-out" 
+            style={{
+              transform: `translate(${mousePos.x * -45}px, ${mousePos.y * -45}px)`
+            }}
+          />
 
           <SiteContainer className="relative">
             <div ref={heroRevealRef} className="max-w-7xl mx-auto space-y-16">
