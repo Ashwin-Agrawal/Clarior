@@ -707,8 +707,8 @@ function Home() {
                         </svg>
                       </div>
                       <div className="flex flex-col items-center">
-                        <span className="text-[10px] font-black text-success uppercase tracking-wider block">NST Senior</span>
-                        <span className="text-[8px] font-bold text-muted uppercase tracking-widest mt-0.5">Verified Insider</span>
+                        <span className="text-[10px] font-black text-success uppercase tracking-wider block">Verified Senior</span>
+                        <span className="text-[8px] font-bold text-muted uppercase tracking-widest mt-0.5">College Senior</span>
                       </div>
                     </div>
 
@@ -734,13 +734,13 @@ function Home() {
                     {/* Floating Question Badges - Structured vertically below the header card */}
                     <div className="absolute inset-x-[15%] top-[25%] bottom-[25%] pointer-events-none z-10">
                       <div className="absolute left-[1%] top-[30%] px-3.5 py-2 rounded-2xl border border-border/70 bg-surface/95 backdrop-blur-md shadow-lg text-[9px] font-black text-fg uppercase tracking-wider animate-question-1">
-                        CSE vs AI placements?
+                        Placement review
                       </div>
                       <div className="absolute right-[1%] top-[46%] px-3.5 py-2 rounded-2xl border border-border/70 bg-surface/95 backdrop-blur-md shadow-lg text-[9px] font-black text-fg uppercase tracking-wider animate-question-2">
                         Hostel & Food review
                       </div>
                       <div className="absolute left-[22%] top-[60%] px-3.5 py-2 rounded-2xl border border-border/70 bg-surface/95 backdrop-blur-md shadow-lg text-[9px] font-black text-fg uppercase tracking-wider animate-question-3">
-                        CGPA requirements?
+                        Academics review
                       </div>
                     </div>
 
