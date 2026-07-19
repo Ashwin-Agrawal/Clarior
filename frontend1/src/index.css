@@ -103,7 +103,25 @@ html.dark {
 }
 
 /* ─── Theme Transition ────────────────────────────────────────── */
-html.theme-animate * {
+html.theme-animate,
+html.theme-animate body,
+html.theme-animate div,
+html.theme-animate section,
+html.theme-animate header,
+html.theme-animate footer,
+html.theme-animate nav,
+html.theme-animate button,
+html.theme-animate input,
+html.theme-animate select,
+html.theme-animate textarea,
+html.theme-animate a,
+html.theme-animate p,
+html.theme-animate h1,
+html.theme-animate h2,
+html.theme-animate h3,
+html.theme-animate h4,
+html.theme-animate h5,
+html.theme-animate h6 {
   transition-property: background-color, border-color, color, fill, stroke;
   transition-duration: 200ms;
   transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -1013,4 +1031,122 @@ html.dark .glass-panel {
 
 .live-pulse-active {
   animation: active-pulse 2s infinite;
+}
+
+/* ─── Redesign Visual Assets & Animations ────────────────── */
+@keyframes spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse-slow {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes bob-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(1.5deg); }
+}
+
+@keyframes bob-medium {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(12px) rotate(-1.5deg); }
+}
+
+@keyframes float-orb-1 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(40px, -60px) scale(1.08); }
+  66% { transform: translate(-30px, 30px) scale(0.92); }
+}
+
+@keyframes float-orb-2 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(-50px, 50px) scale(1.10); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 35s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+  animation: spin-reverse-slow 45s linear infinite;
+}
+
+.animate-bob-slow {
+  animation: bob-slow 6s ease-in-out infinite;
+}
+
+.animate-bob-medium {
+  animation: bob-medium 6.5s ease-in-out infinite;
+}
+
+.animate-float-orb-1 {
+  animation: float-orb-1 20s ease-in-out infinite;
+}
+
+.animate-float-orb-2 {
+  animation: float-orb-2 24s ease-in-out infinite;
+}
+
+/* Conic Spin Border glow effect */
+@keyframes conic-border-spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.glow-card-conic {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.glow-card-conic::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 20%,
+    rgba(var(--primary), 0.25) 40%,
+    rgba(var(--accent), 0.25) 60%,
+    transparent 80%
+  );
+  animation: conic-border-spin 8s linear infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.glow-card-conic-inner {
+  position: relative;
+  z-index: 2;
+}
+
+/* Bento Grid Mouse-Follower Glow */
+.bento-hover-glow {
+  position: relative;
+}
+
+.bento-hover-glow::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: radial-gradient(
+    250px circle at var(--x, 0px) var(--y, 0px),
+    rgba(37, 99, 235, 0.14),
+    transparent 80%
+  );
+  border-radius: inherit;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.bento-hover-glow:hover::after {
+  opacity: 1;
 }

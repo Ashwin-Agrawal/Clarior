@@ -2,7 +2,7 @@ const User = require("../models/User");
 const { sendSuccess, sendError } = require("../utils/response.util");
 
 // 🎯 Get all seniors — Fix 5: only return safe public fields
-exports.getAllSeniors = async (req, res) => {
+exports.getAllSeniors = async (req, res, next) => {
   try {
     const { q, college, domain, course, branch } = req.query;
 
@@ -47,19 +47,32 @@ exports.getAllSeniors = async (req, res) => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
 
-    const seniorsWithSlots = await Promise.all(
-      seniors.map(async (s) => {
-        const count = await Slot.countDocuments({
-          senior: s._id,
+    const seniorIds = seniors.map(s => s._id);
+    const slotCounts = await Slot.aggregate([
+      {
+        $match: {
+          senior: { $in: seniorIds },
           isBooked: false,
           date: { $gte: now }
-        });
-        return {
-          ...s.toObject(),
-          activeSlotsCount: count
-        };
-      })
-    );
+        }
+      },
+      {
+        $group: {
+          _id: "$senior",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const countMap = slotCounts.reduce((acc, curr) => {
+      acc[curr._id.toString()] = curr.count;
+      return acc;
+    }, {});
+
+    const seniorsWithSlots = seniors.map(s => ({
+      ...s.toObject(),
+      activeSlotsCount: countMap[s._id.toString()] || 0
+    }));
 
     res.status(200).json({
       success: true,
@@ -67,10 +80,7 @@ exports.getAllSeniors = async (req, res) => {
       seniors: seniorsWithSlots,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 

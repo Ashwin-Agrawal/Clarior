@@ -7,42 +7,48 @@ const SCOPES = [
   "https://www.googleapis.com/auth/calendar.events",
 ];
 
-exports.getAuthUrl = async (req, res) => {
-  const oauth2Client = getOAuthClient();
-  if (!oauth2Client) {
-    return res.status(503).json({
-      message: "Google OAuth is not configured on the server (missing GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET).",
-    });
-  }
-
-  const url = oauth2Client.generateAuthUrl({
-    access_type: "offline",
-    prompt: "consent",
-    scope: SCOPES,
-  });
-
-  return res.json({ url });
-};
-
-exports.oauthCallback = async (req, res) => {
+exports.getAuthUrl = async (req, res, next) => {
   try {
     const oauth2Client = getOAuthClient();
     if (!oauth2Client) {
-      return res.status(503).json({
-        message: "Google OAuth is not configured on the server.",
-      });
+      const e = new Error("Google OAuth is not configured on the server (missing GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET).");
+      e.statusCode = 503;
+      throw e;
+    }
+
+    const url = oauth2Client.generateAuthUrl({
+      access_type: "offline",
+      prompt: "consent",
+      scope: SCOPES,
+    });
+
+    return res.json({ url });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.oauthCallback = async (req, res, next) => {
+  try {
+    const oauth2Client = getOAuthClient();
+    if (!oauth2Client) {
+      const e = new Error("Google OAuth is not configured on the server.");
+      e.statusCode = 503;
+      throw e;
     }
 
     const { code } = req.query;
-    if (!code) return res.status(400).json({ message: "Missing code" });
+    if (!code) {
+      const e = new Error("Missing code parameter");
+      e.statusCode = 400;
+      throw e;
+    }
 
     const { tokens } = await oauth2Client.getToken(String(code));
     if (!tokens.refresh_token) {
-      // This happens if Google doesn't return refresh_token on subsequent auths.
-      return res.status(400).json({
-        message:
-          "No refresh token returned. Remove app access from your Google Account and re-connect with prompt=consent.",
-      });
+      const e = new Error("No refresh token returned. Remove app access from your Google Account and re-connect with prompt=consent.");
+      e.statusCode = 400;
+      throw e;
     }
 
     await GoogleToken.updateOne(
@@ -62,11 +68,11 @@ exports.oauthCallback = async (req, res) => {
 
     return res.json({ success: true, message: "Google account connected" });
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    next(err);
   }
 };
 
-exports.status = async (req, res) => {
+exports.status = async (req, res, next) => {
   try {
     const doc = await GoogleToken.findOne({ provider: "google" }).lean();
     console.log("👉 Google Status Check Hit! Token found in DB:", !!doc);
@@ -77,7 +83,7 @@ exports.status = async (req, res) => {
     });
   } catch (err) {
     console.error("👉 Google Status Check Error:", err);
-    return res.status(500).json({ message: err.message });
+    next(err);
   }
 };
 
@@ -92,7 +98,6 @@ exports.createMeetForBooking = async (booking, { summary, description }) => {
   }
 
   const calendarId = process.env.GOOGLE_CALENDAR_ID || "primary";
-
   const calendar = google.calendar({ version: "v3", auth: client });
 
   const requestId = `clarior-${booking._id}-${Date.now()}`;
@@ -120,24 +125,32 @@ exports.createMeetForBooking = async (booking, { summary, description }) => {
     console.error("Error fetching senior email for Calendar event:", err);
   }
 
-  const event = await calendar.events.insert({
-    calendarId,
-    conferenceDataVersion: 1,
-    sendUpdates: "all",
-    requestBody: {
-      summary: summary || "Clarior Mentorship Session",
-      description: description || `Booking ${booking._id}`,
-      start: { dateTime: new Date(start).toISOString() },
-      end: { dateTime: new Date(end).toISOString() },
-      attendees: attendees,
-      conferenceData: {
-        createRequest: {
-          requestId,
-          conferenceSolutionKey: { type: "hangoutsMeet" },
+  let event;
+  try {
+    event = await calendar.events.insert({
+      calendarId,
+      conferenceDataVersion: 1,
+      sendUpdates: "all",
+      requestBody: {
+        summary: summary || "Clarior Mentorship Session",
+        description: description || `Booking ${booking._id}`,
+        start: { dateTime: new Date(start).toISOString() },
+        end: { dateTime: new Date(end).toISOString() },
+        attendees: attendees,
+        conferenceData: {
+          createRequest: {
+            requestId,
+            conferenceSolutionKey: { type: "hangoutsMeet" },
+          },
         },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error("Google Calendar API insert failed, throwing fallback exception:", err.message);
+    const e = new Error(`Google Calendar insertion failed: ${err.message}`);
+    e.statusCode = 502;
+    throw e;
+  }
 
   const meetLink =
     event.data?.hangoutLink ||
@@ -152,4 +165,3 @@ exports.createMeetForBooking = async (booking, { summary, description }) => {
 
   return { meetLink, eventId: event.data.id };
 };
-

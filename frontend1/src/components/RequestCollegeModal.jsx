@@ -1,23 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import api from "../services/api";
 import Button from "./ui/Button";
 
-/* Detects if the page is currently in dark mode */
-function useIsDark() {
-  const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
-  useEffect(() => {
-    const obs = new MutationObserver(() =>
-      setDark(document.documentElement.classList.contains("dark"))
-    );
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    return () => obs.disconnect();
-  }, []);
-  return dark;
-}
-
 function RequestCollegeModal({ isOpen, onClose }) {
-  const isDark = useIsDark();
-
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
@@ -29,23 +14,6 @@ function RequestCollegeModal({ isOpen, onClose }) {
   const [submitted, setSubmitted] = useState(false);
 
   if (!isOpen) return null;
-
-  /* ── colour tokens resolved at render time ── */
-  const bg       = isDark ? "#0f1d33" : "#ffffff";
-  const surface  = isDark ? "#142439" : "#f8fafc";
-  const border   = isDark ? "#233b5c" : "#d0e0f7";
-  const fg       = isDark ? "#dfeafc" : "#10213b";
-  const muted    = isDark ? "#95b0dc" : "#567198";
-  const inputBg  = isDark ? "#14253d" : "#ffffff";
-
-  const labelStyle   = { fontSize: 13, fontWeight: 600, color: fg, marginBottom: 6, display: "block" };
-  const inputStyle   = {
-    width: "100%", height: 44, padding: "0 14px", borderRadius: 12,
-    border: `1.5px solid ${border}`, background: inputBg, color: fg,
-    fontSize: 14, outline: "none", boxSizing: "border-box",
-    transition: "border-color 0.2s",
-  };
-  const selectStyle  = { ...inputStyle, cursor: "pointer" };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -78,46 +46,16 @@ function RequestCollegeModal({ isOpen, onClose }) {
   const handleClose = () => { setError(""); setSubmitted(false); onClose(); };
 
   return (
-    <div
-      style={{
-        position: "fixed", inset: 0, zIndex: 50,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        padding: 16,
-        background: isDark ? "rgba(0,0,0,0.65)" : "rgba(15,33,59,0.35)",
-        backdropFilter: "blur(10px)",
-        animation: "fadeIn 0.25s ease both",
-      }}
-    >
+    <div className="fixed inset-0 z-55 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md animate-fade-in">
       {/* Backdrop click */}
-      <div style={{ position: "absolute", inset: 0 }} onClick={handleClose} />
+      <div className="absolute inset-0" onClick={handleClose} />
 
       {/* Modal box */}
-      <div
-        style={{
-          position: "relative", zIndex: 10,
-          width: "100%", maxWidth: 520,
-          background: bg,
-          border: `1.5px solid ${border}`,
-          borderRadius: 28,
-          padding: "32px 28px",
-          boxShadow: isDark
-            ? "0 32px 80px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)"
-            : "0 32px 80px -20px rgba(15,33,59,0.18), 0 0 0 1px rgba(37,99,235,0.06)",
-          maxHeight: "90vh",
-          overflowY: "auto",
-          animation: "scaleIn 0.3s cubic-bezier(0.22,1,0.36,1) both",
-        }}
-      >
+      <div className="relative z-10 w-full max-w-[520px] bg-surface border border-border rounded-[28px] p-8 shadow-hero max-h-[90vh] overflow-y-auto animate-scale-in">
         {/* Close button */}
         <button
           onClick={handleClose}
-          style={{
-            position: "absolute", top: 14, right: 14,
-            width: 32, height: 32, borderRadius: "50%",
-            background: "transparent", border: "none",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            cursor: "pointer", color: muted,
-          }}
+          className="absolute top-4 right-4 h-8 w-8 rounded-full bg-transparent border-none flex items-center justify-center cursor-pointer text-muted hover:text-fg transition-colors"
           aria-label="Close modal"
         >
           <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -126,60 +64,39 @@ function RequestCollegeModal({ isOpen, onClose }) {
         </button>
 
         {/* Header badge */}
-        <div style={{
-          display: "inline-flex", alignItems: "center", gap: 6,
-          padding: "3px 12px", borderRadius: 999,
-          background: isDark ? "rgba(96,165,250,0.15)" : "rgba(37,99,235,0.1)",
-          border: `1px solid ${isDark ? "rgba(96,165,250,0.25)" : "rgba(37,99,235,0.2)"}`,
-          color: isDark ? "#60a5fa" : "#2563eb",
-          fontSize: 10, fontWeight: 900, letterSpacing: "0.12em",
-          textTransform: "uppercase", marginBottom: 12,
-        }}>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black tracking-widest uppercase mb-3">
           Add Platform Request
         </div>
 
-        <h2 style={{ fontSize: 22, fontWeight: 900, color: fg, marginBottom: 6, lineHeight: 1.15 }}>
+        <h2 className="text-2xl font-black text-fg mb-1.5 leading-tight">
           Request to Add{" "}
-          <span style={{
-            background: "linear-gradient(135deg, #2563eb, #38bdf8)",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-          }}>
+          <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             College.
           </span>
         </h2>
-        <p style={{ fontSize: 12, color: muted, lineHeight: 1.7, marginBottom: 20 }}>
+        <p className="text-xs text-muted leading-relaxed mb-5">
           Can't find your college? Submit a request here. Once approved by the administrator, seniors can sign up under this college and students can browse it.
         </p>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Error */}
           {error && (
-            <div style={{
-              padding: "10px 14px", borderRadius: 12, marginBottom: 14,
-              background: isDark ? "rgba(239,68,68,0.1)" : "rgba(239,68,68,0.06)",
-              border: "1px solid rgba(239,68,68,0.3)", color: "#ef4444",
-              fontSize: 12, fontWeight: 700,
-            }}>{error}</div>
+            <div className="px-3.5 py-2.5 rounded-2xl bg-danger/10 border border-danger/20 text-danger text-xs font-bold">{error}</div>
           )}
 
           {/* Success */}
           {submitted && (
-            <div style={{
-              padding: "10px 14px", borderRadius: 12, marginBottom: 14,
-              background: isDark ? "rgba(16,185,129,0.1)" : "rgba(16,185,129,0.06)",
-              border: "1px solid rgba(16,185,129,0.3)", color: "#10b981",
-              fontSize: 12, fontWeight: 700,
-            }}>
+            <div className="px-3.5 py-2.5 rounded-2xl bg-success/10 border border-success/20 text-success text-xs font-bold">
               🎉 Request submitted! Our team will verify and add the college to the platform.
             </div>
           )}
 
           {/* College Name */}
-          <div style={{ marginBottom: 14 }}>
-            <span style={labelStyle}>College Name <span style={{ color: "#ef4444" }}>*</span></span>
+          <div>
+            <label htmlFor="col-name" className="block text-xs font-semibold text-fg mb-1.5">College Name <span className="text-danger">*</span></label>
             <input
-              style={inputStyle}
-              className="placeholder:text-muted/60 focus:border-primary/60 outline-none"
+              id="col-name"
+              className="w-full h-11 px-3.5 rounded-xl border border-border bg-surface2/60 text-fg text-sm font-semibold focus:outline-none focus:border-primary/50 transition placeholder:text-muted/50"
               placeholder="e.g. MS Ramaiah Institute of Technology (MSRIT)"
               value={name}
               onChange={e => setName(e.target.value)}
@@ -189,12 +106,12 @@ function RequestCollegeModal({ isOpen, onClose }) {
           </div>
 
           {/* City + State */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <span style={labelStyle}>City <span style={{ color: "#ef4444" }}>*</span></span>
+              <label htmlFor="col-city" className="block text-xs font-semibold text-fg mb-1.5">City <span className="text-danger">*</span></label>
               <input
-                style={inputStyle}
-                className="placeholder:text-muted/60 focus:border-primary/60 outline-none"
+                id="col-city"
+                className="w-full h-11 px-3.5 rounded-xl border border-border bg-surface2/60 text-fg text-sm font-semibold focus:outline-none focus:border-primary/50 transition placeholder:text-muted/50"
                 placeholder="e.g. Bengaluru"
                 value={city}
                 onChange={e => setCity(e.target.value)}
@@ -203,10 +120,10 @@ function RequestCollegeModal({ isOpen, onClose }) {
               />
             </div>
             <div>
-              <span style={labelStyle}>State <span style={{ color: "#ef4444" }}>*</span></span>
+              <label htmlFor="col-state" className="block text-xs font-semibold text-fg mb-1.5">State <span className="text-danger">*</span></label>
               <input
-                style={inputStyle}
-                className="placeholder:text-muted/60 focus:border-primary/60 outline-none"
+                id="col-state"
+                className="w-full h-11 px-3.5 rounded-xl border border-border bg-surface2/60 text-fg text-sm font-semibold focus:outline-none focus:border-primary/50 transition placeholder:text-muted/50"
                 placeholder="e.g. Karnataka"
                 value={state}
                 onChange={e => setState(e.target.value)}
@@ -217,25 +134,26 @@ function RequestCollegeModal({ isOpen, onClose }) {
           </div>
 
           {/* Type + Year */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <span style={labelStyle}>College Type</span>
+              <label htmlFor="col-type" className="block text-xs font-semibold text-fg mb-1.5">College Type</label>
               <select
-                style={selectStyle}
+                id="col-type"
+                className="w-full h-11 px-3.5 rounded-xl border border-border bg-surface2/60 text-fg text-sm font-semibold focus:outline-none focus:border-primary/50 transition cursor-pointer"
                 value={type}
                 onChange={e => setType(e.target.value)}
                 disabled={loading}
               >
-                <option value="Private" style={{ background: inputBg, color: fg }}>Private</option>
-                <option value="Government" style={{ background: inputBg, color: fg }}>Government</option>
-                <option value="New Gen" style={{ background: inputBg, color: fg }}>New Gen</option>
+                <option value="Private">Private</option>
+                <option value="Government">Government</option>
+                <option value="New Gen">New Gen</option>
               </select>
             </div>
             <div>
-              <span style={labelStyle}>Established Year</span>
+              <label htmlFor="col-established" className="block text-xs font-semibold text-fg mb-1.5">Established Year</label>
               <input
-                style={inputStyle}
-                className="placeholder:text-muted/60 focus:border-primary/60 outline-none"
+                id="col-established"
+                className="w-full h-11 px-3.5 rounded-xl border border-border bg-surface2/60 text-fg text-sm font-semibold focus:outline-none focus:border-primary/50 transition placeholder:text-muted/50"
                 type="number"
                 placeholder="e.g. 1962"
                 value={established}
@@ -246,27 +164,27 @@ function RequestCollegeModal({ isOpen, onClose }) {
           </div>
 
           {/* Email */}
-          <div style={{ marginBottom: 20 }}>
-            <span style={labelStyle}>Your Email Address</span>
+          <div>
+            <label htmlFor="col-email" className="block text-xs font-semibold text-fg mb-1.5">Your Email Address</label>
             <input
-              style={inputStyle}
-              className="placeholder:text-muted/60 focus:border-primary/60 outline-none"
+              id="col-email"
+              className="w-full h-11 px-3.5 rounded-xl border border-border bg-surface2/60 text-fg text-sm font-semibold focus:outline-none focus:border-primary/50 transition placeholder:text-muted/50"
               type="email"
               placeholder="your.email@example.com"
               value={requesterEmail}
               onChange={e => setRequesterEmail(e.target.value)}
               disabled={loading}
             />
-            <p style={{ fontSize: 11, color: muted, marginTop: 5 }}>
+            <p className="text-[10px] text-muted mt-1 leading-normal">
               Optional — lets you track request status on your dashboard.
             </p>
           </div>
 
           {/* Divider */}
-          <div style={{ height: 1, background: border, marginBottom: 20 }} />
+          <div className="h-px bg-border my-5" />
 
           {/* Buttons */}
-          <div style={{ display: "flex", gap: 10 }}>
+          <div className="flex gap-3">
             <Button
               type="button"
               variant="secondary"
@@ -278,7 +196,7 @@ function RequestCollegeModal({ isOpen, onClose }) {
             </Button>
             <Button
               type="submit"
-              className="flex-1 rounded-xl font-black"
+              className="flex-1 rounded-xl font-black uppercase text-xs tracking-wider"
               loading={loading}
             >
               Submit Request

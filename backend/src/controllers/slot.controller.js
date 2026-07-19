@@ -245,7 +245,7 @@ exports.getAvailableSlots = async (req, res) => {
 };
 
 // 🎯 Get slots of specific senior — Fix 6b: ObjectId validation
-exports.getSlotsBySenior = async (req, res) => {
+exports.getSlotsBySenior = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -279,26 +279,35 @@ exports.getSlotsBySenior = async (req, res) => {
     let resultSlots = slots;
     if (isRequestingSelf) {
       const Booking = require("../models/Booking");
-      resultSlots = await Promise.all(
-        slots.map(async (slot) => {
-          if (slot.isBooked) {
-            const booking = await Booking.findOne({ slot: slot._id })
-              .populate("student", "name email")
-              .lean();
-            return {
-              ...slot,
-              booking: booking ? {
-                _id: booking._id,
-                studentName: booking.student?.name || "Student",
-                studentEmail: booking.student?.email || "",
-                meetLink: booking.meetLink || "",
-                status: booking.status
-              } : null
-            };
-          }
-          return slot;
-        })
-      );
+      const bookedSlotIds = slots.filter(s => s.isBooked).map(s => s._id);
+
+      const bookings = await Booking.find({ slot: { $in: bookedSlotIds } })
+        .populate("student", "name email")
+        .lean();
+
+      const bookingMap = bookings.reduce((acc, curr) => {
+        if (curr.slot) {
+          acc[curr.slot.toString()] = curr;
+        }
+        return acc;
+      }, {});
+
+      resultSlots = slots.map((slot) => {
+        if (slot.isBooked) {
+          const booking = bookingMap[slot._id.toString()];
+          return {
+            ...slot,
+            booking: booking ? {
+              _id: booking._id,
+              studentName: booking.student?.name || "Student",
+              studentEmail: booking.student?.email || "",
+              meetLink: booking.meetLink || "",
+              status: booking.status
+            } : null
+          };
+        }
+        return slot;
+      });
     }
 
     res.json({
@@ -306,7 +315,7 @@ exports.getSlotsBySenior = async (req, res) => {
       slots: resultSlots,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 };
 

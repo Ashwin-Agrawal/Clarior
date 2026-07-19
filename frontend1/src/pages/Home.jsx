@@ -337,7 +337,33 @@ function Home() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const heroRef = useRef(null);
 
-  // Carousel refs
+  // Simulator state
+  const [tutorialRole, setTutorialRole] = useState("student");
+  const [tutorialStep, setTutorialStep] = useState(1);
+  const [tutorialAutoplay, setTutorialAutoplay] = useState(true);
+
+  // Simulator autoplay: advance step every 3.8s
+  useEffect(() => {
+    if (!tutorialAutoplay) return;
+    const timer = setTimeout(() => {
+      if (tutorialStep >= 4) {
+        // After student path completes, switch to senior path
+        if (tutorialRole === "student") {
+          setTutorialRole("senior");
+          setTutorialStep(1);
+        } else {
+          // After senior path completes, loop back to student step 1
+          setTutorialRole("student");
+          setTutorialStep(1);
+        }
+      } else {
+        setTutorialStep((prev) => prev + 1);
+      }
+    }, 3800);
+    return () => clearTimeout(timer);
+  }, [tutorialStep, tutorialAutoplay, tutorialRole]);
+
+
   const sliderRef = useRef(null);
   const requestRef = useRef();
   const speedRef = useRef(1.0);
@@ -652,133 +678,581 @@ function Home() {
                   </div>
                 </div>
 
-                {/* Right Column: Extraordinary Interactive Connection Bridge HUD */}
-                <div className="lg:col-span-5 relative flex items-center justify-center h-[520px] w-full mt-12 lg:mt-0 select-none overflow-hidden rounded-[40px] border border-border/40 bg-surface/30 dark:bg-surface-2/5 backdrop-blur-md shadow-card group/hud hover:border-primary/30 transition-all duration-500">
+                {/* Right Column: Redesigned Premium SaaS Interactive Simulator */}
+                <div className="lg:col-span-5 relative flex flex-col items-center justify-center min-h-[600px] w-full mt-12 lg:mt-0 select-none">
+
                   <style>{`
-                    @keyframes flowLeft {
-                      0% { left: 95%; opacity: 0; transform: scale(0.6); }
-                      15% { opacity: 1; transform: scale(1.2); }
-                      85% { opacity: 1; transform: scale(1.2); }
-                      100% { left: 5%; opacity: 0; transform: scale(0.6); }
+                    @keyframes floatCard {
+                      0%, 100% { transform: translateY(0px) rotate(0deg); }
+                      50% { transform: translateY(-8px) rotate(0.5deg); }
                     }
-                    @keyframes floatUpQuestion {
-                      0% { transform: translateY(50px) scale(0.85); opacity: 0; }
-                      15% { opacity: 1; }
-                      85% { opacity: 1; }
-                      100% { transform: translateY(-75px) scale(1); opacity: 0; }
+                    @keyframes floatPillSlow {
+                      0%, 100% { transform: translateY(0px); }
+                      50% { transform: translateY(-6px); }
                     }
-                    .animate-flow-1 { animation: flowLeft 4s linear infinite; }
-                    .animate-flow-2 { animation: flowLeft 4s linear infinite 1.3s; }
-                    .animate-flow-3 { animation: flowLeft 4s linear infinite 2.6s; }
-                    .animate-question-1 { animation: floatUpQuestion 7s ease-in-out infinite; }
-                    .animate-question-2 { animation: floatUpQuestion 7s ease-in-out infinite 2.3s; }
-                    .animate-question-3 { animation: floatUpQuestion 7s ease-in-out infinite 4.6s; }
+                    @keyframes floatPillReverse {
+                      0%, 100% { transform: translateY(0px); }
+                      50% { transform: translateY(6px); }
+                    }
+                    @keyframes spinCoin {
+                      0% { transform: rotateY(0deg) translateY(0); }
+                      50% { transform: rotateY(180deg) translateY(-5px); }
+                      100% { transform: rotateY(360deg) translateY(0); }
+                    }
+                    @keyframes barProgress {
+                      from { width: 0%; }
+                      to { width: 100%; }
+                    }
+                    @keyframes audioWave {
+                      0%, 100% { height: 6px; }
+                      50% { height: 26px; }
+                    }
+                    @keyframes confettiBurst {
+                      0%   { transform: translate(0,0) rotate(0deg) scale(1);   opacity: 1; }
+                      60%  { opacity: 1; }
+                      100% { transform: translate(var(--cx), var(--cy)) rotate(var(--cr)) scale(0.5); opacity: 0; }
+                    }
+                    @keyframes trophyBounce {
+                      0%   { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+                      60%  { transform: scale(1.15) rotate(3deg); opacity: 1; }
+                      80%  { transform: scale(0.95) rotate(-2deg); }
+                      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+                    }
+                    .custom-simulator-float { animation: floatCard 6s ease-in-out infinite; }
+                    .custom-float-pill-1 { animation: floatPillSlow 4.5s ease-in-out infinite; }
+                    .custom-float-pill-2 { animation: floatPillReverse 5.2s ease-in-out infinite 0.5s; }
+                    .custom-coin-spin { animation: spinCoin 2.5s ease-in-out infinite; }
+                    .custom-audio-wave { animation: audioWave 1.2s ease-in-out infinite; }
+                    .custom-confetti-burst {
+                      position: absolute;
+                      top: 50%;
+                      left: 50%;
+                      animation: confettiBurst var(--cd) cubic-bezier(0.22,1,0.36,1) var(--delay) forwards;
+                      pointer-events: none;
+                    }
+                    .custom-trophy-bounce {
+                      animation: trophyBounce 0.65s cubic-bezier(0.34,1.56,0.64,1) forwards;
+                    }
                   `}</style>
-                  
-                  {/* Responsive scale wrapper for mobile sizing */}
-                  <div className="relative w-full h-full flex items-center justify-center scale-[0.84] xs:scale-[0.9] sm:scale-100 origin-center">
+
+                  {/* Floating Micro Badge 1 — Top Right */}
+                  <div className="custom-float-pill-1 absolute -top-5 -right-3 z-30 hidden sm:flex items-center gap-2 rounded-2xl border border-border bg-surface px-3.5 py-2 text-[10px] font-black text-fg shadow-lg backdrop-blur pointer-events-none">
+                    <span className="flex h-2 w-2 relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                    </span>
+                    <span>Instant 1:1 Calls · ₹69</span>
+                  </div>
+
+                  {/* Floating Micro Badge 2 — Bottom Left */}
+                  <div className="custom-float-pill-2 absolute -bottom-4 -left-3 z-30 hidden sm:flex items-center gap-2 rounded-2xl border border-border bg-surface px-3.5 py-2 text-[10px] font-black text-fg shadow-lg backdrop-blur pointer-events-none">
+                    <svg className="w-3.5 h-3.5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                    <span>100% Private & Verified</span>
+                  </div>
+
+                  {/* Adaptive Background Ambient Glow */}
+                  <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-primary/10 dark:bg-primary/5 blur-[100px] pointer-events-none" />
+                  <div className="absolute bottom-1/4 right-1/4 w-56 h-56 rounded-full bg-violet-500/10 dark:bg-violet-500/5 blur-[90px] pointer-events-none" />
+
+                  {/* Main Simulator Card Container */}
+                  <div className="custom-simulator-float relative w-full max-w-[430px] rounded-[32px] border border-border bg-surface p-6 shadow-lift overflow-hidden transition-all duration-300">
                     
-                    {/* Glowing background orbs for deep contrast */}
-                    <div className="absolute -inset-4 bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.08),transparent_70%)] pointer-events-none" />
-                    <div className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-primary/10 blur-[80px] pointer-events-none" />
-                    <div className="absolute bottom-1/4 right-1/4 w-32 h-32 rounded-full bg-success/10 blur-[80px] pointer-events-none" />
+                    {/* Top Decorative Accent Line */}
+                    <div className="h-1.5 w-full bg-gradient-to-r from-primary via-accent to-emerald-400 absolute top-0 left-0 right-0" />
 
-                    {/* Left Node: Student Radar */}
-                    <div className="absolute left-[8%] flex flex-col items-center space-y-3.5 z-20">
-                      <div className="relative flex h-22 w-22 items-center justify-center rounded-full border-2 border-primary/40 bg-surface/90 backdrop-blur shadow-[0_20px_50px_rgba(37,99,235,0.15)] group-hover/hud:scale-105 transition-transform duration-500">
-                        {/* Pulse rings */}
-                        <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping opacity-30" />
-                        <div className="absolute -inset-4 rounded-full border border-primary/10 animate-pulse opacity-40" />
-                        {/* Modern Student Profile Vector Icon */}
-                        <svg className="h-7 w-7 text-primary" fill="none" stroke="currentColor" strokeWidth="2.25" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0zM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                        </svg>
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <span className="text-[10px] font-black text-fg uppercase tracking-wider block">Student</span>
-                        <span className="text-[8px] font-bold text-muted uppercase tracking-widest mt-0.5">Seeking Clarity</span>
-                      </div>
-                    </div>
-
-                    {/* Connecting Neon Beam */}
-                    <div className="absolute inset-x-[26%] h-1 bg-gradient-to-r from-primary via-purple-500 to-success rounded-full opacity-50 group-hover/hud:opacity-80 transition-opacity z-10" />
-                    
-                    {/* Floating Light Packet Streams - Set overflow-visible to prevent edge cutoff */}
-                    <div className="absolute inset-x-[26%] h-8 -translate-y-4 overflow-visible pointer-events-none z-10">
-                      <div className="absolute w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_12px_rgb(37,99,235)] animate-flow-1" />
-                      <div className="absolute w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_10px_#a78bfa] animate-flow-2" />
-                      <div className="absolute w-2.5 h-2.5 rounded-full bg-success shadow-[0_0_12px_#10b981] animate-flow-3" />
-                    </div>
-
-                    {/* Right Node: Senior Radar */}
-                    <div className="absolute right-[8%] flex flex-col items-center space-y-3.5 z-20">
-                      <div className="relative flex h-22 w-22 items-center justify-center rounded-full border-2 border-success/40 bg-surface/90 backdrop-blur shadow-[0_20px_50px_rgba(16,185,129,0.15)] group-hover/hud:scale-105 transition-transform duration-500">
-                        {/* Pulse rings */}
-                        <div className="absolute inset-0 rounded-full border-2 border-success/20 animate-ping opacity-30" style={{ animationDelay: '0.7s' }} />
-                        <div className="absolute -inset-4 rounded-full border border-success/10 animate-pulse opacity-40" />
-                        <svg className="h-7 w-7 text-success" fill="none" stroke="currentColor" strokeWidth="2.25" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
-                        </svg>
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <span className="text-[10px] font-black text-success uppercase tracking-wider block">Verified Senior</span>
-                        <span className="text-[8px] font-bold text-muted uppercase tracking-widest mt-0.5">College Insider</span>
-                      </div>
-                    </div>
-
-                    {/* Shared Workspace of Prep Notes Header - Beautifully Alive */}
-                    <div className="absolute top-[6%] inset-x-[15%] flex flex-col items-center pointer-events-none z-20">
-                      <div className="bg-gradient-to-br from-surface/98 via-surface/95 to-amber-500/5 border border-amber-500/30 dark:border-amber-500/40 px-5 py-2.5 rounded-2xl shadow-[0_15px_40px_-10px_rgba(245,158,11,0.2)] text-center relative overflow-hidden backdrop-blur-md">
-                        {/* Pulse Indicator */}
-                        <span className="absolute top-2 right-2 flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-                        </span>
-                        
-                        <div className="flex items-center justify-center gap-1.5">
-                          <svg className="h-3 w-3 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                          </svg>
-                          <span className="text-[8px] font-black uppercase tracking-[0.25em] text-amber-500">Shared Workspace</span>
+                    {/* Step 4 Party Popper Confetti overlay */}
+                    {tutorialStep === 4 && (() => {
+                      const colors = ["#2563eb","#7c3aed","#10b981","#f59e0b","#ec4899","#ef4444","#06b6d4","#f97316"];
+                      const particles = Array.from({ length: 36 }, (_, i) => {
+                        const angle = (i / 36) * 360;
+                        const dist = 125 + (i % 5) * 28;
+                        const rad = (angle * Math.PI) / 180;
+                        const cx = Math.round(Math.cos(rad) * dist);
+                        const cy = Math.round(Math.sin(rad) * dist);
+                        const size = 5 + (i % 4) * 3;
+                        const isRect = i % 3 === 0;
+                        const color = colors[i % colors.length];
+                        const dur = (0.7 + (i % 6) * 0.12).toFixed(2);
+                        const delay = (i * 0.032).toFixed(3);
+                        const rot = `${(i % 2 === 0 ? 1 : -1) * (180 + i * 15)}deg`;
+                        return { cx, cy, size, isRect, color, dur, delay, rot };
+                      });
+                      return (
+                        <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
+                          {particles.map((p, idx) => (
+                            <span
+                              key={idx}
+                              className="custom-confetti-burst"
+                              style={{
+                                width: p.isRect ? `${p.size * 2}px` : `${p.size}px`,
+                                height: `${p.size}px`,
+                                borderRadius: p.isRect ? '2px' : '50%',
+                                backgroundColor: p.color,
+                                '--cx': `${p.cx}px`,
+                                '--cy': `${p.cy}px`,
+                                '--cr': p.rot,
+                                '--cd': `${p.dur}s`,
+                                '--delay': `${p.delay}s`,
+                                marginLeft: `-${p.size / 2}px`,
+                                marginTop: `-${p.size / 2}px`,
+                              }}
+                            />
+                          ))}
                         </div>
-                        <div className="text-[11px] font-black text-fg/90 mt-0.5 tracking-tight">Pre-Call Prep Notes</div>
-                      </div>
+                      );
+                    })()}
+
+                    {/* Top Role Selector Toggle (Student vs Senior) */}
+                    <div className="flex p-1 rounded-2xl bg-surface2 border border-border mb-6 relative">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTutorialRole("student");
+                          setTutorialStep(1);
+                          setTutorialAutoplay(true);
+                        }}
+                        className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 ${
+                          tutorialRole === "student"
+                            ? "bg-surface text-primary border border-border shadow-sm font-black scale-[1.01]"
+                            : "text-muted hover:text-fg font-bold"
+                        }`}
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" /></svg>
+                        Student Path
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTutorialRole("senior");
+                          setTutorialStep(1);
+                          setTutorialAutoplay(true);
+                        }}
+                        className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 ${
+                          tutorialRole === "senior"
+                            ? "bg-surface text-primary border border-border shadow-sm font-black scale-[1.01]"
+                            : "text-muted hover:text-fg font-bold"
+                        }`}
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        Senior Path
+                      </button>
                     </div>
 
-                    {/* Floating Question Badges - Structured vertically below the header card */}
-                    <div className="absolute inset-x-[15%] top-[25%] bottom-[25%] pointer-events-none z-10">
-                      <div className="absolute left-[1%] top-[30%] px-3.5 py-2 rounded-2xl border border-border/70 bg-surface/95 backdrop-blur-md shadow-lg text-[9px] font-black text-fg uppercase tracking-wider animate-question-1">
-                        Placement review
-                      </div>
-                      <div className="absolute right-[1%] top-[46%] px-3.5 py-2 rounded-2xl border border-border/70 bg-surface/95 backdrop-blur-md shadow-lg text-[9px] font-black text-fg uppercase tracking-wider animate-question-2">
-                        Hostel & Food review
-                      </div>
-                      <div className="absolute left-[22%] top-[60%] px-3.5 py-2 rounded-2xl border border-border/70 bg-surface/95 backdrop-blur-md shadow-lg text-[9px] font-black text-fg uppercase tracking-wider animate-question-3">
-                        Academics review
-                      </div>
+                    {/* Step Navigation Progress indicators */}
+                    <div className="grid grid-cols-4 gap-2 mb-6">
+                      {[
+                        { step: 1, label: tutorialRole === "student" ? "Credits" : "Set Slots" },
+                        { step: 2, label: tutorialRole === "student" ? "Explore" : "Get Booked" },
+                        { step: 3, label: tutorialRole === "student" ? "1:1 Call" : "Share Info" },
+                        { step: 4, label: tutorialRole === "student" ? "Clarity" : "Success" }
+                      ].map((s) => (
+                        <button
+                          key={s.step}
+                          type="button"
+                          onClick={() => {
+                            setTutorialStep(s.step);
+                            setTutorialAutoplay(false); // Pause autoplay
+                          }}
+                          className="flex flex-col items-center gap-1.5 focus:outline-none group cursor-pointer"
+                        >
+                          <div className={`w-full h-1.5 rounded-full transition-all duration-300 relative overflow-hidden ${
+                            tutorialStep >= s.step 
+                              ? "bg-primary shadow-[0_0_8px_rgba(37,99,235,0.3)]" 
+                              : "bg-surface2 border border-border/50"
+                          }`}>
+                            {tutorialStep === s.step && tutorialAutoplay && (
+                              <span 
+                                className="absolute top-0 left-0 h-full bg-violet-500 rounded-full"
+                                style={{ animation: 'barProgress 3.8s linear forwards' }}
+                              />
+                            )}
+                          </div>
+                          <span className={`text-[10px] uppercase tracking-wider transition-colors ${
+                            tutorialStep === s.step 
+                              ? "text-primary font-black scale-105" 
+                              : "text-muted hover:text-fg font-bold"
+                          }`}>
+                            {s.label}
+                          </span>
+                        </button>
+                      ))}
                     </div>
 
-                    {/* Active call HUD indicator */}
-                    <div className="absolute bottom-[10%] inset-x-0 flex flex-col items-center justify-center space-y-2 z-20">
-                      <div className="inline-flex items-center gap-2 bg-success/5 border border-success/15 px-3.5 py-2 rounded-2xl">
-                        <svg className="h-3.5 w-3.5 text-success animate-pulse shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                        </svg>
-                        <span className="text-[9px] font-black text-success uppercase tracking-wider leading-none">
-                          Secure In-App Room • 100% Anonymous
-                        </span>
-                      </div>
-                      
-                      {/* Simulated Voice wave indicator */}
-                      <div className="flex gap-1 items-end h-4 pt-1">
-                        <span className="w-0.5 h-2 bg-primary/60 rounded-full animate-pulse" />
-                        <span className="w-0.5 h-4.5 bg-primary/85 rounded-full animate-pulse" style={{ animationDelay: '0.1s' }} />
-                        <span className="w-0.5 h-3 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
-                        <span className="w-0.5 h-3.5 bg-primary/70 rounded-full animate-pulse" style={{ animationDelay: '0.35s' }} />
-                        <span className="w-0.5 h-2 bg-primary/50 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
-                      </div>
-                    </div>
+                    {/* Role Content Switcher Panel */}
+                    <div className="min-h-[310px] flex flex-col justify-between text-left">
 
+                      {/* ----------------- STUDENT PATH ----------------- */}
+                      {tutorialRole === "student" && (
+                        <>
+                          {/* Step 1: Wallet Credits */}
+                          {tutorialStep === 1 && (
+                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
+                              <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-1">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+                                  Student / Step 01
+                                </span>
+                                <h3 className="text-lg font-black text-fg mt-1">Get Session Credits</h3>
+                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">Load credits to your wallet. You only use credits for calls you book, with simple refundable options.</p>
+                              </div>
+
+                              <div className="my-5 p-4 rounded-2xl border border-border bg-surface2 flex items-center justify-between shadow-sm">
+                                <div className="flex items-center gap-3">
+                                  <div className="custom-coin-spin h-11 w-11 rounded-2xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shadow-sm">
+                                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 033 3z" /></svg>
+                                  </div>
+                                  <div>
+                                    <div className="text-[10px] font-black text-muted uppercase tracking-wider">Wallet Balance</div>
+                                    <div className="text-base font-black text-fg flex items-center gap-1.5">
+                                      10 Credits
+                                      <span className="text-[9px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">1 Call = 1 Credit</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <span className="text-[10px] font-black text-success bg-success/10 border border-success/30 px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+                                  ✓ Added
+                                </span>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setTutorialStep(2);
+                                  setTutorialAutoplay(false);
+                                }}
+                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
+                              >
+                                Find Seniors next
+                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Step 2: Choose Senior */}
+                          {tutorialStep === 2 && (
+                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
+                              <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-1">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+                                  Student / Step 02
+                                </span>
+                                <h3 className="text-lg font-black text-fg mt-1">Choose Verified Senior</h3>
+                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">Filter mentors from engineering, management, and arts colleges across India based on your target branch or queries.</p>
+                              </div>
+
+                              {/* Senior profile mockup */}
+                              <div className="my-4 p-4 rounded-2xl border border-border bg-surface2 flex gap-3.5 shadow-sm">
+                                <div className="relative shrink-0">
+                                  <div className="h-11 w-11 rounded-2xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center text-xs font-black shadow-sm">
+                                    VS
+                                  </div>
+                                  <span className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-success border-2 border-surface shadow-sm" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs font-black text-fg flex items-center gap-1">
+                                      Verified Senior
+                                      <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                                    </span>
+                                    <span className="text-[10px] font-black text-warning bg-warning/10 px-2 py-0.5 rounded-full border border-warning/20">★ 4.9 (42)</span>
+                                  </div>
+
+                                  <div className="flex gap-1.5 mt-2 flex-wrap">
+                                    <span className="text-[9px] font-black uppercase bg-primary/10 text-primary border border-primary/20 px-2.5 py-0.5 rounded-md">Placement scene</span>
+                                    <span className="text-[9px] font-black uppercase bg-success/10 text-success border border-success/20 px-2.5 py-0.5 rounded-md">Branch change</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setTutorialStep(3);
+                                  setTutorialAutoplay(false);
+                                }}
+                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
+                              >
+                                Join Video Call
+                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Step 3: Anonymous In-App Call */}
+                          {tutorialStep === 3 && (
+                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
+                              <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-1">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+                                  Student / Step 03
+                                </span>
+                                <h3 className="text-lg font-black text-fg mt-1">1:1 Anonymous Video Call</h3>
+                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">Ask questions face-to-face in our secure video call framework. No contact numbers or personal IDs are exposed.</p>
+                              </div>
+
+                              {/* Interactive Call Panel Mock */}
+                              <div className="my-4 p-3.5 rounded-2xl border border-border bg-surface2 flex flex-col items-center justify-center h-[115px] relative overflow-hidden shadow-sm">
+                                <div className="flex items-center gap-2 z-10">
+                                  <span className="custom-audio-wave w-1 bg-primary rounded-full" style={{ animationDelay: '0.1s' }} />
+                                  <span className="custom-audio-wave w-1 bg-accent rounded-full h-4" style={{ animationDelay: '0.3s' }} />
+                                  <span className="custom-audio-wave w-1 bg-primary rounded-full h-7" style={{ animationDelay: '0.5s' }} />
+                                  <span className="custom-audio-wave w-1 bg-accent rounded-full h-4" style={{ animationDelay: '0.2s' }} />
+                                  <span className="custom-audio-wave w-1 bg-primary rounded-full" style={{ animationDelay: '0.4s' }} />
+                                </div>
+                                <div className="absolute bottom-2.5 left-3.5 text-[9px] font-black text-muted uppercase tracking-wider flex items-center gap-1.5">
+                                  <span className="h-2 w-2 rounded-full bg-success animate-pulse shadow-sm" />
+                                  Encrypted HD Call Connected
+                                </div>
+                                <div className="absolute bottom-2.5 right-3.5 text-[9px] font-black text-fg bg-surface px-2.5 py-0.5 rounded-md border border-border shadow-xs">
+                                  03:45 Min
+                                </div>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setTutorialStep(4);
+                                  setTutorialAutoplay(false);
+                                }}
+                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
+                              >
+                                Finish Call
+                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Step 4: Success Party */}
+                          {tutorialStep === 4 && (
+                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
+                              <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-success flex items-center gap-1">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-success animate-ping" />
+                                  Student / Step 04
+                                </span>
+                                <h3 className="text-lg font-black text-fg mt-1">Clarity Unlocked!</h3>
+                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">You now have authentic insider insights, placement facts, and the real perspective to choose your target college path.</p>
+                              </div>
+
+                              <div className="my-3 flex flex-col items-center justify-center gap-2">
+                                <div className="custom-trophy-bounce h-16 w-16 rounded-full bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500 flex items-center justify-center shadow-[0_0_30px_rgba(251,191,36,0.4)] relative">
+                                  <span className="absolute inset-0 rounded-full bg-amber-400/20 animate-ping" />
+                                  <span className="absolute inset-[-6px] rounded-full border-2 border-amber-400/30 animate-[spin_4s_linear_infinite]" />
+                                  <svg className="h-8 w-8 text-white drop-shadow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15c-3.314 0-6-2.686-6-6V4h12v5c0 3.314-2.686 6-6 6zm0 0v4m-3 1h6M9 4H5v3c0 1.657 1.343 3 3 3m10-6h-4v3c0 1.657-1.343 3-3 3" />
+                                  </svg>
+                                </div>
+                                <span className="text-[10px] font-black text-warning bg-warning/10 px-3 py-1 rounded-full border border-warning/20 uppercase tracking-widest">
+                                  Confidence Level: Unlocked
+                                </span>
+                              </div>
+
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setTutorialRole("senior");
+                                    setTutorialStep(1);
+                                    setTutorialAutoplay(true);
+                                  }}
+                                  className="px-4 py-3.5 rounded-2xl border border-border bg-surface text-fg hover:bg-surface2 font-black text-xs uppercase tracking-wider transition-all cursor-pointer shadow-sm"
+                                >
+                                  Senior Path
+                                </button>
+                                <Link to="/explore" className="flex-1">
+                                  <button
+                                    type="button"
+                                    className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
+                                  >
+                                    Find Your Senior
+                                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                                  </button>
+                                </Link>
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
+
+                      {/* ----------------- SENIOR PATH ----------------- */}
+                      {tutorialRole === "senior" && (
+                        <>
+                          {/* Step 1: Set Available Slots */}
+                          {tutorialStep === 1 && (
+                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
+                              <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-1">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+                                  Senior / Step 01
+                                </span>
+                                <h3 className="text-lg font-black text-fg mt-1">Schedule Available Slots</h3>
+                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">Create available time slots on your personalized dashboard that match your study and exam schedule.</p>
+                              </div>
+
+                              <div className="my-5 p-4 rounded-2xl border border-border bg-surface2 flex flex-col gap-2.5 shadow-sm">
+                                <div className="text-[10px] font-black text-muted uppercase tracking-wider flex items-center gap-1.5">
+                                  <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                  Scheduled slots (IST)
+                                </div>
+                                <div className="flex gap-2">
+                                  <span className="px-3 py-1.5 rounded-xl border border-primary/20 bg-primary/10 text-primary text-[10px] font-black shadow-xs flex items-center gap-1">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                                    6:30 PM (Today)
+                                  </span>
+                                  <span className="px-3 py-1.5 rounded-xl border border-border bg-surface text-muted text-[10px] font-black">8:00 PM (Tomorrow)</span>
+                                </div>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setTutorialStep(2);
+                                  setTutorialAutoplay(false);
+                                }}
+                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
+                              >
+                                View Booking Flow
+                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Step 2: Get Booked */}
+                          {tutorialStep === 2 && (
+                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
+                              <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-1">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+                                  Senior / Step 02
+                                </span>
+                                <h3 className="text-lg font-black text-fg mt-1">Get Student Bookings</h3>
+                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">Students browse your branch, college name, and expertise domains to book a live, anonymous session.</p>
+                              </div>
+
+                              {/* Booking Mock Card */}
+                              <div className="my-4 p-4 rounded-2xl border border-border bg-surface2 flex gap-3 items-center justify-between shadow-sm">
+                                <div className="flex items-center gap-2.5">
+                                  <div className="h-8 w-8 rounded-full bg-success/10 text-success border border-success/20 flex items-center justify-center text-xs font-black">✓</div>
+                                  <div>
+                                    <div className="text-xs font-black text-fg">Anonymous Student Booking</div>
+                                    <div className="text-[10px] text-muted font-bold mt-0.5">Topic: CSE Placement Reality</div>
+                                  </div>
+                                </div>
+                                <span className="text-[9px] font-black uppercase bg-success/10 text-success border border-success/20 px-2.5 py-1 rounded-md shadow-xs">Confirmed</span>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setTutorialStep(3);
+                                  setTutorialAutoplay(false);
+                                }}
+                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
+                              >
+                                Join Video Call
+                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Step 3: Share Guidance */}
+                          {tutorialStep === 3 && (
+                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
+                              <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-1">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+                                  Senior / Step 03
+                                </span>
+                                <h3 className="text-lg font-black text-fg mt-1">Share Honest Guidance</h3>
+                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">Join the secure call right inside your browser window. Guide juniors who need advice regarding campus life or branches.</p>
+                              </div>
+
+                              {/* Interactive Call Panel Mock */}
+                              <div className="my-4 p-3.5 rounded-2xl border border-border bg-surface2 flex flex-col items-center justify-center h-[115px] relative overflow-hidden shadow-sm">
+                                <div className="flex items-center gap-2 z-10">
+                                  <span className="custom-audio-wave w-1 bg-success rounded-full" style={{ animationDelay: '0.1s' }} />
+                                  <span className="custom-audio-wave w-1 bg-accent rounded-full h-4" style={{ animationDelay: '0.3s' }} />
+                                  <span className="custom-audio-wave w-1 bg-success rounded-full h-7" style={{ animationDelay: '0.5s' }} />
+                                  <span className="custom-audio-wave w-1 bg-accent rounded-full h-4" style={{ animationDelay: '0.2s' }} />
+                                  <span className="custom-audio-wave w-1 bg-success rounded-full" style={{ animationDelay: '0.4s' }} />
+                                </div>
+                                <div className="absolute bottom-2.5 left-3.5 text-[9px] font-black text-muted uppercase tracking-wider flex items-center gap-1.5">
+                                  <span className="h-2 w-2 rounded-full bg-success animate-pulse shadow-sm" />
+                                  Sharing Campus Insights
+                                </div>
+                                <div className="absolute bottom-2.5 right-3.5 text-[9px] font-black text-fg bg-surface px-2.5 py-0.5 rounded-md border border-border shadow-xs">
+                                  06:18 Min
+                                </div>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setTutorialStep(4);
+                                  setTutorialAutoplay(false);
+                                }}
+                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
+                              >
+                                View Milestones
+                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Step 4: Success & Senior Earnings */}
+                          {tutorialStep === 4 && (
+                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
+                              <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-success flex items-center gap-1">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-success animate-ping" />
+                                  Senior / Step 04
+                                </span>
+                                <h3 className="text-lg font-black text-fg mt-1">Impact & Senior Earnings</h3>
+                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">Earn payouts for completed sessions, build your reputation, gain recommendations, and guide the next generation.</p>
+                              </div>
+
+                              <div className="my-4 flex justify-around">
+                                <div className="text-center flex flex-col items-center gap-1.5">
+                                  <svg className="w-5 h-5 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+                                  <div className="text-[10px] font-black text-muted uppercase">Top Rated</div>
+                                </div>
+                                <div className="text-center flex flex-col items-center gap-1.5">
+                                  <svg className="w-5 h-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                  <div className="text-[10px] font-black text-success uppercase">Senior Earnings</div>
+                                </div>
+                                <div className="text-center flex flex-col items-center gap-1.5">
+                                  <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 025.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                  <div className="text-[10px] font-black text-muted uppercase">Network</div>
+                                </div>
+                              </div>
+
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setTutorialStep(1);
+                                    setTutorialAutoplay(true);
+                                  }}
+                                  className="px-4 py-3.5 rounded-2xl border border-border bg-surface text-fg hover:bg-surface2 font-black text-xs uppercase tracking-wider transition-all cursor-pointer shadow-sm"
+                                >
+                                  Loop Again
+                                </button>
+                                <Link to="/become-mentor" className="flex-1">
+                                  <button
+                                    type="button"
+                                    className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
+                                  >
+                                    Apply As Senior
+                                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                                  </button>
+                                </Link>
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
