@@ -191,10 +191,13 @@ function Profile() {
     load();
   }, [id]);
 
+  const [bookingNotes, setBookingNotes] = useState("");
+
   const triggerBooking = (slotId) => {
     if (!user) return navigate("/login");
     if (user.callCredits === 0) return navigate("/buy-credits");
     setSlotToBook(slotId);
+    setBookingNotes("");
     setConfirmOpen(true);
   };
 
@@ -202,15 +205,16 @@ function Profile() {
     if (!slotToBook) return;
     try {
       setBookingSlot(slotToBook);
+      await api.post("/bookings", { slotId: slotToBook, notes: bookingNotes });
       setConfirmOpen(false);
-      await api.post("/bookings", { slotId: slotToBook });
-      showSuccess("Session booked! Find joining links in your dashboard.");
+      showSuccess("Session booked! Find joining links and prep notes in your dashboard.");
       setSlots(prev => prev.filter(s => s._id !== slotToBook));
     } catch (err) {
       showError(err?.response?.data?.message || "Booking failed");
     } finally {
       setBookingSlot(null);
       setSlotToBook(null);
+      setBookingNotes("");
     }
   };  const gradient = getGradient(mentor?.domain, mentor?.name || "");
   const initials = mentor?.name?.trim().split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase() || "?";
@@ -772,16 +776,94 @@ function Profile() {
         </div>
       )}
       
-      <ConfirmModal
-        isOpen={confirmOpen}
-        title="Confirm Booking"
-        message="Are you sure you want to book this session? 1 Credit will be deducted from your wallet."
-        confirmText="Book Slot"
-        cancelText="Cancel"
-        onConfirm={handleConfirmBooking}
-        onCancel={() => { setConfirmOpen(false); setSlotToBook(null); }}
-        loading={!!bookingSlot}
-      />
+      {/* Rich Booking & Prep Notes Modal */}
+      {confirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+          <div className="bg-surface border border-border rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl space-y-5 animate-scale-in">
+            <div className="flex items-center justify-between border-b border-border/80 pb-4">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Confirm Booking</span>
+                <h3 className="text-xl font-black text-fg mt-0.5">Session with {mentor?.name}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setConfirmOpen(false); setSlotToBook(null); setBookingNotes(""); }}
+                className="h-8 w-8 rounded-full bg-surface2 border border-border text-muted hover:text-fg flex items-center justify-center font-bold text-xs"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-surface2 border border-border/70 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-black text-xs">
+                  1C
+                </div>
+                <div>
+                  <div className="text-xs font-black text-fg">1 Session Credit</div>
+                  <div className="text-[10px] font-bold text-muted">Deducted from wallet on confirmation</div>
+                </div>
+              </div>
+              <span className="text-[10px] font-black uppercase text-success bg-success/15 border border-success/30 px-2.5 py-1 rounded-full">Available</span>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-black text-fg flex items-center justify-between">
+                <span>Preparation Notes & Questions (Optional)</span>
+                <span className="text-[10px] font-bold text-muted">{bookingNotes.length}/2000</span>
+              </label>
+              <textarea
+                rows={3}
+                value={bookingNotes}
+                onChange={(e) => setBookingNotes(e.target.value)}
+                placeholder="Write your questions or topics here (e.g. CSE Placement reality, Branch change rules, Hostel options)..."
+                className="w-full p-3.5 rounded-2xl border border-border bg-surface2/60 outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary text-xs font-bold text-fg placeholder:text-muted/60"
+              />
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {[
+                  "🎓 Placement Stats",
+                  "📚 Branch Change Rules",
+                  "💼 Internships",
+                  "🏠 Campus & Hostel Life",
+                  "💡 Exam Preparation"
+                ].map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    onClick={() => {
+                      if (!bookingNotes.includes(prompt)) {
+                        setBookingNotes(prev => (prev ? `${prev}\n• ${prompt}` : `• ${prompt}`));
+                      }
+                    }}
+                    className="text-[9px] font-black uppercase px-2.5 py-1 rounded-lg bg-surface2 border border-border text-muted hover:text-primary hover:border-primary/30 transition-all"
+                  >
+                    + {prompt}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-border/80">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => { setConfirmOpen(false); setSlotToBook(null); setBookingNotes(""); }}
+                className="rounded-xl px-5 font-bold text-xs"
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleConfirmBooking}
+                loading={!!bookingSlot}
+                className="rounded-xl px-6 font-black text-xs shadow-md"
+              >
+                Confirm Booking (1 Credit)
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <RequestSlotModal
         isOpen={requestModalOpen}

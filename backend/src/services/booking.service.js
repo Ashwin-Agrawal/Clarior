@@ -9,7 +9,7 @@ class BookingService {
   /**
    * Create a new booking with atomic operations
    */
-  static async createBooking(studentId, slotId) {
+  static async createBooking(studentId, slotId, initialNotes = "") {
     const User = require("../models/User");
     const Slot = require("../models/Slots");
     const Booking = require("../models/Booking");
@@ -69,6 +69,7 @@ class BookingService {
             startTime: start,
             endTime: end,
             meetLink: null,
+            notes: typeof initialNotes === "string" ? initialNotes.trim().slice(0, 2000) : "",
           },
         ],
         { session }

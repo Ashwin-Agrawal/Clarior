@@ -314,24 +314,36 @@ function Dashboard() {
     };
   }, [bookings, currentTime]);
 
-  // Prep Notes Workspace State & Logic
   const [notesText, setNotesText] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
   const [activePrepBookingId, setActivePrepBookingId] = useState(null);
+  const [copiedNotes, setCopiedNotes] = useState(false);
 
+  // Default to soonest booking if available
   const soonestBooking = upcoming?.[0];
 
   useEffect(() => {
-    if (soonestBooking) {
-      if (activePrepBookingId !== soonestBooking._id) {
-        setActivePrepBookingId(soonestBooking._id);
-        setNotesText(soonestBooking.notes || "");
+    if (upcoming && upcoming.length > 0) {
+      const target = upcoming.find((b) => b._id === activePrepBookingId) || upcoming[0];
+      if (target._id !== activePrepBookingId) {
+        setActivePrepBookingId(target._id);
+        setNotesText(target.notes || "");
       }
     } else {
       setActivePrepBookingId(null);
       setNotesText("");
     }
-  }, [soonestBooking, activePrepBookingId]);
+  }, [upcoming, activePrepBookingId]);
+
+  const activePrepBooking = useMemo(() => {
+    return upcoming?.find((b) => b._id === activePrepBookingId) || soonestBooking;
+  }, [upcoming, activePrepBookingId, soonestBooking]);
+
+  const handleSelectPrepBooking = (bookingId) => {
+    setActivePrepBookingId(bookingId);
+    const target = upcoming?.find((b) => b._id === bookingId);
+    setNotesText(target?.notes || "");
+  };
 
   const handleSaveNotes = async () => {
     if (!activePrepBookingId) return;
@@ -606,55 +618,131 @@ function Dashboard() {
         </div>
 
         {/* Prep Notes Workspace */}
-        {soonestBooking && (
+        {upcoming && upcoming.length > 0 && activePrepBooking && (
           <section className="animate-fade-up">
             <Card className="p-6 md:p-8 border-t-4 border-t-primary shadow-soft hover:shadow-lift transition-all relative overflow-hidden group">
               <div className="absolute -right-16 -top-16 h-36 w-36 bg-primary/5 blur-2xl pointer-events-none rounded-full" />
               <div className="flex flex-col md:flex-row gap-6 justify-between">
-                <div className="space-y-3 flex-1">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-[0.2em] text-primary">
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary live-pulse-active" />
-                    Next Call Prep Workspace
+                <div className="space-y-4 flex-1">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary live-pulse-active" />
+                      Session Prep Workspace
+                    </div>
+
+                    {/* Session Selector Dropdown if multiple upcoming calls */}
+                    {upcoming.length > 1 && (
+                      <select
+                        value={activePrepBookingId || ""}
+                        onChange={(e) => handleSelectPrepBooking(e.target.value)}
+                        className="px-3 py-1.5 rounded-xl border border-border bg-surface text-xs font-bold text-fg outline-none focus:border-primary cursor-pointer"
+                      >
+                        {upcoming.map((b) => (
+                          <option key={b._id} value={b._id}>
+                            With {user?.role === "student" ? b.senior?.name : b.student?.name} ({new Date(b.startTime).toLocaleDateString("en-IN", { month: "short", day: "numeric" })})
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </div>
+
                   <h3 className="text-xl font-black text-fg tracking-tight">
-                    Session Prep Notes with {user?.role === "student" ? soonestBooking.senior?.name : soonestBooking.student?.name}
+                    Session Prep Notes with {user?.role === "student" ? activePrepBooking.senior?.name : activePrepBooking.student?.name}
                   </h3>
+
                   <div className="flex flex-wrap items-center gap-4 text-xs font-bold text-muted uppercase tracking-wider">
                     <span className="flex items-center gap-1.5">
                       <svg className="w-3.5 h-3.5 text-primary shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
-                      {formatDateTime(soonestBooking.startTime)}
+                      {formatDateTime(activePrepBooking.startTime)}
                     </span>
                     <span className="flex items-center gap-1.5">
                       <svg className="w-3.5 h-3.5 text-accent shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                       20 min call
                     </span>
                   </div>
+
                   <p className="text-xs text-muted max-w-xl leading-relaxed">
-                    Write down any questions you want to ask, links to your LinkedIn, or career concerns below. These notes will be saved and visible to both parties during the live call window.
+                    {user?.role === "student"
+                      ? "Write down any questions you want to ask, links to your LinkedIn, or career concerns below. These notes will be saved and visible to the senior during the call."
+                      : "These are the preparation notes and questions provided by the student for this upcoming session."}
                   </p>
+
+                  {/* Student Prompt Chips */}
+                  {user?.role === "student" && (
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {[
+                        "🎓 Placement Stats",
+                        "📚 Branch Change Rules",
+                        "💼 Internships",
+                        "🏠 Campus & Hostel Life",
+                        "💡 Exam Prep"
+                      ].map((prompt) => (
+                        <button
+                          key={prompt}
+                          type="button"
+                          onClick={() => {
+                            if (!notesText.includes(prompt)) {
+                              setNotesText(prev => (prev ? `${prev}\n• ${prompt}` : `• ${prompt}`));
+                            }
+                          }}
+                          className="text-[9px] font-black uppercase px-2.5 py-1 rounded-lg bg-surface2 border border-border text-muted hover:text-primary hover:border-primary/30 transition-all cursor-pointer"
+                        >
+                          + {prompt}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 
                 <div className="w-full md:w-[380px] space-y-3">
-                  <textarea
-                    rows={4}
-                    placeholder="E.g., What are the placement statistics for CSE? How difficult is it to maintain a 9+ CGPA here?"
-                    value={notesText}
-                    onChange={(e) => setNotesText(e.target.value)}
-                    className="w-full p-4 rounded-2xl border border-border bg-surface2/60 outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-xs font-bold text-fg hover:border-primary/25 placeholder:text-muted/60"
-                  />
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase text-muted tracking-wider">
-                      {notesText.length} characters
-                    </span>
-                    <Button
-                      size="sm"
-                      onClick={handleSaveNotes}
-                      loading={savingNotes}
-                      className="rounded-xl font-black px-5 py-2 cursor-pointer text-xs"
-                    >
-                      Save Prep Notes
-                    </Button>
-                  </div>
+                  {user?.role === "student" ? (
+                    <>
+                      <textarea
+                        rows={4}
+                        placeholder="E.g., What are the placement statistics for CSE? How difficult is it to maintain a 9+ CGPA here?"
+                        value={notesText}
+                        onChange={(e) => setNotesText(e.target.value)}
+                        className="w-full p-4 rounded-2xl border border-border bg-surface2/60 outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-xs font-bold text-fg hover:border-primary/25 placeholder:text-muted/60"
+                      />
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black uppercase text-muted tracking-wider">
+                          {notesText.length}/2000 characters
+                        </span>
+                        <Button
+                          size="sm"
+                          onClick={handleSaveNotes}
+                          loading={savingNotes}
+                          className="rounded-xl font-black px-5 py-2 cursor-pointer text-xs"
+                        >
+                          Save Prep Notes
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="p-4 rounded-2xl border border-border bg-surface2/60 text-xs font-bold text-fg leading-relaxed min-h-[110px] whitespace-pre-wrap">
+                        {activePrepBooking.notes ? activePrepBooking.notes : (
+                          <span className="text-muted/60 italic select-none">No preparation notes written by student yet.</span>
+                        )}
+                      </div>
+                      {activePrepBooking.notes && (
+                        <div className="flex justify-end">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => {
+                              navigator.clipboard.writeText(activePrepBooking.notes);
+                              setCopiedNotes(true);
+                              setTimeout(() => setCopiedNotes(false), 2000);
+                            }}
+                            className="rounded-xl font-black px-4 py-1.5 text-xs cursor-pointer"
+                          >
+                            {copiedNotes ? "✓ Copied!" : "📋 Copy Notes"}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </Card>

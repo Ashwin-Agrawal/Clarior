@@ -891,9 +891,31 @@ function Session() {
                       onChange={(e) => setSessionNotes(e.target.value)}
                       className="w-full p-4 rounded-2xl border border-border bg-surface2/60 outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-xs font-bold text-fg hover:border-primary/25 placeholder:text-muted/60"
                     />
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {[
+                        "🎓 Placement Stats",
+                        "📚 Branch Change Rules",
+                        "💼 Internships",
+                        "🏠 Campus & Hostel Life",
+                        "💡 Exam Prep"
+                      ].map((prompt) => (
+                        <button
+                          key={prompt}
+                          type="button"
+                          onClick={() => {
+                            if (!sessionNotes.includes(prompt)) {
+                              setSessionNotes(prev => (prev ? `${prev}\n• ${prompt}` : `• ${prompt}`));
+                            }
+                          }}
+                          className="text-[9px] font-black uppercase px-2.5 py-1 rounded-lg bg-surface2 border border-border text-muted hover:text-primary hover:border-primary/30 transition-all cursor-pointer"
+                        >
+                          + {prompt}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-between pt-2 border-t border-border/60">
                       <span className="text-[10px] font-black uppercase text-muted tracking-wider">
-                        {sessionNotes.length} characters
+                        {sessionNotes.length}/2000 characters
                       </span>
                       <Button
                         size="sm"
@@ -906,9 +928,26 @@ function Session() {
                     </div>
                   </div>
                 ) : (
-                  <div className="p-4 rounded-2xl bg-surface2/60 border border-border/60 text-xs font-bold text-fg whitespace-pre-wrap leading-relaxed">
-                    {booking.notes ? booking.notes : (
-                      <span className="text-muted/65 italic select-none">No preparation notes written by student yet.</span>
+                  <div className="space-y-3">
+                    <div className="p-4 rounded-2xl bg-surface2/60 border border-border/60 text-xs font-bold text-fg whitespace-pre-wrap leading-relaxed min-h-[100px]">
+                      {booking.notes ? booking.notes : (
+                        <span className="text-muted/65 italic select-none">No preparation notes written by student yet.</span>
+                      )}
+                    </div>
+                    {booking.notes && (
+                      <div className="flex justify-end">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => {
+                            navigator.clipboard.writeText(booking.notes);
+                            showSuccess("Notes copied to clipboard!");
+                          }}
+                          className="rounded-xl font-black px-4 py-1.5 text-xs cursor-pointer"
+                        >
+                          📋 Copy Notes
+                        </Button>
+                      </div>
                     )}
                   </div>
                 )}

@@ -21,9 +21,9 @@ const ERROR_MESSAGES = {
 // 🎓 CREATE BOOKING
 exports.createBooking = async (req, res) => {
   try {
-    const { slotId } = req.body;
+    const { slotId, notes } = req.body;
 
-    const booking = await BookingService.createBooking(req.user.id, slotId);
+    const booking = await BookingService.createBooking(req.user.id, slotId, notes);
 
     return sendSuccess(res, "Booking confirmed successfully", { booking }, 201);
   } catch (error) {
@@ -359,13 +359,14 @@ exports.updateBookingNotes = async (req, res) => {
 
     const userId = req.user.id;
     if (booking.student.toString() !== userId && booking.senior.toString() !== userId) {
-      return res.status(403).json({ message: "Not authorized" });
+      return res.status(403).json({ message: "Not authorized to update notes for this session" });
     }
 
-    booking.notes = notes || "";
+    const cleanNotes = typeof notes === "string" ? notes.trim().slice(0, 2000) : "";
+    booking.notes = cleanNotes;
     await booking.save();
 
-    return res.json({ message: "Notes updated successfully", booking });
+    return res.json({ message: "Preparation notes updated successfully", booking });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

@@ -56,6 +56,34 @@ function MyBookings() {
   const [deletingId, setDeletingId] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  
+  // Notes Modal State
+  const [notesModalBooking, setNotesModalBooking] = useState(null);
+  const [notesInput, setNotesInput] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
+  const [copiedNotes, setCopiedNotes] = useState(false);
+
+  const openNotesModal = (b) => {
+    setNotesModalBooking(b);
+    setNotesInput(b.notes || "");
+  };
+
+  const handleSaveNotes = async () => {
+    if (!notesModalBooking) return;
+    try {
+      setSavingNotes(true);
+      await api.patch(`/bookings/${notesModalBooking._id}/notes`, { notes: notesInput });
+      showSuccess("Preparation notes saved!");
+      setBookings((prev) =>
+        prev.map((b) => (b._id === notesModalBooking._id ? { ...b, notes: notesInput } : b))
+      );
+      setNotesModalBooking(null);
+    } catch (err) {
+      showError(err?.response?.data?.message || "Failed to save notes");
+    } finally {
+      setSavingNotes(false);
+    }
+  };
 
   const sorted = useMemo(() => {
     return [...bookings].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
@@ -230,6 +258,10 @@ function MyBookings() {
                     <Button className="w-full rounded-2xl" variant="secondary">View Session</Button>
                   </Link>
 
+                  <Button className="w-full rounded-2xl" variant="secondary" onClick={() => openNotesModal(b)}>
+                    📝 Prep Notes
+                  </Button>
+
                   {user?.role === "student" && b.status === "confirmed" && !b.isCallStarted && (
                     !b.isStudentStarted ? (
                       <Button className="w-full rounded-2xl" variant="primary" onClick={() => startCall(b._id)}>
@@ -291,6 +323,106 @@ function MyBookings() {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Prep Notes Modal */}
+      {notesModalBooking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+          <div className="bg-surface border border-border rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl space-y-5 animate-scale-in">
+            <div className="flex items-center justify-between border-b border-border/80 pb-4">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Preparation Workspace</span>
+                <h3 className="text-xl font-black text-fg mt-0.5">
+                  Notes with {user?.role === "student" ? notesModalBooking.senior?.name : notesModalBooking.student?.name}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setNotesModalBooking(null)}
+                className="h-8 w-8 rounded-full bg-surface2 border border-border text-muted hover:text-fg flex items-center justify-center font-bold text-xs cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {user?.role === "student" ? (
+              <div className="space-y-3">
+                <p className="text-xs text-muted leading-relaxed">
+                  Write down any questions, topics, or background context you want the senior to review before or during the call.
+                </p>
+                <textarea
+                  rows={5}
+                  value={notesInput}
+                  onChange={(e) => setNotesInput(e.target.value)}
+                  placeholder="E.g., What are the placement statistics for CSE? How difficult is it to maintain a 9+ CGPA here?"
+                  className="w-full p-4 rounded-2xl border border-border bg-surface2/60 outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-xs font-bold text-fg placeholder:text-muted/60"
+                />
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {[
+                    "🎓 Placement Stats",
+                    "📚 Branch Change Rules",
+                    "💼 Internships",
+                    "🏠 Campus & Hostel Life",
+                    "💡 Exam Prep"
+                  ].map((prompt) => (
+                    <button
+                      key={prompt}
+                      type="button"
+                      onClick={() => {
+                        if (!notesInput.includes(prompt)) {
+                          setNotesInput(prev => (prev ? `${prev}\n• ${prompt}` : `• ${prompt}`));
+                        }
+                      }}
+                      className="text-[9px] font-black uppercase px-2.5 py-1 rounded-lg bg-surface2 border border-border text-muted hover:text-primary hover:border-primary/30 transition-all cursor-pointer"
+                    >
+                      + {prompt}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between pt-3 border-t border-border/80">
+                  <span className="text-[10px] font-black uppercase text-muted tracking-wider">
+                    {notesInput.length}/2000 characters
+                  </span>
+                  <Button
+                    size="sm"
+                    onClick={handleSaveNotes}
+                    loading={savingNotes}
+                    className="rounded-xl font-black px-6 py-2 cursor-pointer text-xs"
+                  >
+                    Save Notes
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-xs text-muted leading-relaxed">
+                  Student's prep notes and questions for this session:
+                </p>
+                <div className="p-4 rounded-2xl border border-border bg-surface2/60 text-xs font-bold text-fg leading-relaxed min-h-[120px] whitespace-pre-wrap">
+                  {notesModalBooking.notes ? notesModalBooking.notes : (
+                    <span className="text-muted/60 italic select-none">No preparation notes written by student yet.</span>
+                  )}
+                </div>
+                {notesModalBooking.notes && (
+                  <div className="flex justify-end">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => {
+                        navigator.clipboard.writeText(notesModalBooking.notes);
+                        setCopiedNotes(true);
+                        setTimeout(() => setCopiedNotes(false), 2000);
+                      }}
+                      className="rounded-xl font-black px-4 py-1.5 text-xs cursor-pointer"
+                    >
+                      {copiedNotes ? "✓ Copied!" : "📋 Copy Notes"}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
