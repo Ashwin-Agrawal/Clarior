@@ -187,7 +187,10 @@ function AppShell({ title, subtitle, children }) {
           </div>
         </div>
 
-        <div className="min-h-screen bg-bg pb-20 lg:pb-0">
+        <div className="min-h-screen bg-bg relative overflow-hidden pb-20 lg:pb-0">
+          {/* Ambient Background Glow Orbs */}
+          <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-1/3 left-1/4 w-80 h-80 rounded-full bg-accent/5 blur-[100px] pointer-events-none" />
           <SiteContainer className="py-6 lg:py-8">
             {(title || subtitle) && (
               <div className="mb-8 rounded-2xl border border-border/70 bg-surface p-5 shadow-soft ">

@@ -478,9 +478,9 @@ function Profile() {
                         {/* Recommendation Tags */}
                         {reviews.length > 0 && (
                           <div className="mt-6 pt-5 border-t border-border/30">
-                            <span className="text-[10px] font-black uppercase text-muted tracking-wider block mb-3">Student Tags & Highlights</span>
+                            <span className="text-[10px] font-black uppercase text-muted tracking-wider block mb-3">Verified Student Highlights</span>
                             <div className="flex flex-wrap gap-2">
-                              {["🎓 Career Guidance", "📝 Admission Tips", "💻 Placement Prep", "💬 Extremely Friendly"].map((tag, idx) => (
+                              {["• Career Guidance", "• Admission Tips", "• Placement Insights", "• Highly Recommended"].map((tag, idx) => (
                                 <span key={idx} className="inline-flex items-center rounded-xl bg-primary/8 border border-primary/15 text-primary text-[10px] font-black uppercase tracking-wider px-3.5 py-1.5 shadow-sm">
                                   {tag}
                                 </span>
@@ -494,8 +494,8 @@ function Profile() {
                       <div className="space-y-4">
                         {reviews.length === 0 ? (
                           <Card className="p-8 text-center border-dashed border-2 border-border/70 bg-surface/40 backdrop-blur-sm">
-                            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary text-xl">
-                              ⭐
+                            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                             </div>
                             <h4 className="font-black text-fg text-sm uppercase tracking-wider">No reviews yet</h4>
                             <p className="text-xs text-muted mt-1 font-semibold">Be the first to share your experience after booking!</p>
@@ -508,22 +508,41 @@ function Profile() {
                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-2 border border-border text-xs font-black text-muted shadow-sm">
                                   {revInitials}
                                 </div>
-                                <div className="flex-1 space-y-1">
+                                <div className="flex-1 space-y-2">
                                   <div className="flex flex-wrap items-center justify-between gap-2">
                                     <div>
                                       <div className="font-black text-fg text-sm leading-none">{rev.student?.name || "Student"}</div>
                                       <div className="text-[10px] text-muted font-bold mt-1">{formatReviewDate(rev.createdAt)}</div>
                                     </div>
-                                    <div className="flex text-warning gap-0.5 bg-warning/5 px-2 py-1 rounded-lg border border-warning/10">
-                                      {[1,2,3,4,5].map(i => (
-                                        <svg key={i} width="10" height="10" fill={i <= rev.rating ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                        </svg>
-                                      ))}
+                                    <div className="flex items-center gap-1.5 bg-warning/10 px-2.5 py-1 rounded-xl border border-warning/20">
+                                      <span className="text-xs font-black text-warning">{rev.rating || 5}.0</span>
+                                      <div className="flex text-warning gap-0.5">
+                                        {[1,2,3,4,5].map(i => (
+                                          <svg key={i} width="10" height="10" fill={i <= (rev.rating || 5) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                          </svg>
+                                        ))}
+                                      </div>
                                     </div>
                                   </div>
+
+                                  {/* Sub-category Rating Breakdown Pills */}
+                                  {rev.ratings && (
+                                    <div className="flex flex-wrap gap-2 pt-1">
+                                      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-lg bg-surface2 border border-border text-muted">
+                                        Communication: <strong className="text-fg">{rev.ratings.communication || rev.rating}/5</strong>
+                                      </span>
+                                      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-lg bg-surface2 border border-border text-muted">
+                                        Placements: <strong className="text-fg">{rev.ratings.placementInsights || rev.rating}/5</strong>
+                                      </span>
+                                      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-lg bg-surface2 border border-border text-muted">
+                                        Helpfulness: <strong className="text-fg">{rev.ratings.helpfulness || rev.rating}/5</strong>
+                                      </span>
+                                    </div>
+                                  )}
+
                                   {rev.comment && (
-                                    <p className="text-sm text-fg/80 leading-relaxed font-semibold italic mt-2">
+                                    <p className="text-xs text-fg/90 leading-relaxed font-semibold italic pt-1">
                                       "{rev.comment}"
                                     </p>
                                   )}
@@ -821,11 +840,11 @@ function Profile() {
               />
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {[
-                  "🎓 Placement Stats",
-                  "📚 Branch Change Rules",
-                  "💼 Internships",
-                  "🏠 Campus & Hostel Life",
-                  "💡 Exam Preparation"
+                  "Placement Stats",
+                  "Branch Change Rules",
+                  "Internships",
+                  "Campus & Hostel Life",
+                  "Exam Preparation"
                 ].map((prompt) => (
                   <button
                     key={prompt}

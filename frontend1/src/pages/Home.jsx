@@ -21,13 +21,13 @@ const motivationTips = [
   {
     title: "The best advice is often one call away.",
     text: "Get clarity from someone who already walked the path you're on right now.",
-    badge: "⚡ Insider Access",
+    badge: "Insider Access",
     tagColor: "text-primary bg-primary/10 border-primary/25 dark:text-primary"
   },
   {
     title: "Don't guess when you can ask a senior.",
     text: "Real guidance beats random internet opinions when the stakes are high.",
-    badge: "💡 Verified Experts",
+    badge: "Verified Experts",
     tagColor: "text-success bg-success/10 border-success/25 dark:text-success"
   },
 ];
@@ -1316,7 +1316,7 @@ function Home() {
                               {motivationTips[activeTip].badge}
                             </span>
                             <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface/85 text-muted border border-border/60 text-[10px] font-black uppercase tracking-wider">
-                              ⚡️ ₹69 Fixed Price
+                              ₹69 Fixed Price
                             </span>
                           </div>
 

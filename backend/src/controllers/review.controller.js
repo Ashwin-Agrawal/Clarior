@@ -6,9 +6,9 @@ const Booking = require("../models/Booking");
 // ⭐ ADD REVIEW (ONLY AFTER SESSION)
 exports.addReview = async (req, res) => {
   try {
-    const { bookingId, seniorId, rating, comment } = req.body;
+    const { bookingId, seniorId, rating, ratings, comment } = req.body;
 
-    // � Validate inputs
+    // Validate inputs
     if (!seniorId || !rating) {
       return res.status(400).json({
         success: false,
@@ -22,6 +22,12 @@ exports.addReview = async (req, res) => {
         message: "Rating must be an integer between 1 and 5"
       });
     }
+
+    const validatedRatings = {
+      communication: (ratings && typeof ratings.communication === "number" && ratings.communication >= 1 && ratings.communication <= 5) ? ratings.communication : rating,
+      placementInsights: (ratings && typeof ratings.placementInsights === "number" && ratings.placementInsights >= 1 && ratings.placementInsights <= 5) ? ratings.placementInsights : rating,
+      helpfulness: (ratings && typeof ratings.helpfulness === "number" && ratings.helpfulness >= 1 && ratings.helpfulness <= 5) ? ratings.helpfulness : rating,
+    };
 
     if (comment && typeof comment !== "string") {
       return res.status(400).json({
@@ -37,7 +43,7 @@ exports.addReview = async (req, res) => {
       });
     }
 
-    // 🔍 check senior exists
+    // Check senior exists
     const senior = await User.findById(seniorId);
     if (!senior || senior.role !== "senior") {
       return res.status(404).json({
@@ -46,7 +52,7 @@ exports.addReview = async (req, res) => {
       });
     }
 
-    // 🔒 check booking exists (ONLY AFTER COMPLETION)
+    // Check booking exists (ONLY AFTER COMPLETION)
     let booking;
     if (bookingId) {
       const mongoose = require("mongoose");
@@ -73,7 +79,7 @@ exports.addReview = async (req, res) => {
       });
     }
 
-    // ❌ prevent multiple reviews on the same booking/session
+    // Prevent multiple reviews on the same booking/session
     let existingReview;
     if (bookingId) {
       existingReview = await Review.findOne({ booking: bookingId });
@@ -91,12 +97,13 @@ exports.addReview = async (req, res) => {
       });
     }
 
-    // ⭐ create review
+    // Create review with multi-category breakdown
     const review = await Review.create({
       student: req.user.id,
       senior: seniorId,
       booking: bookingId || booking._id,
       rating,
+      ratings: validatedRatings,
       comment: comment ? comment.trim() : null,
     });
 

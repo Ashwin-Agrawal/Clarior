@@ -259,7 +259,7 @@ function MyBookings() {
                   </Link>
 
                   <Button className="w-full rounded-2xl" variant="secondary" onClick={() => openNotesModal(b)}>
-                    📝 Prep Notes
+                    Prep Notes
                   </Button>
 
                   {user?.role === "student" && b.status === "confirmed" && !b.isCallStarted && (
@@ -360,11 +360,11 @@ function MyBookings() {
                 />
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {[
-                    "🎓 Placement Stats",
-                    "📚 Branch Change Rules",
-                    "💼 Internships",
-                    "🏠 Campus & Hostel Life",
-                    "💡 Exam Prep"
+                    "Placement Stats",
+                    "Branch Change Rules",
+                    "Internships",
+                    "Campus & Hostel Life",
+                    "Exam Prep"
                   ].map((prompt) => (
                     <button
                       key={prompt}

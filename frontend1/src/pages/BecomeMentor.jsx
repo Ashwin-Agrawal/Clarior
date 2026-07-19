@@ -243,7 +243,9 @@ function BecomeMentor() {
                 </div>
 
                 <div className="p-6 rounded-3xl bg-primary/10 border border-primary/20 text-fg text-sm leading-relaxed max-w-2xl mx-auto text-left flex items-start gap-4 shadow-sm animate-scale-in">
-                  <div className="text-2xl mt-0.5 select-none">💡</div>
+                  <div className="mt-1 text-primary shrink-0">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 2.625a3.375 3.375 0 00-3.75-3.375m-3.75 3.375a3.375 3.375 0 013.75-3.375M12 3a6 6 0 00-6 6c0 1.996.974 3.76 2.474 4.846M12 3a6 6 0 016 6c0 1.996-.974 3.76-2.474 4.846M9 21h6m-3 0v-2.25"/></svg>
+                  </div>
                   <div>
                     <span className="font-extrabold block text-primary uppercase tracking-wide text-xs mb-1">Official Student Email ID Required</span>
                     Seniors must register and apply using their official college-issued student email ID. Verification will be processed exclusively through your student ID credentials.

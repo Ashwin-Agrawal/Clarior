@@ -23,6 +23,11 @@ const reviewSchema = new mongoose.Schema({
     min: 1,
     max: 5,
   },
+  ratings: {
+    communication: { type: Number, min: 1, max: 5, default: 5 },
+    placementInsights: { type: Number, min: 1, max: 5, default: 5 },
+    helpfulness: { type: Number, min: 1, max: 5, default: 5 },
+  },
   comment: String,
 },{ timestamps: true });
 

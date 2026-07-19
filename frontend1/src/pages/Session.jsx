@@ -171,6 +171,9 @@ function Session() {
   }, [stream]);
 
   const [rating, setRating] = useState(5);
+  const [communicationRating, setCommunicationRating] = useState(5);
+  const [placementInsightsRating, setPlacementInsightsRating] = useState(5);
+  const [helpfulnessRating, setHelpfulnessRating] = useState(5);
   const [comment, setComment] = useState("");
   const [reviewMsg, setReviewMsg] = useState("");
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -397,7 +400,17 @@ function Session() {
     setSubmittingReview(true);
     try {
       const seniorId = typeof booking.senior === "string" ? booking.senior : booking.senior?._id;
-      await api.post("/reviews", { bookingId, seniorId, rating: Number(rating), comment });
+      await api.post("/reviews", {
+        bookingId,
+        seniorId,
+        rating: Number(rating),
+        ratings: {
+          communication: Number(communicationRating),
+          placementInsights: Number(placementInsightsRating),
+          helpfulness: Number(helpfulnessRating),
+        },
+        comment
+      });
       setReviewMsg("Review submitted successfully.");
       triggerConfettiCelebration();
       setShowReviewModal(false); // Only close modal on success
@@ -998,7 +1011,7 @@ function Session() {
                     borderRadius: 999,
                     background: isDark ? "rgba(16,185,129,0.15)" : "rgba(16,185,129,0.1)",
                     border: `1px solid ${isDark ? "rgba(16,185,129,0.25)" : "rgba(16,185,129,0.2)"}`,
-                    color: isDark ? "#10b981" : "#10b981",
+                    color: "#10b981",
                     fontSize: 9,
                     fontWeight: 900,
                     letterSpacing: "0.12em",
@@ -1006,7 +1019,8 @@ function Session() {
                     marginBottom: 12,
                   }}
                 >
-                  🎉 Call Completed!
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                  Call Completed!
                 </div>
 
                 <h2 style={{ fontSize: 22, fontWeight: 900, color: isDark ? "#dfeafc" : "#10213b", marginBottom: 6, lineHeight: 1.15 }}>
@@ -1022,15 +1036,18 @@ function Session() {
                   </span>
                 </h2>
                 
-                <p style={{ fontSize: 12, color: isDark ? "#95b0dc" : "#567198", lineHeight: 1.6, marginBottom: 24 }}>
-                  Your feedback helps us maintain high quality mentorship and guidance on Clarior.
+                <p style={{ fontSize: 12, color: isDark ? "#95b0dc" : "#567198", lineHeight: 1.6, marginBottom: 20 }}>
+                  Provide a detailed multi-category rating to help verify senior quality and guide future students.
                 </p>
 
-                {/* Rating Stars */}
-                <div style={{ marginBottom: 20 }}>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: isDark ? "#dfeafc" : "#10213b", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 8 }}>
-                    Your Rating
-                  </span>
+                {/* Overall Rating */}
+                <div style={{ marginBottom: 16 }}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span style={{ fontSize: 11, fontWeight: 800, color: isDark ? "#dfeafc" : "#10213b", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                      Overall Experience
+                    </span>
+                    <span className="text-xs font-black text-warning">{rating}/5</span>
+                  </div>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((r) => (
                       <button
@@ -1041,8 +1058,8 @@ function Session() {
                         aria-label={`${r} star${r !== 1 ? 's' : ''}`}
                       >
                         <svg
-                          width="36"
-                          height="36"
+                          width="30"
+                          height="30"
                           fill={rating >= r ? "#f59e0b" : "none"}
                           stroke="#f59e0b"
                           strokeWidth="1.5"
@@ -1055,14 +1072,99 @@ function Session() {
                   </div>
                 </div>
 
+                {/* Multi-Category Breakdown */}
+                <div className="space-y-3 p-4 rounded-2xl bg-surface2/60 border border-border/70 mb-5">
+                  <span className="text-[10px] font-black uppercase text-muted tracking-wider block">
+                    Detailed Ratings Breakdown
+                  </span>
+
+                  {/* Communication Rating */}
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs font-bold text-fg">Communication & Tone</span>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((r) => (
+                        <button
+                          key={r}
+                          type="button"
+                          onClick={() => setCommunicationRating(r)}
+                          className="focus:outline-none cursor-pointer"
+                        >
+                          <svg
+                            width="18"
+                            height="18"
+                            fill={communicationRating >= r ? "#f59e0b" : "none"}
+                            stroke="#f59e0b"
+                            strokeWidth="1.5"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                          </svg>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Placement Insights Rating */}
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs font-bold text-fg">Placement & Career Insights</span>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((r) => (
+                        <button
+                          key={r}
+                          type="button"
+                          onClick={() => setPlacementInsightsRating(r)}
+                          className="focus:outline-none cursor-pointer"
+                        >
+                          <svg
+                            width="18"
+                            height="18"
+                            fill={placementInsightsRating >= r ? "#f59e0b" : "none"}
+                            stroke="#f59e0b"
+                            strokeWidth="1.5"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                          </svg>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Helpfulness Rating */}
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs font-bold text-fg">Helpfulness & Guidance</span>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((r) => (
+                        <button
+                          key={r}
+                          type="button"
+                          onClick={() => setHelpfulnessRating(r)}
+                          className="focus:outline-none cursor-pointer"
+                        >
+                          <svg
+                            width="18"
+                            height="18"
+                            fill={helpfulnessRating >= r ? "#f59e0b" : "none"}
+                            stroke="#f59e0b"
+                            strokeWidth="1.5"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                          </svg>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
                 {/* Feedback Input */}
-                <div style={{ marginBottom: 24 }}>
+                <div style={{ marginBottom: 20 }}>
                   <span style={{ fontSize: 11, fontWeight: 800, color: isDark ? "#dfeafc" : "#10213b", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 8 }}>
                     Feedback & Comments
                   </span>
                   <textarea
-                    className="w-full rounded-2xl border border-border bg-surface2/60 p-4 text-sm text-fg outline-none focus:border-primary/45 focus:bg-surface transition"
-                    rows={4}
+                    className="w-full rounded-2xl border border-border bg-surface2/60 p-4 text-xs font-bold text-fg outline-none focus:border-primary/45 focus:bg-surface transition placeholder:text-muted/60"
+                    rows={3}
                     placeholder="Tell us what you learned during your session..."
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
@@ -1082,7 +1184,7 @@ function Session() {
                     fontSize: 12,
                     fontWeight: 700,
                   }}>
-                    ⚠️ {reviewMsg}
+                    {reviewMsg}
                   </div>
                 )}
 
@@ -1093,7 +1195,7 @@ function Session() {
                   }}
                   loading={submittingReview}
                   disabled={submittingReview}
-                  className="w-full rounded-xl py-3.5 font-black text-sm tracking-wide shadow-hero"
+                  className="w-full rounded-xl py-3.5 font-black text-xs uppercase tracking-wider shadow-hero cursor-pointer"
                 >
                   Submit Review & End Session
                 </Button>

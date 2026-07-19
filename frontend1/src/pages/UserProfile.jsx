@@ -419,7 +419,7 @@ function UserProfile() {
                   ? "bg-success/10 text-success border-success/20"
                   : "bg-warning/10 text-warning border-warning/20 animate-pulse"
               }`}>
-                <span className="text-sm leading-none">{user?.isVerified ? "✓" : "⏳"}</span>
+                <span className="text-sm leading-none">{user?.isVerified ? "✓" : "⏱"}</span>
                 {user?.isVerified ? "Verified Mentor" : "Verification Pending"}
               </span>
             </div>
@@ -472,7 +472,7 @@ function UserProfile() {
                     {user?.role === "student" ? "STUDENT MEMBER PASS" : "PREMIUM MENTOR PASS"}
                   </h4>
                 </div>
-                <div className="text-2xl font-black text-indigo-400 animate-pulse">⚡</div>
+                <div className="text-xl font-black text-indigo-400">✦</div>
               </div>
 
               {/* Card middle: microchip & balance */}

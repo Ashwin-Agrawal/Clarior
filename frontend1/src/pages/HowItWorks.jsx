@@ -20,9 +20,9 @@ const seniorSteps = [
 ];
 
 const policies = [
-  { icon: "🛡️", title: "Verified seniors only", desc: "Every senior is manually reviewed before they can accept bookings." },
-  { icon: "⚖️", title: "Honest guidance required", desc: "Misleading advice or repeated poor feedback leads to account removal." },
-  { icon: "📊", title: "Transparent ratings", desc: "Every session is rated. Quality stays visible and accountability stays real." },
+  { icon: "◆", title: "Verified seniors only", desc: "Every senior is manually reviewed before they can accept bookings." },
+  { icon: "■", title: "Honest guidance required", desc: "Misleading advice or repeated poor feedback leads to account removal." },
+  { icon: "★", title: "Transparent ratings", desc: "Every session is rated. Quality stays visible and accountability stays real." },
 ];
 
 function Step({ number, title, desc, last = false }) {

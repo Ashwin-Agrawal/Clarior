@@ -290,10 +290,10 @@ function AdminDashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Total Users", val: stats.total, color: "primary", i: "👥" },
-          { label: "Students", val: stats.students, color: "success", i: "🎓" },
-          { label: "Seniors", val: stats.seniors, color: "accent", i: "⭐" },
-          { label: "Admins", val: stats.admins, color: "muted", i: "🛡️" },
+          { label: "Total Users", val: stats.total, color: "primary", i: "●" },
+          { label: "Students", val: stats.students, color: "success", i: "●" },
+          { label: "Seniors", val: stats.seniors, color: "accent", i: "★" },
+          { label: "Admins", val: stats.admins, color: "muted", i: "◆" },
         ].map(s => (
           <Card key={s.label} className="p-6 animate-fade-up">
             <div className="flex items-center justify-between">
