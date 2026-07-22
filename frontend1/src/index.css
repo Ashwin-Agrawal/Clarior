@@ -18,19 +18,31 @@
 }
 
 /* ─── Base Layout ─────────────────────────────────────────── */
-html, body, #root { height: 100%; }
+html, body, #root { min-height: 100%; }
 
-html { scroll-behavior: smooth; }
+/* ──────────────────────────────────────────────────────────────
+   PREMIUM PAGE BACKGROUND
+   The html element is the canvas behind everything.
+   bg-bg elements are FULLY OPAQUE — the gradient shows in the
+   visible negative space / between sections / in padding areas.
+   Sections get their OWN premium internal gradients.
+   ────────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  background-color: rgb(var(--bg));
+}
 
 body {
   background-color: rgb(var(--bg));
-  background-image: 
-    radial-gradient(rgba(37, 99, 235, 0.16) 1.25px, transparent 1.25px),
-    radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.12) 0%, transparent 45%),
-    radial-gradient(circle at 85% 10%, rgba(56, 189, 248, 0.10) 0%, transparent 50%),
-    radial-gradient(circle at 50% 85%, rgba(99, 102, 241, 0.07) 0%, transparent 60%);
-  background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100%;
-  background-attachment: scroll, fixed, fixed, fixed;
+  /* Rich multi-layer aurora background — visible in page gaps/padding */
+  background-image:
+    radial-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+    radial-gradient(ellipse 120% 80% at -5% -5%, rgba(56, 189, 248, 0.28) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 80% at 105% -5%, rgba(139, 92, 246, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 70% at -5% 80%, rgba(16, 185, 129, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 70% at 105% 90%, rgba(245, 158, 11, 0.10) 0%, transparent 55%);
+  background-size: 28px 28px, cover, cover, cover, cover;
+  background-attachment: scroll, fixed, fixed, fixed, fixed;
   color: rgb(var(--fg));
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -38,15 +50,18 @@ body {
 }
 
 html.dark body {
-  background-color: rgb(var(--bg));
-  background-image: 
-    radial-gradient(rgba(96, 165, 250, 0.22) 1.25px, transparent 1.25px),
-    radial-gradient(circle at 15% 15%, rgba(96, 165, 250, 0.16) 0%, transparent 45%),
-    radial-gradient(circle at 85% 10%, rgba(56, 189, 248, 0.14) 0%, transparent 50%),
-    radial-gradient(circle at 50% 85%, rgba(139, 92, 246, 0.08) 0%, transparent 60%);
-  background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100%;
-  background-attachment: scroll, fixed, fixed, fixed;
+  background-image:
+    radial-gradient(rgba(96, 165, 250, 0.13) 1px, transparent 1px),
+    radial-gradient(ellipse 120% 80% at -5% -5%, rgba(96, 165, 250, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 80% at 105% -5%, rgba(139, 92, 246, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 70% at -5% 80%, rgba(16, 185, 129, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 70% at 105% 90%, rgba(245, 158, 11, 0.06) 0%, transparent 55%);
+  background-size: 28px 28px, cover, cover, cover, cover;
+  background-attachment: scroll, fixed, fixed, fixed, fixed;
 }
+
+
+
 
 /* ─── Premium Theme Background Options ────────────────────── */
 .bg-aurora-mesh {
@@ -56,6 +71,73 @@ html.dark body {
     radial-gradient(at 100% 0%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
     radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
   background-attachment: fixed;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   PREMIUM LIGHT MODE HERO BACKGROUND
+   Fully opaque, rich gradient — no see-through content.
+   The gradient IS the background. Cards sit on top fully opaque.
+   ───────────────────────────────────────────────────────────────── */
+.hero-bg-light {
+  background-color: rgb(var(--bg));
+  background-image:
+    /* Fine grid */
+    linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+    /* Big cyan aurora top-left */
+    radial-gradient(ellipse 130% 90% at -10% -10%, rgba(56, 189, 248, 0.32) 0%, rgba(56, 189, 248, 0.08) 40%, transparent 65%),
+    /* Big violet aurora top-right */
+    radial-gradient(ellipse 110% 90% at 110% -10%, rgba(139, 92, 246, 0.28) 0%, rgba(139, 92, 246, 0.06) 40%, transparent 65%),
+    /* Subtle blue center wash */
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59, 130, 246, 0.10) 0%, transparent 60%),
+    /* Green bottom-left */
+    radial-gradient(ellipse 70% 60% at -5% 100%, rgba(16, 185, 129, 0.14) 0%, transparent 55%),
+    /* Amber bottom-right */
+    radial-gradient(ellipse 80% 60% at 105% 100%, rgba(245, 158, 11, 0.12) 0%, transparent 55%);
+  background-size: 32px 32px, 32px 32px, cover, cover, cover, cover, cover;
+}
+html.dark .hero-bg-light {
+  background-color: rgb(var(--bg));
+  background-image:
+    linear-gradient(rgba(96, 165, 250, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96, 165, 250, 0.05) 1px, transparent 1px),
+    radial-gradient(ellipse 130% 90% at -10% -10%, rgba(96, 165, 250, 0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 110% 90% at 110% -10%, rgba(139, 92, 246, 0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(96, 165, 250, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 60% at -5% 100%, rgba(16, 185, 129, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 60% at 105% 100%, rgba(245, 158, 11, 0.05) 0%, transparent 55%);
+  background-size: 32px 32px, 32px 32px, cover, cover, cover, cover, cover;
+}
+
+/* ─── Global: Apply premium background to ALL page wrappers ── */
+/* Covers every page that uses <main className="bg-bg ..."> */
+main.bg-bg,
+div.bg-bg.min-h-screen,
+div.bg-bg.min-h-\[calc\(100vh-72px\)\] {
+  background-color: rgb(var(--bg));
+  background-image:
+    linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+    radial-gradient(ellipse 130% 90% at -10% -10%, rgba(56, 189, 248, 0.30) 0%, rgba(56, 189, 248, 0.06) 40%, transparent 65%),
+    radial-gradient(ellipse 110% 90% at 110% -10%, rgba(139, 92, 246, 0.24) 0%, rgba(139, 92, 246, 0.05) 40%, transparent 65%),
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59, 130, 246, 0.09) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 60% at -5% 100%, rgba(16, 185, 129, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 60% at 105% 100%, rgba(245, 158, 11, 0.10) 0%, transparent 55%);
+  background-size: 32px 32px, 32px 32px, cover, cover, cover, cover, cover;
+}
+
+html.dark main.bg-bg,
+html.dark div.bg-bg.min-h-screen,
+html.dark div.bg-bg.min-h-\[calc\(100vh-72px\)\] {
+  background-image:
+    linear-gradient(rgba(96, 165, 250, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96, 165, 250, 0.05) 1px, transparent 1px),
+    radial-gradient(ellipse 130% 90% at -10% -10%, rgba(96, 165, 250, 0.20) 0%, transparent 60%),
+    radial-gradient(ellipse 110% 90% at 110% -10%, rgba(139, 92, 246, 0.16) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(96, 165, 250, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 60% at -5% 100%, rgba(16, 185, 129, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 60% at 105% 100%, rgba(245, 158, 11, 0.04) 0%, transparent 55%);
+  background-size: 32px 32px, 32px 32px, cover, cover, cover, cover, cover;
 }
 
 html.dark .bg-aurora-mesh {
@@ -76,17 +158,17 @@ html.dark .bg-dot-matrix {
 }
 
 .bg-grid-pattern {
-  background-color: rgb(var(--bg));
+  background-color: transparent;
   background-image: 
-    linear-gradient(to right, rgba(37, 99, 235, 0.10) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(37, 99, 235, 0.10) 1px, transparent 1px);
+    linear-gradient(to right, rgba(37, 99, 235, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(37, 99, 235, 0.12) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
 html.dark .bg-grid-pattern {
   background-image: 
-    linear-gradient(to right, rgba(96, 165, 250, 0.12) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(96, 165, 250, 0.12) 1px, transparent 1px);
+    linear-gradient(to right, rgba(96, 165, 250, 0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(96, 165, 250, 0.18) 1px, transparent 1px);
 }
 
 option {
@@ -98,13 +180,13 @@ option {
 :root {
   color-scheme: light;
 
-  /* neutrals */
-  --bg: 241 247 255;
+  /* neutrals — warmer, more distinct for depth */
+  --bg: 242 246 255;
   --surface: 255 255 255;
-  --surface-2: 248 250 252;
-  --border: 205 224 247;
-  --fg: 16 33 59;
-  --muted: 86 113 152;
+  --surface-2: 246 250 255;
+  --border: 210 225 248;
+  --fg: 12 28 56;
+  --muted: 80 108 148;
 
   /* brand */
   --primary: 37 99 235;
@@ -117,22 +199,22 @@ option {
   --warning: 245 158 11;
   --danger: 239 68 68;
 
-  /* hero gradient */
-  --hero-gradient: radial-gradient(circle at top left, rgba(59,91,219,0.08), transparent 45%),
-                   radial-gradient(circle at top right, rgba(14,165,233,0.06), transparent 50%);
-  --hero-blur-left: rgba(59, 91, 219, 0.08);
-  --hero-blur-right: rgba(14, 165, 233, 0.06);
+  /* hero gradient — more vivid in light mode */
+  --hero-gradient: radial-gradient(circle at top left, rgba(37,99,235,0.10), transparent 45%),
+                   radial-gradient(circle at top right, rgba(56,189,248,0.09), transparent 50%);
+  --hero-blur-left: rgba(37, 99, 235, 0.12);
+  --hero-blur-right: rgba(56, 189, 248, 0.10);
 
   /* badge backgrounds */
-  --badge-primary: rgba(59, 91, 219, 0.12);
-  --badge-accent:  rgba(14, 165, 233, 0.12);
-  --badge-warning: rgba(245, 158, 11, 0.12);
+  --badge-primary: rgba(37, 99, 235, 0.10);
+  --badge-accent:  rgba(56, 189, 248, 0.10);
+  --badge-warning: rgba(245, 158, 11, 0.10);
 
-  /* shadows */
-  --shadow-hero: 0 20px 70px rgba(59, 91, 219, 0.12);
+  /* shadows — more visible/premium in light */
+  --shadow-hero: 0 20px 80px rgba(37, 99, 235, 0.15);
   --shadow-glow: 0 0 0 3px rgba(37, 99, 235, 0.25);
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
-  --shadow-lift: 0 4px 16px rgba(0,0,0,0.08), 0 24px 48px rgba(0,0,0,0.08);
+  --shadow-card: 0 1px 4px rgba(0,0,0,0.04), 0 8px 28px rgba(37,99,235,0.07), 0 0 0 1px rgba(37,99,235,0.05);
+  --shadow-lift: 0 4px 20px rgba(37,99,235,0.10), 0 24px 60px rgba(37,99,235,0.10);
 }
 
 /* ─── Dark Mode Tokens ────────────────────────────────────── */
@@ -206,6 +288,11 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid rgb(var(--border));
   background: linear-gradient(135deg, rgb(var(--surface)) 0%, rgba(var(--surface-2), 0.96) 100%);
   box-shadow: var(--shadow-card);
+}
+
+/* light mode: extra depth on cards */
+:root .surface-card {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 8px 32px rgba(37,99,235,0.08), 0 0 0 1px rgba(37,99,235,0.06);
 }
 
 .surface-muted {

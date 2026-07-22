@@ -15,7 +15,7 @@ const motivationTips = [
   {
     title: "A ₹69 call can save you lakhs.",
     text: "One honest conversation can prevent a costly mistake in college choices, branches, or placements.",
-    badge: "🔥 Smart Choice",
+    badge: "Smart Choice",
     tagColor: "text-amber-600 bg-amber-500/10 border-amber-500/25 dark:text-amber-400"
   },
   {
@@ -321,14 +321,14 @@ function Home() {
   const [collegesList, setCollegesList] = useState([]);
   const [collegesLoading, setCollegesLoading] = useState(true);
   const [globalStats, setGlobalStats] = useState({
-    collegesCount: 40,
-    seniorsCount: 200,
-    sessionsCount: 1200
+    collegesCount: 6,
+    seniorsCount: 353,
+    sessionsCount: 10
   });
 
   const stats = useMemo(() => [
     { label: "Active Seniors", numericValue: globalStats.seniorsCount, suffix: "+", icon: "users" },
-    { label: "Colleges", numericValue: globalStats.collegesCount, suffix: "+", icon: "campus" },
+    { label: "Colleges", numericValue: globalStats.collegesCount, suffix: globalStats.collegesCount > 6 ? "+" : "", icon: "campus" },
     { label: "Success Stories", numericValue: globalStats.sessionsCount, suffix: "", displayAs: globalStats.sessionsCount >= 1000 ? `${(globalStats.sessionsCount / 1000).toFixed(1)}k` : undefined, icon: "spark" },
   ], [globalStats]);
 
@@ -363,6 +363,13 @@ function Home() {
     return () => clearTimeout(timer);
   }, [tutorialStep, tutorialAutoplay, tutorialRole]);
 
+  // Motivation quotes auto-play: rotate quote every 6.5s
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveTip((prev) => (prev + 1) % motivationTips.length);
+    }, 6500);
+    return () => clearInterval(timer);
+  }, []);
 
   const sliderRef = useRef(null);
   const requestRef = useRef();
@@ -554,9 +561,9 @@ function Home() {
       try {
         const res = await api.get("/colleges/stats");
         setGlobalStats({
-          collegesCount: res.data.collegesCount || 40,
-          seniorsCount: res.data.seniorsCount || 200,
-          sessionsCount: res.data.sessionsCount || 1200
+          collegesCount: res.data.collegesCount || 6,
+          seniorsCount: res.data.seniorsCount || 353,
+          sessionsCount: res.data.sessionsCount || 10
         });
       } catch (err) {
         console.error("Failed to load stats", err);
@@ -599,7 +606,7 @@ function Home() {
       {/* Grain texture overlay for premium depth */}
       <div className="grain-overlay" aria-hidden="true" />
 
-      <main className="bg-bg overflow-x-hidden">
+      <main className="hero-bg-light overflow-x-hidden">
         {/* Progress Bar */}
         <div className="fixed top-0 left-0 w-full h-[3px] z-[60] pointer-events-none">
           <div 
@@ -614,23 +621,25 @@ function Home() {
         {/* ═══════════════════════════════════════════════════════
             HERO SECTION — Animated Grid + Text Reveal
             ═══════════════════════════════════════════════════════ */}
-        <section ref={heroRef} className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-20 overflow-hidden bg-bg">
-          <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
+        <section ref={heroRef} className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-20 overflow-hidden">
+          {/* Grid pattern overlay — matches the hero-bg-light grid but adds hover depth */}
+          <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none dark:opacity-40" />
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
           {/* Mouse-parallax premium glow blobs */}
           <div 
-            className="absolute top-1/4 left-1/4 h-[350px] w-[350px] rounded-full bg-primary/8 dark:bg-primary/5 blur-[100px] pointer-events-none transition-transform duration-300 ease-out" 
+            className="absolute top-1/4 left-1/4 h-[450px] w-[450px] rounded-full bg-primary/10 dark:bg-primary/5 blur-[120px] pointer-events-none transition-transform duration-300 ease-out" 
             style={{
               transform: `translate(${mousePos.x * 45}px, ${mousePos.y * 45}px)`
             }}
           />
           <div 
-            className="absolute bottom-1/4 right-1/4 h-[350px] w-[350px] rounded-full bg-accent/8 dark:bg-accent/5 blur-[100px] pointer-events-none transition-transform duration-300 ease-out" 
+            className="absolute bottom-1/4 right-1/4 h-[400px] w-[400px] rounded-full bg-violet-500/8 dark:bg-accent/5 blur-[100px] pointer-events-none transition-transform duration-300 ease-out" 
             style={{
               transform: `translate(${mousePos.x * -45}px, ${mousePos.y * -45}px)`
             }}
           />
+          <div className="absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-accent/8 dark:bg-accent/3 blur-[120px] pointer-events-none" />
 
           <SiteContainer className="relative">
             <div ref={heroRevealRef} className="max-w-7xl mx-auto space-y-16">
@@ -1258,20 +1267,32 @@ function Home() {
               </div>
 
               {/* Bottom Row: Stats & Motivation Tips */}
-              <div className="space-y-12 pt-8 w-full flex flex-col items-center justify-center">
+              <div className="space-y-12 pt-16 w-full flex flex-col items-center justify-center">
                 {/* Animated Stats with Counter */}
-                <div className="scroll-reveal reveal-up stagger-4 grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-5xl px-4 mx-auto">
+                <div className="scroll-reveal reveal-up stagger-4 grid grid-cols-1 sm:grid-cols-3 gap-8 w-full max-w-5xl px-4 mx-auto">
                   {stats.map((s, index) => (
-                    <div key={s.label} className={`group relative overflow-hidden rounded-[28px] border border-border/70 bg-gradient-to-br from-surface via-surface/90 to-primary/5 p-5 text-center shadow-[0_20px_70px_-30px_rgba(37,99,235,0.28)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_90px_-35px_rgba(37,99,235,0.32)] scroll-reveal reveal-scale stagger-${index + 5}`}>
-                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.12),transparent_60%)] opacity-80 transition-opacity duration-500 group-hover:opacity-100" />
-                      <div className="relative z-10">
-                        <div className="mb-4 mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-500 group-hover:bg-primary group-hover:text-white group-hover:scale-110 group-hover:rotate-6">
-                          <LineIcon name={s.icon} className="h-7 w-7" />
+                    <div key={s.label} className="group relative overflow-hidden rounded-[36px] border border-border/40 bg-gradient-to-b from-surface/90 to-surface/40 backdrop-blur-xl p-8 text-center shadow-[0_30px_90px_-20px_rgba(37,99,235,0.06)] hover:shadow-[0_45px_110px_-25px_rgba(37,99,235,0.16)] hover:border-primary/40 transition-all duration-700 ease-out hover:-translate-y-2 scroll-reveal reveal-scale stagger-5">
+                      {/* Technical Micro Grid Background Overlay */}
+                      <div className="absolute inset-0 bg-grid-pattern opacity-80 pointer-events-none transition-opacity duration-500 group-hover:opacity-100" />
+                      
+                      {/* Interactive Radial Laser Beam Reflections */}
+                      <div className="absolute -top-24 -left-24 h-56 w-56 rounded-full bg-gradient-to-br from-primary/20 to-accent/10 blur-3xl opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 ease-out pointer-events-none" />
+                      <div className="absolute -bottom-24 -right-24 h-56 w-56 rounded-full bg-gradient-to-tl from-accent/15 to-indigo-500/10 blur-3xl opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 ease-out pointer-events-none" />
+                      
+                      {/* Ambient Edge Glow Border */}
+                      <div className="absolute inset-0 border border-transparent bg-gradient-to-b from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-[36px]" />
+
+                      <div className="relative z-10 flex flex-col items-center justify-center">
+                        {/* Premium Double Ring Hologram Badge */}
+                        <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-[24px] bg-primary/10 text-primary border border-primary/20 shadow-inner transition-all duration-700 ease-out group-hover:border-primary/50 group-hover:scale-110 group-hover:rotate-[360deg] group-hover:shadow-[0_15px_30px_-5px_rgba(37,99,235,0.15)]">
+                          <LineIcon name={s.icon} className="h-6 w-6 transition-transform duration-500 group-hover:scale-110" />
                         </div>
-                        <div className="text-3xl md:text-4xl font-black text-fg tracking-tighter">
+                        
+                        {/* Gradient-Clipped Start Numbers */}
+                        <div className="text-4xl md:text-5xl font-black bg-gradient-to-r from-fg via-primary to-accent bg-clip-text text-transparent tracking-tighter" style={{ fontFamily: "'Outfit', sans-serif" }}>
                           <AnimatedCounter target={s.numericValue} suffix={s.suffix} displayAs={s.displayAs} />
                         </div>
-                        <div className="mt-2 text-[11px] font-black uppercase tracking-[0.28em] text-muted">{s.label}</div>
+                        <div className="mt-3 text-[10px] font-extrabold uppercase tracking-[0.32em] text-muted/80 group-hover:text-muted transition-colors duration-300">{s.label}</div>
                       </div>
                     </div>
                   ))}
@@ -1279,58 +1300,108 @@ function Home() {
 
                 {/* Motivation Tips Card */}
                 <div className="scroll-reveal reveal-up stagger-6 w-full max-w-4xl px-4 mx-auto">
-                  <div className="rounded-[32px] border border-border/80 bg-surface/75 p-5 md:p-7 shadow-[0_24px_80px_-25px_rgba(37,99,235,0.18)] dark:shadow-[0_24px_80px_-25px_rgba(96,165,250,0.08)] backdrop-blur-xl transition-all duration-300">
-                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-2 pb-2">
+                  <div className="rounded-[48px] border border-border/50 bg-surface/40 backdrop-blur-2xl p-7 md:p-10 shadow-[0_40px_100px_rgba(37,99,235,0.05)] dark:shadow-[0_40px_100px_rgba(96,165,250,0.03)] transition-all duration-500 relative overflow-hidden">
+                    {/* Glowing background meshes */}
+                    <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 blur-3xl pointer-events-none rounded-full" />
+                    <div className="absolute bottom-0 left-0 w-80 h-80 bg-accent/5 blur-3xl pointer-events-none rounded-full" />
+                    
+                    <div className="relative z-10 flex flex-col gap-5 md:flex-row md:items-center md:justify-between px-3 pb-3">
                       <div>
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-primary/8 to-accent/8 border border-primary/15 dark:border-primary/25 text-xs font-black uppercase tracking-[0.2em] text-primary shadow-sm hover:scale-[1.02] transition-transform select-none mb-2">
-                          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                        <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-primary/8 via-accent/8 to-primary/4 border border-primary/15 dark:border-primary/25 text-[10px] font-black uppercase tracking-[0.22em] text-primary shadow-sm select-none mb-2">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                          </span>
                           Why students book
                         </div>
-                        <div className="mt-1 text-sm font-semibold text-muted">Short, honest guidance that feels worth way more than ₹69.</div>
+                        <div className="mt-1.5 text-base font-semibold text-fg tracking-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>Short, honest guidance that feels worth way more than ₹69.</div>
                       </div>
-                      <div className="flex items-center gap-1.5 shrink-0">
+                      
+                      {/* Premium Indicator dots */}
+                      <div className="flex items-center gap-2.5 shrink-0 bg-surface/80 border border-border/40 rounded-full px-4 py-2 shadow-inner">
                         {motivationTips.map((_, index) => (
                           <button
                             key={index}
                             type="button"
                             aria-label={`Show tip ${index + 1}`}
                             onClick={() => setActiveTip(index)}
-                            className={`h-1.5 rounded-full transition-all duration-300 ${activeTip === index ? "w-6 bg-gradient-to-r from-primary to-accent shadow-soft" : "w-2 bg-muted/40 hover:bg-muted/60"}`}
+                            className={`h-2.5 rounded-full transition-all duration-700 cursor-pointer ${activeTip === index ? "w-8 bg-gradient-to-r from-primary to-accent shadow-md" : "w-2.5 bg-muted/20 hover:bg-muted/50"}`}
                           />
                         ))}
                       </div>
                     </div>
 
-                    {/* Highly Engaging Quote Ticker Card */}
-                    <div className="mt-4 relative rounded-3xl bg-gradient-to-br from-primary/8 via-surface to-accent/8 border border-primary/20 p-6 md:p-8 min-h-[170px] flex flex-col justify-between overflow-hidden shadow-inner">
+                    {/* Highly Engaging Split-Bento Showcase Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch mt-6 relative z-10">
                       
-                      <div key={activeTip} className="relative z-10 animate-quote-slide space-y-4">
-                        <div>
-                          <div className="text-lg md:text-xl font-black text-fg tracking-tight leading-snug">{motivationTips[activeTip].title}</div>
-                          <div className="mt-2 text-sm md:text-base text-muted font-medium leading-relaxed">{motivationTips[activeTip].text}</div>
-                        </div>
+                      {/* Left Side: Editorial Testimonial Slider */}
+                      <div className="lg:col-span-7 relative rounded-3xl bg-gradient-to-br from-primary/5 via-surface/90 to-accent/5 border border-primary/15 p-6 md:p-8 min-h-[220px] flex flex-col justify-between overflow-hidden shadow-sm hover:border-primary/25 transition-all duration-300">
+                        {/* Continuous Progress Story-Loader Line */}
+                        <div className="absolute top-0 left-0 h-1 bg-gradient-to-r from-primary to-accent transition-all duration-700" style={{ width: `${((activeTip + 1) / motivationTips.length) * 100}%` }} />
+                        
+                        {/* Large decorative quotation mark background overlay */}
+                        <div className="absolute -top-12 -left-6 text-[180px] font-black text-primary/5 select-none pointer-events-none leading-none font-serif">“</div>
+                        
+                        <div key={activeTip} className="relative z-10 animate-quote-slide space-y-5 h-full flex flex-col justify-between">
+                          <div>
+                            <div className="text-lg md:text-xl font-extrabold text-fg tracking-tight leading-snug" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                              {motivationTips[activeTip].title}
+                            </div>
+                            <div className="mt-3 text-xs md:text-sm text-muted font-bold leading-relaxed">
+                              {motivationTips[activeTip].text}
+                            </div>
+                          </div>
 
-                        <div className="mt-4 pt-4 border-t border-primary/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${motivationTips[activeTip].tagColor}`}>
+                          <div className="mt-6 pt-4 border-t border-primary/10 flex flex-wrap items-center gap-3">
+                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${motivationTips[activeTip].tagColor} shadow-sm`}>
+                              <span className="h-1 w-1 rounded-full bg-current" />
                               {motivationTips[activeTip].badge}
                             </span>
-                            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface/85 text-muted border border-border/60 text-[10px] font-black uppercase tracking-wider">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface text-muted border border-border/60 text-[10px] font-black uppercase tracking-wider shadow-sm">
+                              <span>★</span>
                               ₹69 Fixed Price
                             </span>
                           </div>
-
-                          <Link to="/explore">
-                            <Button
-                              size="sm"
-                              className="rounded-full cursor-pointer font-black"
-                              iconRight={<svg className="h-3.5 w-3.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>}
-                            >
-                              Get Clarity Now
-                            </Button>
-                          </Link>
                         </div>
                       </div>
+
+                      {/* Right Side: Interactive Comparison Matrix */}
+                      <div className="lg:col-span-5 relative rounded-3xl bg-gradient-to-br from-surface/90 to-surface-2/60 border border-border/60 p-6 flex flex-col justify-between shadow-sm hover:border-primary/20 transition-all duration-300">
+                        <div className="space-y-4">
+                          <div className="text-[10px] font-black uppercase tracking-[0.25em] text-accent">Value Blueprint</div>
+                          
+                          <div className="space-y-2.5">
+                            <div className="flex items-center justify-between rounded-2xl bg-surface2/65 p-3 border border-border/40 hover:scale-[1.02] transition-transform duration-355">
+                              <span className="text-xs font-bold text-muted">Traditional Consulting</span>
+                              <span className="text-[10px] font-black text-danger bg-danger/10 border border-danger/20 rounded-lg px-2.5 py-1 uppercase tracking-wider">Lakhs of ₹</span>
+                            </div>
+                            <div className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-3 border border-primary/20 hover:scale-[1.02] transition-transform duration-355 shadow-sm">
+                              <span className="text-xs font-extrabold text-fg">Clarior Session</span>
+                              <span className="text-[10px] font-black text-success bg-success/10 border border-success/20 rounded-lg px-2.5 py-1 uppercase tracking-wider">₹69 Fixed</span>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 pt-1.5 border-t border-border/40">
+                            <div className="flex items-center gap-2 text-xs text-muted font-semibold">
+                              <span className="text-danger font-extrabold">✗</span> Unverified, biased advice online
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-fg font-extrabold">
+                              <span className="text-success font-extrabold">✓</span> 1-on-1 verified college seniors
+                            </div>
+                          </div>
+                        </div>
+
+                        <Link to="/explore" className="w-full mt-4">
+                          <Button
+                            size="sm"
+                            className="w-full rounded-2xl cursor-pointer font-black text-xs uppercase tracking-wider shadow-hero py-3"
+                            iconRight={<svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>}
+                          >
+                            Get Clarity Now
+                          </Button>
+                        </Link>
+                      </div>
+
                     </div>
                   </div>
                 </div>

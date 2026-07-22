@@ -105,7 +105,7 @@ function AppShell({ title, subtitle, children }) {
   const initials = user?.name?.trim()?.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase() || "C";
 
   return (
-    <div className="min-h-screen bg-bg text-fg">
+    <div className="min-h-screen hero-bg-light text-fg">
       {/* ── Sidebar ───────────────────────────────────────── */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border/70 lg:bg-surface lg:">
         {/* Top gradient accent */}
