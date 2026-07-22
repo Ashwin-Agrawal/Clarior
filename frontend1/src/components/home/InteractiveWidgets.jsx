@@ -224,7 +224,7 @@ export function SpeedBookingBoard() {
               return (
                 <div
                   key={slot._id}
-                  className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl border border-border/70 bg-surface/90 hover:border-primary/20 hover:shadow-soft transition-all duration-300 group"
+                  className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl border border-border/70 bg-surface hover:border-primary/20 hover:shadow-soft transition-all duration-300 group"
                 >
                   <div className="flex items-center gap-3.5 min-w-0 flex-1">
                     <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-tr from-surface2 to-border/40 text-xs font-black text-fg border border-border flex items-center justify-center shadow-sm">

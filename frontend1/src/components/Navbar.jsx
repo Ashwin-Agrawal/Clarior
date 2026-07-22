@@ -189,6 +189,173 @@ function NotificationBell() {
   );
 }
 
+function UserAvatarMenu({ user, handleLogout }) {
+  const [open, setOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const firstName = user?.name?.trim()?.split(" ")[0] || "Account";
+  const initials = user?.name?.trim()?.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase() || "C";
+  const roleLabel = user?.role === "senior" ? "Senior" : user?.role === "admin" ? "Admin" : "Student";
+  const credits = user?.callCredits ?? (user?.role === "student" ? 10 : 0);
+  const hasAvatar = Boolean(user?.avatar && typeof user.avatar === "string" && user.avatar.trim() !== "" && user.avatar !== "undefined" && user.avatar !== "null" && !imgError);
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      {/* Luxury Startup User Pill Trigger */}
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="group flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full border border-border/80 bg-surface hover:bg-surface2 hover:border-primary/30 shadow-xs hover:shadow transition-all duration-300 cursor-pointer focus:outline-none"
+        title={`${user?.name} (${roleLabel})`}
+      >
+        {/* Avatar Ring Circle */}
+        <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-white font-black text-xs tracking-wider shadow-sm overflow-hidden ring-1 ring-primary/20">
+          {hasAvatar ? (
+            <img
+              src={user.avatar}
+              alt={user.name || "User"}
+              onError={() => setImgError(true)}
+              className="h-full w-full object-cover rounded-full"
+            />
+          ) : (
+            <span className="select-none">{initials}</span>
+          )}
+          <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-success ring-2 ring-surface" />
+        </div>
+
+        {/* User Name & Chevron */}
+        <div className="hidden sm:flex items-center gap-1.5 min-w-0">
+          <span className="text-xs font-black text-fg truncate max-w-[90px]">{firstName}</span>
+          <svg
+            className={`w-3.5 h-3.5 text-muted transition-transform duration-300 ${open ? "rotate-180 text-primary" : "group-hover:text-fg"}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </button>
+
+      {/* Luxury Account Dropdown Panel */}
+      {open && (
+        <div className="absolute right-0 mt-3 w-72 rounded-3xl border border-border/80 bg-surface p-2.5 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.18)] dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] backdrop-blur-xl z-[120] animate-slide-down">
+          {/* Header Card */}
+          <div className="p-3.5 rounded-2xl bg-surface2/70 border border-border/50 mb-2">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary via-indigo-600 to-accent text-white font-black text-sm shadow-sm overflow-hidden ring-1 ring-primary/20">
+                {hasAvatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name || "User"}
+                    onError={() => setImgError(true)}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="select-none">{initials}</span>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-black text-fg truncate leading-snug">{user.name}</p>
+                <p className="text-[10px] text-muted font-medium truncate">{user.email}</p>
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <span className="text-[9px] font-black uppercase text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-md">
+                    {roleLabel}
+                  </span>
+                  <span className="text-[9px] font-black uppercase text-success bg-success/10 border border-success/20 px-2 py-0.5 rounded-md">
+                    Active
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Wallet Credits Bar */}
+            <div className="mt-3 pt-2.5 border-t border-border/40 flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted">
+                <svg className="w-3.5 h-3.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                <span>Credits:</span>
+                <span className="text-fg font-black">{credits}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setOpen(false); navigate("/buy-credits"); }}
+                className="text-[10px] font-black text-primary hover:underline uppercase tracking-wider bg-transparent border-0 cursor-pointer"
+              >
+                + Get More
+              </button>
+            </div>
+          </div>
+
+          {/* Navigation Links */}
+          <div className="space-y-0.5 text-xs font-bold">
+            <button
+              type="button"
+              onClick={() => { setOpen(false); navigate("/profile"); }}
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-fg hover:bg-primary/10 hover:text-primary transition-colors text-left cursor-pointer group"
+            >
+              <svg className="w-4 h-4 text-muted group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+              My Profile
+            </button>
+
+            {user.role === "senior" && (
+              <button
+                type="button"
+                onClick={() => { setOpen(false); navigate("/dashboard"); }}
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-fg hover:bg-primary/10 hover:text-primary transition-colors text-left cursor-pointer group"
+              >
+                <svg className="w-4 h-4 text-muted group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                Senior Dashboard
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => { setOpen(false); navigate("/my-bookings"); }}
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-fg hover:bg-primary/10 hover:text-primary transition-colors text-left cursor-pointer group"
+            >
+              <svg className="w-4 h-4 text-muted group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              My Bookings
+            </button>
+
+            <button
+              type="button"
+              onClick={() => { setOpen(false); navigate("/buy-credits"); }}
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-fg hover:bg-primary/10 hover:text-primary transition-colors text-left cursor-pointer group"
+            >
+              <svg className="w-4 h-4 text-muted group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+              Buy Credits
+            </button>
+
+            <div className="pt-1.5 mt-1 border-t border-border/50">
+              <button
+                type="button"
+                onClick={() => { setOpen(false); handleLogout(); }}
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-danger hover:bg-danger/10 transition-colors text-left cursor-pointer group"
+              >
+                <svg className="w-4 h-4 text-danger group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                Log out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Navbar() {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
@@ -303,15 +470,7 @@ function Navbar() {
             <NotificationBell />
 
             {user ? (
-              <button
-                type="button"
-                onClick={() => navigate("/profile")}
-                className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-600 to-pink-500 text-xs font-black uppercase tracking-wide text-white border border-white/20 shadow-md hover:scale-110 active:scale-95 transform transition-all cursor-pointer overflow-hidden"
-                title="View Profile"
-              >
-                <div className="absolute inset-0 bg-gradient-to-b from-white/12 to-transparent rounded-lg" />
-                <span className="relative z-10">{user.name?.trim()?.[0] || "C"}</span>
-              </button>
+              <UserAvatarMenu user={user} handleLogout={handleLogout} />
             ) : (
               <>
                 <Link

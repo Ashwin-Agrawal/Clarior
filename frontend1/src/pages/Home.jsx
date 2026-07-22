@@ -622,8 +622,6 @@ function Home() {
             HERO SECTION — Animated Grid + Text Reveal
             ═══════════════════════════════════════════════════════ */}
         <section ref={heroRef} className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-20 overflow-hidden">
-          {/* Grid pattern overlay — matches the hero-bg-light grid but adds hover depth */}
-          <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none dark:opacity-40" />
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
           {/* Mouse-parallax premium glow blobs */}
@@ -1271,8 +1269,8 @@ function Home() {
                 {/* Animated Stats with Counter */}
                 <div className="scroll-reveal reveal-up stagger-4 grid grid-cols-1 sm:grid-cols-3 gap-8 w-full max-w-5xl px-4 mx-auto">
                   {stats.map((s, index) => (
-                    <div key={s.label} className="group relative overflow-hidden rounded-[36px] border border-border bg-gradient-to-b from-surface to-surface-2 p-8 text-center shadow-[0_4px_20px_rgba(37,99,235,0.08),0_0_0_1px_rgba(37,99,235,0.04)] hover:shadow-[0_20px_60px_rgba(37,99,235,0.14)] hover:border-primary/40 transition-all duration-700 ease-out hover:-translate-y-2 scroll-reveal reveal-scale stagger-5">
-                      {/* NO grid overlay inside cards — that was causing see-through effect */}
+                    <div key={s.label} className="group relative overflow-hidden rounded-[36px] border border-border/60 bg-surface p-8 text-center shadow-[0_20px_50px_-15px_rgba(37,99,235,0.08)] hover:shadow-[0_30px_70px_-20px_rgba(37,99,235,0.18)] hover:border-primary/40 transition-all duration-500 ease-out hover:-translate-y-2 scroll-reveal reveal-scale stagger-5">
+                      
                       
                       {/* Interactive Radial Laser Beam Reflections */}
                       <div className="absolute -top-24 -left-24 h-56 w-56 rounded-full bg-gradient-to-br from-primary/20 to-accent/10 blur-3xl opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 ease-out pointer-events-none" />
@@ -1299,7 +1297,7 @@ function Home() {
 
                 {/* Motivation Tips Card */}
                 <div className="scroll-reveal reveal-up stagger-6 w-full max-w-4xl px-4 mx-auto">
-                  <div className="rounded-[48px] border border-border bg-surface p-7 md:p-10 shadow-[0_4px_20px_rgba(37,99,235,0.07),0_0_0_1px_rgba(37,99,235,0.04)] transition-all duration-500 relative overflow-hidden">
+                  <div className="rounded-[48px] border border-border/60 bg-surface p-7 md:p-10 shadow-[0_25px_70px_rgba(37,99,235,0.06)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.3)] transition-all duration-500 relative overflow-hidden">
                     {/* Glowing background meshes */}
                     <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 blur-3xl pointer-events-none rounded-full" />
                     <div className="absolute bottom-0 left-0 w-80 h-80 bg-accent/5 blur-3xl pointer-events-none rounded-full" />
@@ -1317,7 +1315,7 @@ function Home() {
                       </div>
                       
                       {/* Premium Indicator dots */}
-                      <div className="flex items-center gap-2.5 shrink-0 bg-surface2 border border-border rounded-full px-4 py-2 shadow-inner">
+                      <div className="flex items-center gap-2.5 shrink-0 bg-surface/80 border border-border/40 rounded-full px-4 py-2 shadow-inner">
                         {motivationTips.map((_, index) => (
                           <button
                             key={index}
@@ -1334,7 +1332,7 @@ function Home() {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch mt-6 relative z-10">
                       
                       {/* Left Side: Editorial Testimonial Slider */}
-                      <div className="lg:col-span-7 relative rounded-3xl bg-gradient-to-br from-blue-50 to-indigo-50/80 dark:from-primary/5 dark:via-surface dark:to-accent/5 border border-primary/20 p-6 md:p-8 min-h-[220px] flex flex-col justify-between overflow-hidden shadow-[0_4px_16px_rgba(37,99,235,0.08)] hover:border-primary/35 transition-all duration-300">
+                      <div className="lg:col-span-7 relative rounded-3xl bg-surface border border-primary/20 p-6 md:p-8 min-h-[220px] flex flex-col justify-between overflow-hidden shadow-sm hover:border-primary/30 transition-all duration-300">
                         {/* Continuous Progress Story-Loader Line */}
                         <div className="absolute top-0 left-0 h-1 bg-gradient-to-r from-primary to-accent transition-all duration-700" style={{ width: `${((activeTip + 1) / motivationTips.length) * 100}%` }} />
                         
@@ -1365,12 +1363,12 @@ function Home() {
                       </div>
 
                       {/* Right Side: Interactive Comparison Matrix */}
-                      <div className="lg:col-span-5 relative rounded-3xl bg-gradient-to-br from-surface to-surface-2 border border-border p-6 flex flex-col justify-between shadow-[0_4px_16px_rgba(37,99,235,0.06)] hover:border-primary/25 transition-all duration-300">
+                      <div className="lg:col-span-5 relative rounded-3xl bg-surface border border-border/70 p-6 flex flex-col justify-between shadow-sm hover:border-primary/30 transition-all duration-300">
                         <div className="space-y-4">
                           <div className="text-[10px] font-black uppercase tracking-[0.25em] text-accent">Value Blueprint</div>
                           
                           <div className="space-y-2.5">
-                            <div className="flex items-center justify-between rounded-2xl bg-surface2 p-3 border border-border hover:scale-[1.02] transition-transform duration-300">
+                            <div className="flex items-center justify-between rounded-2xl bg-surface2 p-3 border border-border/60 hover:scale-[1.02] transition-transform duration-355">
                               <span className="text-xs font-bold text-muted">Traditional Consulting</span>
                               <span className="text-[10px] font-black text-danger bg-danger/10 border border-danger/20 rounded-lg px-2.5 py-1 uppercase tracking-wider">Lakhs of ₹</span>
                             </div>
@@ -1417,7 +1415,7 @@ function Home() {
             ═══════════════════════════════════════════════════════ */}
         <section className="pt-8 pb-16 relative overflow-hidden">
           <SiteContainer>
-            <div ref={collegesRevealRef} className="relative overflow-hidden rounded-[40px] border border-white/20 bg-gradient-to-br from-primary/4 via-surface to-accent/4 p-6 shadow-[0_25px_90px_-35px_rgba(37,99,235,0.32)] md:p-10">
+            <div ref={collegesRevealRef} className="relative overflow-hidden rounded-[40px] border border-border/60 bg-surface p-6 shadow-card md:p-10">
               <div className="absolute -inset-10 bg-gradient-to-tr from-primary/5 to-accent/5 rounded-[64px] blur-3xl pointer-events-none opacity-60 section-glow" />
               
               <h2 className="scroll-reveal reveal-up relative z-10 flex justify-center mb-8">
@@ -1606,7 +1604,7 @@ function Home() {
                 <div className="relative w-full">
                   <div className="absolute -inset-4 bg-gradient-to-tr from-primary/5 to-accent/10 rounded-[48px] blur-3xl pointer-events-none opacity-60" />
                   
-                  <div className="relative overflow-hidden rounded-[28px] border border-border bg-surface shadow-[0_4px_20px_rgba(37,99,235,0.07),0_0_0_1px_rgba(37,99,235,0.04)]">
+                  <div className="relative overflow-hidden rounded-[28px] border border-border/60 bg-surface shadow-card">
                     <div 
                       className="flex transition-transform duration-700 ease-out"
                       style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}
@@ -1694,8 +1692,8 @@ function Home() {
                 </div>
 
                 {/* Desktop & Tablet Matrix View */}
-                <div className="hidden md:block rounded-[28px] border border-border bg-surface shadow-[0_4px_20px_rgba(37,99,235,0.07),0_0_0_1px_rgba(37,99,235,0.04)] overflow-hidden">
-                  <div className="grid grid-cols-3 border-b border-border bg-surface2 p-4 text-center font-black text-[10px] uppercase tracking-widest text-muted">
+                <div className="hidden md:block rounded-[28px] border border-border/60 bg-surface shadow-card overflow-hidden">
+                  <div className="grid grid-cols-3 border-b border-border bg-surface2/60 p-4 text-center font-black text-[10px] uppercase tracking-widest text-muted">
                     <div className="text-left pl-3">Decision Factor</div>
                     <div>Traditional Advice</div>
                     <div className="text-primary">Clarior Difference</div>
@@ -1757,7 +1755,7 @@ function Home() {
                       clarior: "Instant 20-min focused check-in. Safe, in-app call."
                     }
                   ].map((row, idx) => (
-                    <div key={idx} className="rounded-2xl border border-border bg-surface p-5 space-y-3 shadow-[0_2px_12px_rgba(37,99,235,0.06)]">
+                    <div key={idx} className="rounded-2xl border border-border/60 bg-surface p-5 space-y-3 shadow-sm">
                       <div className="flex items-center justify-between border-b border-border/30 pb-2">
                         <span className="text-xs font-black text-fg uppercase tracking-widest">{row.factor}</span>
                         <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-[8px] font-black uppercase tracking-wider text-primary">Clarior Difference</span>
@@ -1846,7 +1844,7 @@ function Home() {
                       ref={plan.tilt.ref}
                       onMouseMove={plan.tilt.handleMouseMove}
                       onMouseLeave={plan.tilt.handleMouseLeave}
-                      className={`tilt-card p-8 rounded-[24px] bg-surface/95 border border-border/70 shadow-soft backdrop-blur-sm ${
+                      className={`tilt-card p-8 rounded-[24px] bg-surface border border-border/70 shadow-soft ${
                         plan.isPrimary 
                           ? "animated-border animated-border-active pricing-glow border-primary/30 shadow-lift ring-4 ring-primary/5" 
                           : "animated-border"
@@ -1897,8 +1895,7 @@ function Home() {
         {/* ═══════════════════════════════════════════════════════
             CLARITY HUB — Risk Slider, Real Live Board & FAQ Accordion
             ═══════════════════════════════════════════════════════ */}
-        <section className="py-24 relative overflow-hidden bg-surface-2/40 border-t border-border/10">
-          <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
+        <section className="py-24 relative overflow-hidden border-t border-border/40">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-primary/5 blur-3xl pointer-events-none" />
           
           <SiteContainer>

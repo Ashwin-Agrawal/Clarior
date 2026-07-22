@@ -99,7 +99,6 @@ function Explore() {
       <main className="bg-bg min-h-screen">
         {/* Premium Header Hero */}
         <section className="relative pt-24 pb-12 overflow-hidden">
-          <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
           <div className="absolute inset-0 pointer-events-none opacity-50" style={{ background: "var(--hero-gradient)" }} />
           <div className="absolute top-1/4 left-1/4 h-80 w-80 rounded-full bg-primary/5 blur-3xl animate-float-slow pointer-events-none" />
           <div className="absolute bottom-1/4 right-1/4 h-64 w-64 rounded-full bg-accent/5 blur-3xl pointer-events-none" />
@@ -123,7 +122,7 @@ function Explore() {
                 <input
                   type="text"
                   placeholder="Search by college name or city..."
-                  className="w-full h-16 pl-14 pr-6 rounded-3xl border border-border/80 bg-surface/50 backdrop-blur-md outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-base sm:text-lg font-black text-fg shadow-card hover:border-primary/25"
+                  className="w-full h-16 pl-14 pr-6 rounded-3xl border border-border/80 bg-surface outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-base sm:text-lg font-black text-fg shadow-card hover:border-primary/25"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
