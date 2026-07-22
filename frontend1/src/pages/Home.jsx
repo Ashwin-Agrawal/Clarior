@@ -1271,9 +1271,8 @@ function Home() {
                 {/* Animated Stats with Counter */}
                 <div className="scroll-reveal reveal-up stagger-4 grid grid-cols-1 sm:grid-cols-3 gap-8 w-full max-w-5xl px-4 mx-auto">
                   {stats.map((s, index) => (
-                    <div key={s.label} className="group relative overflow-hidden rounded-[36px] border border-border/40 bg-gradient-to-b from-surface/90 to-surface/40 backdrop-blur-xl p-8 text-center shadow-[0_30px_90px_-20px_rgba(37,99,235,0.06)] hover:shadow-[0_45px_110px_-25px_rgba(37,99,235,0.16)] hover:border-primary/40 transition-all duration-700 ease-out hover:-translate-y-2 scroll-reveal reveal-scale stagger-5">
-                      {/* Technical Micro Grid Background Overlay */}
-                      <div className="absolute inset-0 bg-grid-pattern opacity-80 pointer-events-none transition-opacity duration-500 group-hover:opacity-100" />
+                    <div key={s.label} className="group relative overflow-hidden rounded-[36px] border border-border bg-gradient-to-b from-surface to-surface-2 p-8 text-center shadow-[0_4px_20px_rgba(37,99,235,0.08),0_0_0_1px_rgba(37,99,235,0.04)] hover:shadow-[0_20px_60px_rgba(37,99,235,0.14)] hover:border-primary/40 transition-all duration-700 ease-out hover:-translate-y-2 scroll-reveal reveal-scale stagger-5">
+                      {/* NO grid overlay inside cards — that was causing see-through effect */}
                       
                       {/* Interactive Radial Laser Beam Reflections */}
                       <div className="absolute -top-24 -left-24 h-56 w-56 rounded-full bg-gradient-to-br from-primary/20 to-accent/10 blur-3xl opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 ease-out pointer-events-none" />
@@ -1300,7 +1299,7 @@ function Home() {
 
                 {/* Motivation Tips Card */}
                 <div className="scroll-reveal reveal-up stagger-6 w-full max-w-4xl px-4 mx-auto">
-                  <div className="rounded-[48px] border border-border/50 bg-surface/40 backdrop-blur-2xl p-7 md:p-10 shadow-[0_40px_100px_rgba(37,99,235,0.05)] dark:shadow-[0_40px_100px_rgba(96,165,250,0.03)] transition-all duration-500 relative overflow-hidden">
+                  <div className="rounded-[48px] border border-border bg-surface p-7 md:p-10 shadow-[0_4px_20px_rgba(37,99,235,0.07),0_0_0_1px_rgba(37,99,235,0.04)] transition-all duration-500 relative overflow-hidden">
                     {/* Glowing background meshes */}
                     <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 blur-3xl pointer-events-none rounded-full" />
                     <div className="absolute bottom-0 left-0 w-80 h-80 bg-accent/5 blur-3xl pointer-events-none rounded-full" />
@@ -1318,7 +1317,7 @@ function Home() {
                       </div>
                       
                       {/* Premium Indicator dots */}
-                      <div className="flex items-center gap-2.5 shrink-0 bg-surface/80 border border-border/40 rounded-full px-4 py-2 shadow-inner">
+                      <div className="flex items-center gap-2.5 shrink-0 bg-surface2 border border-border rounded-full px-4 py-2 shadow-inner">
                         {motivationTips.map((_, index) => (
                           <button
                             key={index}
@@ -1335,7 +1334,7 @@ function Home() {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch mt-6 relative z-10">
                       
                       {/* Left Side: Editorial Testimonial Slider */}
-                      <div className="lg:col-span-7 relative rounded-3xl bg-gradient-to-br from-primary/5 via-surface/90 to-accent/5 border border-primary/15 p-6 md:p-8 min-h-[220px] flex flex-col justify-between overflow-hidden shadow-sm hover:border-primary/25 transition-all duration-300">
+                      <div className="lg:col-span-7 relative rounded-3xl bg-gradient-to-br from-blue-50 to-indigo-50/80 dark:from-primary/5 dark:via-surface dark:to-accent/5 border border-primary/20 p-6 md:p-8 min-h-[220px] flex flex-col justify-between overflow-hidden shadow-[0_4px_16px_rgba(37,99,235,0.08)] hover:border-primary/35 transition-all duration-300">
                         {/* Continuous Progress Story-Loader Line */}
                         <div className="absolute top-0 left-0 h-1 bg-gradient-to-r from-primary to-accent transition-all duration-700" style={{ width: `${((activeTip + 1) / motivationTips.length) * 100}%` }} />
                         
@@ -1366,12 +1365,12 @@ function Home() {
                       </div>
 
                       {/* Right Side: Interactive Comparison Matrix */}
-                      <div className="lg:col-span-5 relative rounded-3xl bg-gradient-to-br from-surface/90 to-surface-2/60 border border-border/60 p-6 flex flex-col justify-between shadow-sm hover:border-primary/20 transition-all duration-300">
+                      <div className="lg:col-span-5 relative rounded-3xl bg-gradient-to-br from-surface to-surface-2 border border-border p-6 flex flex-col justify-between shadow-[0_4px_16px_rgba(37,99,235,0.06)] hover:border-primary/25 transition-all duration-300">
                         <div className="space-y-4">
                           <div className="text-[10px] font-black uppercase tracking-[0.25em] text-accent">Value Blueprint</div>
                           
                           <div className="space-y-2.5">
-                            <div className="flex items-center justify-between rounded-2xl bg-surface2/65 p-3 border border-border/40 hover:scale-[1.02] transition-transform duration-355">
+                            <div className="flex items-center justify-between rounded-2xl bg-surface2 p-3 border border-border hover:scale-[1.02] transition-transform duration-300">
                               <span className="text-xs font-bold text-muted">Traditional Consulting</span>
                               <span className="text-[10px] font-black text-danger bg-danger/10 border border-danger/20 rounded-lg px-2.5 py-1 uppercase tracking-wider">Lakhs of ₹</span>
                             </div>
@@ -1607,7 +1606,7 @@ function Home() {
                 <div className="relative w-full">
                   <div className="absolute -inset-4 bg-gradient-to-tr from-primary/5 to-accent/10 rounded-[48px] blur-3xl pointer-events-none opacity-60" />
                   
-                  <div className="relative overflow-hidden rounded-[28px] border border-border/40 bg-surface/90 shadow-card">
+                  <div className="relative overflow-hidden rounded-[28px] border border-border bg-surface shadow-[0_4px_20px_rgba(37,99,235,0.07),0_0_0_1px_rgba(37,99,235,0.04)]">
                     <div 
                       className="flex transition-transform duration-700 ease-out"
                       style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}
@@ -1695,8 +1694,8 @@ function Home() {
                 </div>
 
                 {/* Desktop & Tablet Matrix View */}
-                <div className="hidden md:block rounded-[28px] border border-border/60 bg-surface/90 shadow-card overflow-hidden backdrop-blur-xl">
-                  <div className="grid grid-cols-3 border-b border-border bg-surface2/60 p-4 text-center font-black text-[10px] uppercase tracking-widest text-muted">
+                <div className="hidden md:block rounded-[28px] border border-border bg-surface shadow-[0_4px_20px_rgba(37,99,235,0.07),0_0_0_1px_rgba(37,99,235,0.04)] overflow-hidden">
+                  <div className="grid grid-cols-3 border-b border-border bg-surface2 p-4 text-center font-black text-[10px] uppercase tracking-widest text-muted">
                     <div className="text-left pl-3">Decision Factor</div>
                     <div>Traditional Advice</div>
                     <div className="text-primary">Clarior Difference</div>
@@ -1758,7 +1757,7 @@ function Home() {
                       clarior: "Instant 20-min focused check-in. Safe, in-app call."
                     }
                   ].map((row, idx) => (
-                    <div key={idx} className="rounded-2xl border border-border/60 bg-surface/90 p-5 space-y-3 shadow-sm">
+                    <div key={idx} className="rounded-2xl border border-border bg-surface p-5 space-y-3 shadow-[0_2px_12px_rgba(37,99,235,0.06)]">
                       <div className="flex items-center justify-between border-b border-border/30 pb-2">
                         <span className="text-xs font-black text-fg uppercase tracking-widest">{row.factor}</span>
                         <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-[8px] font-black uppercase tracking-wider text-primary">Clarior Difference</span>
