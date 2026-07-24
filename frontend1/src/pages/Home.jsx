@@ -314,10 +314,12 @@ function useMagnetic(strength = 0.3) {
 
 function Home() {
   const [scrolled, setScrolled] = useState(0);
+  const [showDock, setShowDock] = useState(false);
   const [pulseLoading, setPulseLoading] = useState(true);
   const [activeTip, setActiveTip] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [activeHubTab, setActiveHubTab] = useState("value");
+  const [heroSeniors, setHeroSeniors] = useState([]);
   const [collegesList, setCollegesList] = useState([]);
   const [collegesLoading, setCollegesLoading] = useState(true);
   const [globalStats, setGlobalStats] = useState({
@@ -331,6 +333,12 @@ function Home() {
     { label: "Colleges", numericValue: globalStats.collegesCount, suffix: globalStats.collegesCount > 6 ? "+" : "", icon: "campus" },
     { label: "Success Stories", numericValue: globalStats.sessionsCount, suffix: "", displayAs: globalStats.sessionsCount >= 1000 ? `${(globalStats.sessionsCount / 1000).toFixed(1)}k` : undefined, icon: "spark" },
   ], [globalStats]);
+
+  const avgSeniorRating = useMemo(() => {
+    if (!heroSeniors || heroSeniors.length === 0) return "4.9";
+    const sum = heroSeniors.reduce((acc, s) => acc + (s.rating || 5), 0);
+    return (sum / heroSeniors.length).toFixed(1);
+  }, [heroSeniors]);
 
 
   // Mouse parallax for hero orbs
@@ -570,8 +578,18 @@ function Home() {
       }
     };
 
+    const fetchSeniors = async () => {
+      try {
+        const res = await api.get("/users/seniors");
+        setHeroSeniors(res.data.seniors || []);
+      } catch (err) {
+        console.error("Failed to load seniors for hero", err);
+      }
+    };
+
     fetchColleges();
     fetchStats();
+    fetchSeniors();
 
     const timer = setTimeout(() => {
       setPulseLoading(false);
@@ -588,6 +606,7 @@ function Home() {
     const handleScroll = () => {
       const progress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
       setScrolled(Math.min(progress, 1));
+      setShowDock(window.scrollY > 450);
     };
     window.addEventListener("scroll", handleScroll);
     return () => {
@@ -647,10 +666,18 @@ function Home() {
                 
                 {/* Left Column: Headline and Actions */}
                 <div className="lg:col-span-7 text-center lg:text-left flex flex-col items-center lg:items-start max-w-3xl mx-auto lg:mx-0">
-                  {/* Trust Badge */}
-                  <div className="scroll-reveal reveal-up inline-flex items-center gap-2 rounded-full border border-primary/20 bg-surface/90 px-4 py-2 text-[11px] font-black text-primary uppercase tracking-[0.18em] mb-6 shadow-[0_10px_35px_rgba(37,99,235,0.12)] backdrop-blur">
-                    <span className="h-2 w-2 rounded-full bg-success shadow-[0_0_0_4px_rgba(16,185,129,0.14)]" />
-                    Trusted by 5000+ students
+                  {/* Trust Badge — shimmer sweep + verified checkmark */}
+                  <div className="scroll-reveal reveal-up inline-flex items-center gap-2.5 rounded-full border border-primary/25 bg-surface px-5 py-2 text-[11px] font-black text-primary uppercase tracking-[0.18em] mb-6 shadow-[0_10px_35px_rgba(37,99,235,0.14)] overflow-hidden relative">
+                    {/* Shimmer sweep layer */}
+                    <span className="shimmer-badge absolute inset-0 pointer-events-none" aria-hidden="true" />
+                    <span className="relative flex items-center gap-1.5 z-10">
+                      <span className="flex h-2 w-2 relative">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-60" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-success" />
+                      </span>
+                      <svg className="h-3 w-3 text-primary/70" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                      Direct 1:1 Senior Advice
+                    </span>
                   </div>
                   
                   {/* Hero Title — Static "Stop" + animated word */}
@@ -662,26 +689,64 @@ function Home() {
                     </span>
                   </h1>
                   
+                  {/* Subtext with premium ₹69 price highlight */}
                   <p className="scroll-reveal reveal-up stagger-2 mt-6 text-xl md:text-2xl text-muted leading-tight font-medium tracking-tight">
-                    1:1 calls with verified seniors for just <span className="text-primary font-black animated-underline revealed">₹69</span>
+                    1:1 calls with verified seniors for just{" "}
+                    <span className="price-highlight text-xl md:text-2xl">₹69</span>
                   </p>
 
-                  {/* Magnetic CTA Buttons */}
+                  {/* CTA Buttons */}
                   <div className="scroll-reveal reveal-up stagger-3 mt-8 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
                     <Link to="/explore" className="w-full sm:w-auto">
-                      <Button size="xl" className="relative w-full sm:w-auto overflow-hidden rounded-full px-10 shadow-[0_18px_45px_rgba(37,99,235,0.24)] group hover:-translate-y-1 transition-transform">
+                      <Button size="xl" className="aurora-shine relative w-full sm:w-auto overflow-hidden rounded-full px-10 shadow-[0_18px_45px_rgba(37,99,235,0.28)] group hover:-translate-y-1.5 transition-all duration-300">
                         <span className="relative z-10 flex items-center gap-2 justify-center">
                           Explore Seniors
                           <LineIcon name="arrow" className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                         </span>
-                        <span className="absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.3)_50%,transparent_100%)] translate-x-[-180%] group-hover:translate-x-[180%] transition-transform duration-700" />
                       </Button>
                     </Link>
                     <Link to="/become-mentor" className="w-full sm:w-auto">
-                      <Button variant="secondary" size="xl" className="w-full sm:w-auto rounded-full px-10 hover:-translate-y-1 transition-transform shadow-[0_12px_30px_rgba(15,23,42,0.08)]">
+                      <Button variant="secondary" size="xl" className="w-full sm:w-auto rounded-full px-10 hover:-translate-y-1 transition-transform shadow-[0_12px_30px_rgba(15,23,42,0.08)] border-2">
                         Become a Senior
                       </Button>
                     </Link>
+                  </div>
+
+                  {/* Social Proof Avatar Row — Real Dynamic Senior Data */}
+                  <div className="scroll-reveal reveal-up stagger-4 mt-6 flex items-center gap-3">
+                    <div className="avatar-stack">
+                      {heroSeniors.length > 0 ? (
+                        heroSeniors.slice(0, 4).map((s, idx) => {
+                          const initials = s.name
+                            ? s.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
+                            : "S";
+                          return (
+                            <div key={s._id || idx} className="avatar-item" title={s.name}>
+                              {initials}
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <>
+                          <div className="avatar-item">AA</div>
+                          <div className="avatar-item">SC</div>
+                          <div className="avatar-item">SA</div>
+                        </>
+                      )}
+                      <div className="avatar-item">+</div>
+                    </div>
+                    <div>
+                      <div className="flex gap-0.5 text-amber-500 mb-0.5">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                          <svg key={i} width="10" height="10" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                          </svg>
+                        ))}
+                      </div>
+                      <p className="text-[10px] font-bold text-muted">
+                        {avgSeniorRating} avg senior rating · Verified
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -766,6 +831,22 @@ function Home() {
                     
                     {/* Top Decorative Accent Line */}
                     <div className="h-1.5 w-full bg-gradient-to-r from-primary via-accent to-emerald-400 absolute top-0 left-0 right-0" />
+
+                    {/* macOS App Header Bar */}
+                    <div className="flex items-center justify-between pb-4 mb-4 border-b border-border/40 pt-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="h-2.5 w-2.5 rounded-full bg-rose-500/80 inline-block" />
+                        <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80 inline-block" />
+                        <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80 inline-block" />
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted flex items-center gap-1.5">
+                        <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                        Workflow Simulator
+                      </span>
+                      <span className="text-[9px] font-black text-success bg-success/10 border border-success/20 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                        Live Demo
+                      </span>
+                    </div>
 
                     {/* Step 4 Party Popper Confetti overlay */}
                     {tutorialStep === 4 && (() => {
@@ -1267,25 +1348,87 @@ function Home() {
               {/* Bottom Row: Stats & Motivation Tips */}
               <div className="space-y-12 pt-16 w-full flex flex-col items-center justify-center">
                 {/* Animated Stats with Counter */}
-                <div className="scroll-reveal reveal-up stagger-4 grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-5xl px-4 mx-auto">
-                  {stats.map((s, index) => (
-                    <div key={s.label} className="group relative overflow-hidden rounded-[28px] border border-border/80 bg-surface p-7 text-center shadow-card hover:shadow-lift hover:border-primary/40 transition-all duration-300 ease-out hover:-translate-y-1.5 scroll-reveal reveal-scale stagger-5">
-                      
-                      {/* Ambient Soft Glow Reflection */}
-                      <div className="absolute -top-20 -right-20 h-44 w-44 rounded-full bg-primary/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                      <div className="absolute -bottom-20 -left-20 h-44 w-44 rounded-full bg-accent/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="scroll-reveal reveal-up stagger-4 grid grid-cols-1 sm:grid-cols-3 gap-5 w-full max-w-5xl px-4 mx-auto">
+                  {[
+                    {
+                      ...stats[0],
+                      accent: "from-blue-500 to-indigo-600",
+                      glow: "rgba(37,99,235,0.18)",
+                      glowColor: "rgba(37,99,235,0.08)",
+                      borderHover: "hover:border-blue-400/50",
+                      iconBg: "bg-blue-500/10 border-blue-400/20 text-blue-600 dark:text-blue-400",
+                      iconHover: "group-hover:bg-blue-500 group-hover:text-white group-hover:border-blue-500",
+                      numColor: "group-hover:text-blue-600 dark:group-hover:text-blue-400",
+                      badge: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-400/20",
+                    },
+                    {
+                      ...stats[1],
+                      accent: "from-violet-500 to-purple-600",
+                      glow: "rgba(139,92,246,0.18)",
+                      glowColor: "rgba(139,92,246,0.08)",
+                      borderHover: "hover:border-violet-400/50",
+                      iconBg: "bg-violet-500/10 border-violet-400/20 text-violet-600 dark:text-violet-400",
+                      iconHover: "group-hover:bg-violet-500 group-hover:text-white group-hover:border-violet-500",
+                      numColor: "group-hover:text-violet-600 dark:group-hover:text-violet-400",
+                      badge: "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-400/20",
+                    },
+                    {
+                      ...stats[2],
+                      accent: "from-emerald-500 to-teal-600",
+                      glow: "rgba(16,185,129,0.18)",
+                      glowColor: "rgba(16,185,129,0.08)",
+                      borderHover: "hover:border-emerald-400/50",
+                      iconBg: "bg-emerald-500/10 border-emerald-400/20 text-emerald-600 dark:text-emerald-400",
+                      iconHover: "group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500",
+                      numColor: "group-hover:text-emerald-600 dark:group-hover:text-emerald-400",
+                      badge: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-400/20",
+                    },
+                  ].map((s) => (
+                    <div
+                      key={s.label}
+                      className={`group relative overflow-hidden rounded-[24px] border border-border/70 bg-surface p-6 shadow-card ${s.borderHover} hover:shadow-lift transition-all duration-300 ease-out hover:-translate-y-1.5 scroll-reveal reveal-scale stagger-5`}
+                    >
+                      {/* Top gradient accent bar */}
+                      <div className={`absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r ${s.accent} opacity-70 group-hover:opacity-100 transition-opacity duration-300`} />
 
-                      <div className="relative z-10 flex flex-col items-center justify-center">
-                        {/* Professional Icon Badge (Smooth Fill on Hover, No Rotation) */}
-                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary border border-primary/20 shadow-xs transition-all duration-300 group-hover:bg-primary group-hover:text-white group-hover:border-primary group-hover:scale-105 group-hover:shadow-[0_8px_20px_-4px_rgba(37,99,235,0.3)]">
-                          <LineIcon name={s.icon} className="h-6 w-6 transition-transform duration-300 group-hover:scale-110" />
+                      {/* Hover inner glow */}
+                      <div
+                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-[24px]"
+                        style={{ background: `radial-gradient(ellipse 80% 70% at 50% 0%, ${s.glow} 0%, transparent 70%)` }}
+                      />
+
+                      {/* Decorative faint grid dots */}
+                      <div
+                        className="absolute inset-0 opacity-[0.025] pointer-events-none"
+                        style={{ backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)", backgroundSize: "18px 18px" }}
+                      />
+
+                      <div className="relative z-10">
+                        {/* Icon badge + Label row */}
+                        <div className="flex items-center justify-between mb-5">
+                          <div className={`flex h-11 w-11 items-center justify-center rounded-xl border ${s.iconBg} ${s.iconHover} transition-all duration-300 shadow-xs group-hover:scale-105 group-hover:shadow-md`}>
+                            <LineIcon name={s.icon} className="h-5 w-5" />
+                          </div>
+                          <span className={`text-[10px] font-black uppercase tracking-[0.18em] px-2.5 py-1 rounded-full border ${s.badge}`}>
+                            Live
+                          </span>
                         </div>
-                        
-                        {/* Crisp Professional Stat Counter Number */}
-                        <div className="text-4xl md:text-5xl font-black text-fg tracking-tight group-hover:text-primary transition-colors duration-300" style={{ fontFamily: "'Outfit', sans-serif" }}>
+
+                        {/* Big number */}
+                        <div
+                          className={`text-5xl font-black tracking-tight text-fg ${s.numColor} transition-colors duration-300`}
+                          style={{ fontFamily: "'Outfit', sans-serif" }}
+                        >
                           <AnimatedCounter target={s.numericValue} suffix={s.suffix} displayAs={s.displayAs} />
                         </div>
-                        <div className="mt-2 text-xs font-bold uppercase tracking-wider text-muted group-hover:text-fg transition-colors duration-300">{s.label}</div>
+
+                        {/* Label + subtle divider */}
+                        <div className="mt-3 flex items-center gap-2">
+                          <div className={`h-px flex-1 bg-gradient-to-r ${s.accent} opacity-20 group-hover:opacity-50 transition-opacity duration-300`} />
+                          <span className="text-[11px] font-bold uppercase tracking-widest text-muted group-hover:text-fg transition-colors duration-300 shrink-0">
+                            {s.label}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -1484,93 +1627,108 @@ function Home() {
           <SiteContainer>
             <div ref={featuresRevealRef} className="space-y-16">
               <div className="text-center max-w-3xl mx-auto space-y-4">
-                <div className="scroll-reveal reveal-up inline-block px-4 py-1.5 rounded-full bg-accent/5 border border-accent/20 text-[10px] font-black text-accent uppercase tracking-widest">The Clarior Edge</div>
-                <h2 className="scroll-reveal reveal-up stagger-1 heading-display text-4xl md:text-6xl font-black text-fg leading-tight">
-                  Because Every Question <br /> <span className="gradient-text-animated">Deserves an Answer.</span>
-                </h2>
+                <div className="scroll-reveal reveal-up inline-flex items-center gap-3">
+                  <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-accent/10 via-primary/8 to-accent/10 border border-accent/25 text-[10px] font-black text-accent uppercase tracking-[0.25em] shadow-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                    The Clarior Edge
+                    <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                  </span>
+                </div>
+                <div className="scroll-reveal reveal-up stagger-1">
+                  <h2 className="heading-display text-4xl md:text-6xl font-black text-fg leading-tight">
+                    Because Every Question <br /> <span className="gradient-text-animated">Deserves an Answer.</span>
+                  </h2>
+                  {/* Animated section divider line */}
+                  <div className="scroll-reveal section-divider-line w-48 mx-auto mt-6" />
+                </div>
                 <p className="scroll-reveal reveal-up stagger-2 text-lg text-muted leading-relaxed">
                   Most platforms give you generic advice. We give you a direct line to the people who&apos;ve actually been there. No hidden costs, no long-term commitments.
                 </p>
               </div>
 
               {/* Bento Grid */}
-              <div className="grid md:grid-cols-3 gap-6 auto-rows-[220px]">
+              <div className="grid md:grid-cols-3 gap-6 auto-rows-[240px]">
                 
-                {/* Bento Card 1: Live 1:1 Guided Video Calls (Wide: Col-span-2, Row-span-1) */}
-                <div className="scroll-reveal reveal-up stagger-3 md:col-span-2 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-primary/5 p-6 flex flex-col justify-between shadow-soft hover:shadow-lift transition-all duration-300 relative overflow-hidden group">
-                  <div className="absolute -right-10 -bottom-10 h-32 w-32 bg-primary/5 blur-2xl rounded-full group-hover:bg-primary/10 transition-colors" />
-                  <div className="flex gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                {/* Bento Card 1: Live 1:1 Guided Video Calls (Wide: Col-span-2) */}
+                <div className="scroll-reveal reveal-up stagger-3 md:col-span-2 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-primary/5 p-7 flex flex-col justify-between shadow-soft hover:shadow-lift hover:border-primary/30 transition-all duration-300 relative overflow-hidden group bento-hover-glow">
+                  {/* Corner glow blob */}
+                  <div className="absolute -right-8 -bottom-8 h-40 w-40 bg-primary/8 blur-3xl rounded-full group-hover:bg-primary/15 transition-all duration-500" />
+                  {/* Top accent bar */}
+                  <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-primary/60 via-blue-400/80 to-primary/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="flex gap-5">
+                    <div className="bento-icon-badge h-14 w-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/15 shadow-sm group-hover:bg-primary/15 group-hover:border-primary/30 group-hover:shadow-[0_0_20px_rgba(37,99,235,0.2)]">
                       <LineIcon name="call" className="w-6 h-6" />
                     </div>
                     <div>
                       <h3 className="text-lg font-black text-fg">Live 1:1 Video Calls</h3>
-                      <p className="text-xs font-semibold text-muted mt-1 leading-relaxed">
+                      <p className="text-xs font-semibold text-muted mt-1.5 leading-relaxed">
                         Get face-to-face clarity with live, high-definition video calls hosted securely in our application. No Zoom links required.
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2.5 items-center bg-surface2/60 border border-border/40 p-2.5 rounded-xl text-[10px] font-black text-muted uppercase tracking-wider w-fit mt-3">
-                    <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-                    Secure In-App Room Active
+                  <div className="flex items-center justify-between">
+                    <div className="flex gap-2.5 items-center bg-surface2/70 border border-border/40 px-3 py-2 rounded-xl text-[10px] font-black text-muted uppercase tracking-wider">
+                      <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
+                      Secure In-App Room Active
+                    </div>
+                    <span className="bento-metric text-primary border-primary/20 bg-primary/8">&lt; 2 min setup</span>
                   </div>
                 </div>
 
-                {/* Bento Card 2: Transparent ₹69 Credits (Small: Col-span-1, Row-span-1) */}
-                <div className="scroll-reveal reveal-up stagger-4 md:col-span-1 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-accent/5 p-6 flex flex-col justify-between shadow-soft hover:shadow-lift transition-all duration-300 relative overflow-hidden group">
-                  <div className="absolute -right-10 -bottom-10 h-32 w-32 bg-accent/5 blur-2xl rounded-full group-hover:bg-accent/10 transition-colors" />
+                {/* Bento Card 2: Transparent ₹69 Credits (Small: Col-span-1) */}
+                <div className="scroll-reveal reveal-up stagger-4 md:col-span-1 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-accent/5 p-7 flex flex-col justify-between shadow-soft hover:shadow-lift hover:border-accent/30 transition-all duration-300 relative overflow-hidden group bento-hover-glow">
+                  <div className="absolute -right-8 -bottom-8 h-40 w-40 bg-accent/8 blur-3xl rounded-full group-hover:bg-accent/15 transition-all duration-500" />
+                  <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-accent/60 via-sky-400/80 to-accent/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="flex gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-accent/10 text-accent flex items-center justify-center shrink-0">
+                    <div className="bento-icon-badge h-14 w-14 rounded-2xl bg-accent/10 text-accent flex items-center justify-center shrink-0 border border-accent/15 shadow-sm group-hover:bg-accent/15 group-hover:border-accent/30 group-hover:shadow-[0_0_20px_rgba(56,189,248,0.2)]">
                       <LineIcon name="gem" className="w-6 h-6" />
                     </div>
                     <div>
                       <h3 className="text-lg font-black text-fg">₹69 Call Pass</h3>
-                      <p className="text-xs font-semibold text-muted mt-1 leading-relaxed">
+                      <p className="text-xs font-semibold text-muted mt-1.5 leading-relaxed">
                         Flat pricing for all seniors. No subscription traps, pay as you go.
                       </p>
                     </div>
                   </div>
-                  <div className="text-xs font-black text-primary uppercase tracking-wider">
-                    No Consultancies Fee
-                  </div>
+                  <span className="bento-metric text-accent border-accent/20 bg-accent/8">₹0 hidden fees</span>
                 </div>
 
-                {/* Bento Card 3: 100% Manual Verification (Small: Col-span-1, Row-span-1) */}
-                <div className="scroll-reveal reveal-up stagger-5 md:col-span-1 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-success/5 p-6 flex flex-col justify-between shadow-soft hover:shadow-lift transition-all duration-300 relative overflow-hidden group">
-                  <div className="absolute -right-10 -bottom-10 h-32 w-32 bg-success/5 blur-2xl rounded-full group-hover:bg-success/10 transition-colors" />
+                {/* Bento Card 3: 100% Manual Verification (Small: Col-span-1) */}
+                <div className="scroll-reveal reveal-up stagger-5 md:col-span-1 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-success/5 p-7 flex flex-col justify-between shadow-soft hover:shadow-lift hover:border-success/30 transition-all duration-300 relative overflow-hidden group bento-hover-glow">
+                  <div className="absolute -right-8 -bottom-8 h-40 w-40 bg-success/8 blur-3xl rounded-full group-hover:bg-success/15 transition-all duration-500" />
+                  <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-success/60 via-emerald-400/80 to-success/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="flex gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-success/10 text-success flex items-center justify-center shrink-0">
+                    <div className="bento-icon-badge h-14 w-14 rounded-2xl bg-success/10 text-success flex items-center justify-center shrink-0 border border-success/15 shadow-sm group-hover:bg-success/15 group-hover:border-success/30 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]">
                       <LineIcon name="shield" className="w-6 h-6" />
                     </div>
                     <div>
                       <h3 className="text-lg font-black text-fg">Verified Insiders Only</h3>
-                      <p className="text-xs font-semibold text-muted mt-1 leading-relaxed">
+                      <p className="text-xs font-semibold text-muted mt-1.5 leading-relaxed">
                         Every senior&apos;s identity and college ID are verified manually by our team.
                       </p>
                     </div>
                   </div>
-                  <div className="text-xs font-black text-success uppercase tracking-wider flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-success" />
-                    ID Checks Required
-                  </div>
+                  <span className="bento-metric text-success border-success/20 bg-success/8">100% ID verified</span>
                 </div>
 
-                {/* Bento Card 4: Prep Notes Workspace (Wide: Col-span-2, Row-span-1) */}
-                <div className="scroll-reveal reveal-up stagger-6 md:col-span-2 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-amber-500/5 p-6 flex flex-col justify-between shadow-soft hover:shadow-lift transition-all duration-300 relative overflow-hidden group">
-                  <div className="absolute -right-10 -bottom-10 h-32 w-32 bg-amber-500/5 blur-2xl rounded-full group-hover:bg-amber-500/10 transition-colors" />
-                  <div className="flex gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+                {/* Bento Card 4: Prep Notes Workspace (Wide: Col-span-2) */}
+                <div className="scroll-reveal reveal-up stagger-6 md:col-span-2 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-amber-500/5 p-7 flex flex-col justify-between shadow-soft hover:shadow-lift hover:border-amber-400/30 transition-all duration-300 relative overflow-hidden group bento-hover-glow">
+                  <div className="absolute -right-8 -bottom-8 h-40 w-40 bg-amber-500/8 blur-3xl rounded-full group-hover:bg-amber-500/15 transition-all duration-500" />
+                  <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-amber-500/60 via-yellow-400/80 to-amber-500/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="flex gap-5">
+                    <div className="bento-icon-badge h-14 w-14 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 border border-amber-500/15 shadow-sm group-hover:bg-amber-500/15 group-hover:border-amber-400/35 group-hover:shadow-[0_0_20px_rgba(245,158,11,0.2)]">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9z" /></svg>
                     </div>
                     <div>
                       <h3 className="text-lg font-black text-fg">Pre-Call Prep Workspace</h3>
-                      <p className="text-xs font-semibold text-muted mt-1 leading-relaxed">
+                      <p className="text-xs font-semibold text-muted mt-1.5 leading-relaxed">
                         List questions or placement concerns before the call. The senior reviews your notes in advance to make every minute of your session productive.
                       </p>
                     </div>
                   </div>
-                  <div className="text-xs font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider">
-                    Zero Wasted Time
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider">Zero Wasted Time</span>
+                    <span className="bento-metric text-amber-600 dark:text-amber-400 border-amber-400/20 bg-amber-500/8">20 min sessions</span>
                   </div>
                 </div>
 
@@ -1590,8 +1748,14 @@ function Home() {
               
               {/* Left Column (2/5 width): Testimonials Slider */}
               <div className="lg:col-span-2 space-y-6">
-                <div className="space-y-2">
-                  <div className="inline-block px-3 py-1 rounded-full bg-primary/5 border border-primary/20 text-[9px] font-black text-primary uppercase tracking-widest">Testimonials</div>
+                <div className="space-y-3">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-primary/8 via-accent/5 to-primary/8 border border-primary/20 text-[9px] font-black text-primary uppercase tracking-widest overflow-hidden relative">
+                    <span className="shimmer-badge absolute inset-0 pointer-events-none" />
+                    <span className="relative z-10 flex items-center gap-1.5">
+                      <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+                      Testimonials
+                    </span>
+                  </div>
                   <h2 className="heading-display text-2xl md:text-3xl font-black text-fg tracking-tight">
                     What Seniors Say
                   </h2>
@@ -1606,10 +1770,10 @@ function Home() {
                       style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}
                     >
                       {testimonials.map((t) => (
-                        <div key={t.name} className="w-full flex-shrink-0 p-5 flex flex-col justify-between group min-h-[250px]">
-                          <div>
+                        <div key={t.name} className="w-full flex-shrink-0 p-6 flex flex-col justify-between group min-h-[270px] relative overflow-hidden">
+                          <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-4">
-                              <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr border text-sm font-black uppercase shadow-inner transition-transform duration-500 ${t.avatarGlow}`}>
+                              <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr border text-sm font-black uppercase shadow-md transition-transform duration-500 ${t.avatarGlow}`}>
                                 {t.initials}
                               </div>
                               <div>
@@ -1618,12 +1782,9 @@ function Home() {
                               </div>
                             </div>
                             
-                            <div className="flex gap-2 items-start">
-                              <span className={`text-3xl font-serif leading-none select-none -mt-2 transition-colors duration-500 ${t.quoteColor}`}>&ldquo;</span>
-                              <p className="text-xs md:text-sm text-fg/80 italic leading-relaxed pt-0.5">
-                                {t.quote}
-                              </p>
-                            </div>
+                            <p className="text-sm text-fg/80 leading-relaxed pl-1">
+                              {t.quote}
+                            </p>
                           </div>
                           
                           <div className="mt-6 flex justify-between items-center pt-3 border-t border-border/20">
@@ -1688,11 +1849,17 @@ function Home() {
                 </div>
 
                 {/* Desktop & Tablet Matrix View */}
-                <div className="hidden md:block rounded-[28px] border border-border/60 bg-surface shadow-card overflow-hidden">
-                  <div className="grid grid-cols-3 border-b border-border bg-surface2/60 p-4 text-center font-black text-[10px] uppercase tracking-widest text-muted">
-                    <div className="text-left pl-3">Decision Factor</div>
-                    <div>Traditional Advice</div>
-                    <div className="text-primary">Clarior Difference</div>
+                <div className="hidden md:block rounded-[28px] border border-border/70 bg-surface shadow-card overflow-hidden">
+                  <div className="grid grid-cols-3 border-b border-border/80 bg-surface2/80 p-4 text-center font-black text-[10px] uppercase tracking-[0.2em] text-muted">
+                    <div className="text-left pl-4">Decision Factor</div>
+                    <div className="text-danger/90 flex items-center justify-center gap-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-danger inline-block" />
+                      Traditional Advice
+                    </div>
+                    <div className="text-primary flex items-center justify-center gap-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary inline-block" />
+                      Clarior Difference
+                    </div>
                   </div>
 
                   {[
@@ -1717,11 +1884,18 @@ function Home() {
                       clarior: "Instant 20-min focused check-in. Safe, in-app call."
                     }
                   ].map((row, idx) => (
-                    <div key={idx} className="grid grid-cols-3 p-4 items-center border-b border-border/30 last:border-0 hover:bg-surface2/20 transition-colors text-left">
-                      <div className="font-bold text-fg text-xs pl-3">{row.factor}</div>
-                      <div className="text-xs text-muted font-medium leading-relaxed">{row.traditional}</div>
-                      <div className="text-xs text-primary font-semibold leading-relaxed">
-                        {row.clarior}
+                    <div key={idx} className="grid grid-cols-3 p-4.5 items-center border-b border-border/30 last:border-0 hover:bg-primary/5 transition-colors duration-200 text-left group">
+                      <div className="font-extrabold text-fg text-xs pl-4 flex items-center gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-primary/40 group-hover:bg-primary group-hover:scale-125 transition-all" />
+                        {row.factor}
+                      </div>
+                      <div className="text-xs text-muted font-medium leading-relaxed pr-3 flex items-start gap-2">
+                        <span className="text-danger/70 font-black shrink-0 text-sm">✕</span>
+                        <span>{row.traditional}</span>
+                      </div>
+                      <div className="text-xs text-primary font-bold leading-relaxed flex items-start gap-2 bg-primary/5 p-2.5 rounded-xl border border-primary/15">
+                        <span className="text-success font-black shrink-0 text-sm">✓</span>
+                        <span>{row.clarior}</span>
                       </div>
                     </div>
                   ))}
@@ -1788,9 +1962,13 @@ function Home() {
           <SiteContainer className="relative">
             <div ref={pricingRevealRef}>
               <div className="mx-auto max-w-3xl text-center">
-                <div className="scroll-reveal reveal-up text-[10px] font-black uppercase tracking-[0.25em] text-primary">Simple pricing</div>
-                <h2 className="scroll-reveal reveal-up stagger-1 mt-4 heading-display text-4xl md:text-6xl font-black text-fg tracking-tight">
-                  One clear price. No subscriptions.
+                <div className="scroll-reveal reveal-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-primary/8 via-accent/5 to-primary/8 border border-primary/20 text-[10px] font-black text-primary uppercase tracking-[0.25em] shadow-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                  Simple pricing
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                </div>
+                <h2 className="scroll-reveal reveal-up stagger-1 mt-5 heading-display text-4xl md:text-6xl font-black text-fg tracking-tight">
+                  One clear price. <span className="gradient-text-animated">No subscriptions.</span>
                 </h2>
                 <p className="scroll-reveal reveal-up stagger-2 mt-5 text-lg text-muted leading-relaxed">
                   Start with one call or buy a bundle when you want to compare colleges.
@@ -1842,17 +2020,24 @@ function Home() {
                       onMouseLeave={plan.tilt.handleMouseLeave}
                       className={`tilt-card p-8 rounded-[24px] bg-surface border border-border/70 shadow-soft ${
                         plan.isPrimary 
-                          ? "animated-border animated-border-active pricing-glow border-primary/30 shadow-lift ring-4 ring-primary/5" 
-                          : "animated-border"
+                          ? "animated-border animated-border-active pricing-breath border-primary/30 shadow-lift ring-4 ring-primary/8" 
+                          : "animated-border hover:border-border hover:shadow-lift"
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="text-xs font-black uppercase tracking-[0.2em] text-muted">{plan.label}</div>
-                        {plan.badge && (
-                          <span className="bg-success/10 text-success text-[10px] font-bold px-2 py-1 rounded-lg">
-                            {plan.badge}
-                          </span>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {plan.isPrimary && (
+                            <span className="flex items-center gap-1 bg-gradient-to-r from-primary to-accent text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                              <span className="popular-arrow">↓</span> Most Popular
+                            </span>
+                          )}
+                          {plan.badge && (
+                            <span className="bg-success/10 text-success text-[10px] font-bold px-2 py-1 rounded-lg">
+                              {plan.badge}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <div className="mt-5 flex items-baseline gap-2">
                         {plan.originalPrice && (
@@ -1886,9 +2071,6 @@ function Home() {
         <WaveDivider flip color="rgb(var(--bg))" />
 
         {/* ═══════════════════════════════════════════════════════
-            CTA — Particles + Scroll Reveal + Gradient Shimmer
-            ═══════════════════════════════════════════════════════ */}
-        {/* ═══════════════════════════════════════════════════════
             CLARITY HUB — Risk Slider, Real Live Board & FAQ Accordion
             ═══════════════════════════════════════════════════════ */}
         <section className="py-24 relative overflow-hidden border-t border-border/40">
@@ -1896,19 +2078,20 @@ function Home() {
           
           <SiteContainer>
             <div className="text-center max-w-xl mx-auto space-y-3 mb-10">
-              <h2 className="text-xs font-black text-primary uppercase tracking-[0.25em] flex justify-center items-center gap-2">
+              <p className="text-xs font-black text-primary uppercase tracking-[0.25em] flex justify-center items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                 Clarity Hub
-              </h2>
+                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+              </p>
               <h2 className="text-3xl font-black text-fg tracking-tight sm:text-5xl leading-tight">
-                Start connecting. Stop overthinking.
+                Start connecting. <span className="gradient-text-animated">Stop overthinking.</span>
               </h2>
-              <p className="text-sm text-muted max-w-md mx-auto leading-relaxed">
-                Calculate tuition/career risks, view live active slots directly, and get clear answers to build your future.
+              <p className="text-sm text-muted max-w-md mx-auto leading-relaxed font-medium">
+                Calculate tuition/career risks, view live active slots directly, and get clear answers.
               </p>
             </div>
 
-            {/* Tab Switchers */}
+            {/* Tab Switchers (Clean, Professional, No Emojis) */}
             <div className="flex justify-center mb-10">
               <div className="inline-flex rounded-full bg-surface border border-border p-1.5 shadow-sm max-w-full overflow-x-auto scrollbar-hide">
                 {[
@@ -1921,7 +2104,7 @@ function Home() {
                     onClick={() => setActiveHubTab(tab.id)}
                     className={`px-6 py-2.5 rounded-full text-xs font-black tracking-wider transition-all duration-300 cursor-pointer uppercase ${
                       activeHubTab === tab.id
-                        ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white border-transparent shadow-md shadow-blue-500/20 scale-[1.02]"
+                        ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white border-transparent tab-active-glow scale-[1.02]"
                         : "text-muted hover:text-fg"
                     }`}
                   >
@@ -1939,6 +2122,36 @@ function Home() {
             </div>
           </SiteContainer>
         </section>
+
+        {/* ═══════════════════════════════════════════════════════
+            STICKY QUICK PASS DOCK (Appears on Scroll)
+            ═══════════════════════════════════════════════════════ */}
+        <div className={`fixed bottom-6 inset-x-0 z-50 pointer-events-none transition-all duration-500 ${showDock ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
+          <div className="max-w-md mx-auto px-4 pointer-events-auto">
+            <div className="rounded-full border border-primary/30 bg-surface/95 p-2 pr-2.5 shadow-[0_20px_50px_rgba(37,99,235,0.22)] backdrop-blur-xl flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 pl-3">
+                <span className="flex h-3 w-3 relative shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-success" />
+                </span>
+                <div>
+                  <div className="text-xs font-black text-fg leading-tight">Verified Seniors Active</div>
+                  <div className="text-[10px] font-bold text-muted">₹69 Fixed 1:1 Pass</div>
+                </div>
+              </div>
+
+              <Link to="/explore" className="shrink-0">
+                <button
+                  type="button"
+                  className="px-5 py-2.5 rounded-full bg-gradient-to-r from-primary to-accent text-white font-black text-xs uppercase tracking-wider shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
+                >
+                  Book Now
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
       </main>
       <Footer />
     </>

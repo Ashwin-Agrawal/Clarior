@@ -1329,3 +1329,244 @@ html.dark .glass-panel {
 .bento-hover-glow:hover::after {
   opacity: 1;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   PREMIUM LANDING PAGE — NEW UTILITIES (Phase 2 Upgrade)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Shimmer Badge — sliding light sweep across trust badges ── */
+@keyframes badgeShimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.shimmer-badge {
+  background-image: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 80%
+  );
+  background-size: 200% 100%;
+  animation: badgeShimmer 3.5s ease-in-out infinite;
+}
+
+html.dark .shimmer-badge {
+  background-image: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 80%
+  );
+}
+
+/* ─── Pricing Pulse — breathing glow on primary pricing card ── */
+@keyframes pricingBreath {
+  0%, 100% {
+    box-shadow:
+      0 0 0 4px rgba(37,99,235,0.05),
+      0 12px 40px rgba(37,99,235,0.14),
+      0 32px 80px rgba(37,99,235,0.08);
+  }
+  50% {
+    box-shadow:
+      0 0 0 8px rgba(37,99,235,0.10),
+      0 16px 60px rgba(37,99,235,0.22),
+      0 40px 100px rgba(37,99,235,0.12);
+  }
+}
+
+.pricing-breath {
+  animation: pricingBreath 3.5s ease-in-out infinite;
+}
+
+html.dark .pricing-breath {
+  animation: none;
+  box-shadow:
+    0 0 0 1px rgba(96,165,250,0.25),
+    0 20px 60px rgba(96,165,250,0.12),
+    0 40px 100px rgba(0,0,0,0.3);
+}
+
+/* ─── Section Label Line — animated width reveal ─────────────── */
+.section-label-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-label-line::before,
+.section-label-line::after {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 32px;
+  background: linear-gradient(90deg, transparent, rgb(var(--primary)));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.section-label-line::after {
+  background: linear-gradient(90deg, rgb(var(--primary)), transparent);
+  transform-origin: right;
+}
+
+.revealed .section-label-line::before,
+.revealed .section-label-line::after,
+.section-label-line.revealed::before,
+.section-label-line.revealed::after {
+  transform: scaleX(1);
+}
+
+/* ─── Hero Price Highlight — ₹69 price badge flash ───────────── */
+.price-highlight {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px 2px 10px;
+  border-radius: 8px;
+  background: rgba(37, 99, 235, 0.10);
+  border: 1px solid rgba(37, 99, 235, 0.20);
+  color: rgb(var(--primary));
+  font-weight: 900;
+  position: relative;
+  overflow: hidden;
+}
+
+.price-highlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.4) 50%, transparent 80%);
+  background-size: 200% 100%;
+  animation: badgeShimmer 4s ease-in-out infinite 1s;
+}
+
+html.dark .price-highlight {
+  background: rgba(96, 165, 250, 0.12);
+  border-color: rgba(96, 165, 250, 0.22);
+}
+
+/* ─── Avatar Group Stack — social proof row ──────────────────── */
+.avatar-stack {
+  display: flex;
+  align-items: center;
+}
+
+.avatar-stack .avatar-item {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgb(var(--surface));
+  margin-left: -8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, rgb(var(--primary)), rgb(var(--accent)));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 900;
+  color: white;
+  letter-spacing: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.avatar-stack .avatar-item:first-child {
+  margin-left: 0;
+}
+
+.avatar-stack .avatar-item:nth-child(2) { z-index: 2; }
+.avatar-stack .avatar-item:nth-child(3) { z-index: 3; background: linear-gradient(135deg, #7c3aed, #a78bfa); }
+.avatar-stack .avatar-item:nth-child(4) { z-index: 4; background: linear-gradient(135deg, #059669, #10b981); }
+.avatar-stack .avatar-item:nth-child(5) { z-index: 5; background: linear-gradient(135deg, #d97706, #f59e0b); }
+
+/* ─── Bento Card Metric Chip ─────────────────────────────────── */
+.bento-metric {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid;
+}
+
+/* ─── Tab Active Glow ────────────────────────────────────────── */
+.tab-active-glow {
+  box-shadow:
+    0 0 0 1px rgba(37, 99, 235, 0.25),
+    0 4px 16px rgba(37, 99, 235, 0.22),
+    inset 0 1px 1px rgba(255,255,255,0.12);
+}
+
+html.dark .tab-active-glow {
+  box-shadow:
+    0 0 0 1px rgba(96, 165, 250, 0.3),
+    0 4px 18px rgba(96, 165, 250, 0.20),
+    inset 0 1px 1px rgba(255,255,255,0.06);
+}
+
+/* ─── "Most Popular" badge arrow ─────────────────────────────── */
+@keyframes arrowBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(4px); }
+}
+
+.popular-arrow {
+  animation: arrowBounce 1.5s ease-in-out infinite;
+}
+
+/* ─── Bento Card Icon Ring Hover ─────────────────────────────── */
+.bento-icon-badge {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.group:hover .bento-icon-badge {
+  transform: scale(1.08);
+}
+
+/* ─── Section Header Divider Lines ───────────────────────────── */
+@keyframes lineExpand {
+  from { transform: scaleX(0); opacity: 0; }
+  to   { transform: scaleX(1); opacity: 1; }
+}
+
+.section-divider-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgb(var(--primary)), rgb(var(--accent)), transparent);
+  transform: scaleX(0);
+  transform-origin: center;
+}
+
+.revealed .section-divider-line {
+  animation: lineExpand 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+/* ─── CTA Button Aurora Shine ────────────────────────────────── */
+@keyframes auroraShine {
+  0%   { background-position: -300% 0; }
+  100% { background-position:  300% 0; }
+}
+
+.aurora-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255,255,255,0.22) 40%,
+    rgba(255,255,255,0.35) 50%,
+    rgba(255,255,255,0.22) 60%,
+    transparent 100%
+  );
+  background-size: 300% 100%;
+  animation: auroraShine 3s ease-in-out infinite;
+  pointer-events: none;
+}
