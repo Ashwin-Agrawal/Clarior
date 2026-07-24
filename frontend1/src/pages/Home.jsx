@@ -1267,29 +1267,25 @@ function Home() {
               {/* Bottom Row: Stats & Motivation Tips */}
               <div className="space-y-12 pt-16 w-full flex flex-col items-center justify-center">
                 {/* Animated Stats with Counter */}
-                <div className="scroll-reveal reveal-up stagger-4 grid grid-cols-1 sm:grid-cols-3 gap-8 w-full max-w-5xl px-4 mx-auto">
+                <div className="scroll-reveal reveal-up stagger-4 grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-5xl px-4 mx-auto">
                   {stats.map((s, index) => (
-                    <div key={s.label} className="group relative overflow-hidden rounded-[36px] border border-border/60 bg-surface p-8 text-center shadow-[0_20px_50px_-15px_rgba(37,99,235,0.08)] hover:shadow-[0_30px_70px_-20px_rgba(37,99,235,0.18)] hover:border-primary/40 transition-all duration-500 ease-out hover:-translate-y-2 scroll-reveal reveal-scale stagger-5">
+                    <div key={s.label} className="group relative overflow-hidden rounded-[28px] border border-border/80 bg-surface p-7 text-center shadow-card hover:shadow-lift hover:border-primary/40 transition-all duration-300 ease-out hover:-translate-y-1.5 scroll-reveal reveal-scale stagger-5">
                       
-                      
-                      {/* Interactive Radial Laser Beam Reflections */}
-                      <div className="absolute -top-24 -left-24 h-56 w-56 rounded-full bg-gradient-to-br from-primary/20 to-accent/10 blur-3xl opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 ease-out pointer-events-none" />
-                      <div className="absolute -bottom-24 -right-24 h-56 w-56 rounded-full bg-gradient-to-tl from-accent/15 to-indigo-500/10 blur-3xl opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 ease-out pointer-events-none" />
-                      
-                      {/* Ambient Edge Glow Border */}
-                      <div className="absolute inset-0 border border-transparent bg-gradient-to-b from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-[36px]" />
+                      {/* Ambient Soft Glow Reflection */}
+                      <div className="absolute -top-20 -right-20 h-44 w-44 rounded-full bg-primary/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                      <div className="absolute -bottom-20 -left-20 h-44 w-44 rounded-full bg-accent/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
                       <div className="relative z-10 flex flex-col items-center justify-center">
-                        {/* Premium Double Ring Hologram Badge */}
-                        <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-[24px] bg-primary/10 text-primary border border-primary/20 shadow-inner transition-all duration-700 ease-out group-hover:border-primary/50 group-hover:scale-110 group-hover:rotate-[360deg] group-hover:shadow-[0_15px_30px_-5px_rgba(37,99,235,0.15)]">
-                          <LineIcon name={s.icon} className="h-6 w-6 transition-transform duration-500 group-hover:scale-110" />
+                        {/* Professional Icon Badge (Smooth Fill on Hover, No Rotation) */}
+                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary border border-primary/20 shadow-xs transition-all duration-300 group-hover:bg-primary group-hover:text-white group-hover:border-primary group-hover:scale-105 group-hover:shadow-[0_8px_20px_-4px_rgba(37,99,235,0.3)]">
+                          <LineIcon name={s.icon} className="h-6 w-6 transition-transform duration-300 group-hover:scale-110" />
                         </div>
                         
-                        {/* Gradient-Clipped Start Numbers */}
-                        <div className="text-4xl md:text-5xl font-black bg-gradient-to-r from-fg via-primary to-accent bg-clip-text text-transparent tracking-tighter" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                        {/* Crisp Professional Stat Counter Number */}
+                        <div className="text-4xl md:text-5xl font-black text-fg tracking-tight group-hover:text-primary transition-colors duration-300" style={{ fontFamily: "'Outfit', sans-serif" }}>
                           <AnimatedCounter target={s.numericValue} suffix={s.suffix} displayAs={s.displayAs} />
                         </div>
-                        <div className="mt-3 text-[10px] font-extrabold uppercase tracking-[0.32em] text-muted/80 group-hover:text-muted transition-colors duration-300">{s.label}</div>
+                        <div className="mt-2 text-xs font-bold uppercase tracking-wider text-muted group-hover:text-fg transition-colors duration-300">{s.label}</div>
                       </div>
                     </div>
                   ))}
