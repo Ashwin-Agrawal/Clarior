@@ -12,6 +12,28 @@ export default function ResetPasswordModal({ isOpen, onClose, onSuccess }) {
   const [successMessage, setSuccessMessage] = useState("");
   const [step, setStep] = useState("phone"); // 'phone' | 'reset'
 
+  const initRecaptcha = () => {
+    try {
+      if (window.recaptchaVerifierReset) {
+        try { window.recaptchaVerifierReset.clear(); } catch (_) {}
+        window.recaptchaVerifierReset = null;
+      }
+      const container = document.getElementById("recaptcha-reset-container");
+      if (!container) return null;
+      window.recaptchaVerifierReset = new RecaptchaVerifier(auth, container, {
+        size: "invisible",
+        callback: () => {},
+        "expired-callback": () => {
+          setError("reCAPTCHA expired. Please request OTP again.");
+        },
+      });
+      return window.recaptchaVerifierReset;
+    } catch (err) {
+      console.error("reCAPTCHA init error:", err);
+      return null;
+    }
+  };
+
   useEffect(() => {
     if (!isOpen) {
       setStep("phone");
@@ -21,20 +43,9 @@ export default function ResetPasswordModal({ isOpen, onClose, onSuccess }) {
       setError("");
       setSuccessMessage("");
       setConfirmationResult(null);
-      return;
-    }
-
-    if (!window.recaptchaVerifierReset) {
-      try {
-        window.recaptchaVerifierReset = new RecaptchaVerifier(auth, "recaptcha-reset-container", {
-          size: "invisible",
-          callback: () => {},
-          "expired-callback": () => {
-            setError("reCAPTCHA expired. Please request OTP again.");
-          },
-        });
-      } catch (err) {
-        console.error("reCAPTCHA init error:", err);
+      if (window.recaptchaVerifierReset) {
+        try { window.recaptchaVerifierReset.clear(); } catch (_) {}
+        window.recaptchaVerifierReset = null;
       }
     }
   }, [isOpen]);
@@ -56,13 +67,25 @@ export default function ResetPasswordModal({ isOpen, onClose, onSuccess }) {
         ? `+${cleanPhone}`
         : `+91${cleanPhone.slice(-10)}`;
 
-      const appVerifier = window.recaptchaVerifierReset;
+      const appVerifier = initRecaptcha();
+      if (!appVerifier) {
+        throw new Error("Failed to initialize verification system. Please refresh the page.");
+      }
+
       const result = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
       setConfirmationResult(result);
       setStep("reset");
     } catch (err) {
       console.error("Firebase send OTP error:", err);
-      setError(err.message || "Failed to send OTP code. Please check the mobile number.");
+      if (window.recaptchaVerifierReset) {
+        try { window.recaptchaVerifierReset.clear(); } catch (_) {}
+        window.recaptchaVerifierReset = null;
+      }
+      let msg = err.message || "Failed to send OTP code. Please check the mobile number.";
+      if (err.code === "auth/invalid-phone-number") msg = "Invalid phone number format.";
+      if (err.code === "auth/too-many-requests") msg = "Too many requests. Please wait a few minutes before trying again.";
+      if (err.code === "auth/operation-not-allowed") msg = "Phone authentication is not enabled in your Firebase console or region policy.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
