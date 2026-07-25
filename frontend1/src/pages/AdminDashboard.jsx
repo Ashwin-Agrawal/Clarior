@@ -402,8 +402,7 @@ function AdminDashboard() {
 
                 {pending.length === 0 && !loading && (
                   <div className="py-12 text-center bg-surface2/50 rounded-[40px] border border-dashed border-border">
-                    <div className="text-3xl mb-4">✨</div>
-                    <h4 className="text-lg font-bold text-fg">Queue clear!</h4>
+                    <h4 className="text-lg font-bold text-fg">Queue clear</h4>
                     <p className="text-sm text-muted mt-1">No pending applications to review right now.</p>
                   </div>
                 )}

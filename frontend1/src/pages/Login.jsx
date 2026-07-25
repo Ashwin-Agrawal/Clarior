@@ -7,7 +7,7 @@ import Input from "../components/ui/Input";
 import { Logo } from "../components/layout/icons";
 import useSEO from "../hooks/useSEO";
 
-import PhoneVerificationModal from "../components/PhoneVerificationModal";
+import ResetPasswordModal from "../components/ResetPasswordModal";
 
 const trustPoints = [
   "Verified seniors from colleges worldwide",
@@ -21,9 +21,9 @@ function Login() {
       description: "Login to your Clarior account to connect with verified mentors."
     });
   
-    const [email, setEmail] = useState("");
+    const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
-    const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
+    const [isResetModalOpen, setIsResetModalOpen] = useState(false);
     const { setUser } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -34,8 +34,12 @@ function Login() {
     const handleLogin = async () => {
       try {
         setError("");
+        if (!identifier || !password) {
+          setError("Please enter your email/phone and password.");
+          return;
+        }
         setLoading(true);
-        const res = await api.post("/auth/login", { email, password });
+        const res = await api.post("/auth/login", { identifier, password });
         setUser(res.data.data.user);
         navigate("/dashboard", { replace: true });
       } catch (err) {
@@ -161,7 +165,7 @@ function Login() {
   
           <div className="w-full max-w-md animate-fade-up">
             <div className="mb-8">
-              <h1 className="text-3xl font-extrabold tracking-tight text-fg">Good to see you again 👋</h1>
+              <h1 className="text-3xl font-extrabold tracking-tight text-fg">Welcome back</h1>
               <p className="text-muted mt-2 text-sm">Your clarity journey continues here.</p>
             </div>
   
@@ -176,18 +180,18 @@ function Login() {
   
             <div className="space-y-4">
               <Input
-                label="Email"
+                label="Email or Phone Number"
                 id="login-email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                placeholder="you@example.com or 9876543210"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
                 onKeyDown={handleKeyDown}
-                autoComplete="email"
+                autoComplete="username"
                 iconLeft={
                   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                    <polyline points="22,6 12,13 2,6"/>
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
                   </svg>
                 }
               />
@@ -195,9 +199,8 @@ function Login() {
                 <div className="flex items-center justify-between mb-1">
                   <label htmlFor="login-password" className="text-sm font-bold text-fg">Password</label>
                   <button 
-                    onClick={() => {
-                      setError("Password reset is not configured yet. Please contact support at support@clarior.in");
-                    }}
+                    type="button"
+                    onClick={() => setIsResetModalOpen(true)}
                     className="text-xs font-semibold text-primary hover:underline cursor-pointer"
                   >
                     Forgot password?
@@ -240,22 +243,11 @@ function Login() {
 
             <div id="google-signin-button" className="w-full flex justify-center" />
 
-            <div className="mt-3">
-              <button
-                type="button"
-                onClick={() => setIsPhoneModalOpen(true)}
-                className="w-full py-3 px-4 rounded-xl border border-border bg-surface hover:bg-surface2/80 font-black text-xs text-fg uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
-              >
-                <span>📱</span> Log in with Phone OTP
-              </button>
-            </div>
-
-            <PhoneVerificationModal
-              isOpen={isPhoneModalOpen}
-              onClose={() => setIsPhoneModalOpen(false)}
-              onSuccess={(user) => {
-                setUser(user);
-                navigate("/dashboard", { replace: true });
+            <ResetPasswordModal
+              isOpen={isResetModalOpen}
+              onClose={() => setIsResetModalOpen(false)}
+              onSuccess={() => {
+                setError("");
               }}
             />
   

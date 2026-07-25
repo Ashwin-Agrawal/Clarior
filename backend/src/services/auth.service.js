@@ -56,12 +56,27 @@ class AuthService {
   /**
    * Login user and generate JWT
    */
-  static async loginUser(email, password) {
+  static async loginUser(identifier, password) {
     const User = require("../models/User");
     const bcrypt = require("bcryptjs");
     const jwt = require("jsonwebtoken");
 
-    const user = await User.findOne({ email }).select("+password");
+    if (!identifier || !password) {
+      throw new Error("INVALID_CREDENTIALS");
+    }
+
+    const cleanIdentifier = String(identifier).trim();
+    const cleanPhone = cleanIdentifier.replace(/\D/g, "");
+    const formattedPhone = cleanPhone.length === 10 ? `+91${cleanPhone}` : cleanIdentifier;
+
+    const user = await User.findOne({
+      $or: [
+        { email: cleanIdentifier.toLowerCase() },
+        { phone: cleanIdentifier },
+        { phone: formattedPhone }
+      ]
+    }).select("+password");
+
     if (!user) {
       throw new Error("INVALID_CREDENTIALS");
     }
@@ -75,10 +90,9 @@ class AuthService {
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "24h" } // 🔒 Reduced from 7 days to 24 hours
+      { expiresIn: "24h" }
     );
 
-    // Return token and user
     const userObj = user.toObject();
     delete userObj.password;
 

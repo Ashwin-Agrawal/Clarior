@@ -59,10 +59,20 @@ function Register() {
   const handleRegister = async () => {
     try {
       setError("");
-      if (!form.name || !form.email || !form.password) { setError("All fields are required."); return; }
-      if (form.password.length < 8) { setError("Password must be at least 8 characters."); return; }
+      if (!form.name || !form.email || !form.phone || !form.password) {
+        setError("All fields including mobile number are required.");
+        return;
+      }
+      if (!isPhoneVerified) {
+        setError("Please verify your mobile number via OTP before completing registration.");
+        return;
+      }
+      if (form.password.length < 8) {
+        setError("Password must be at least 8 characters.");
+        return;
+      }
       setLoading(true);
-      await api.post("/auth/register", { ...form, role: "student" });
+      await api.post("/auth/register", { ...form, role: "student", isPhoneVerified: true });
       setSuccess(true);
       setTimeout(() => navigate("/login"), 1800);
     } catch (err) {
@@ -191,7 +201,7 @@ function Register() {
                 <label className="text-xs font-bold text-fg">Mobile Number (Anonymous & Private)</label>
                 {isPhoneVerified && (
                   <span className="text-[10px] font-black text-success bg-success/10 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                    ✓ Verified
+                    Verified
                   </span>
                 )}
               </div>
@@ -220,7 +230,7 @@ function Register() {
                       : "bg-primary text-white border-transparent hover:bg-accent"
                   }`}
                 >
-                  {isPhoneVerified ? "Verified ✓" : "Verify OTP"}
+                  {isPhoneVerified ? "Verified" : "Verify OTP"}
                 </button>
               </div>
             </div>

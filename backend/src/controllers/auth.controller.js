@@ -50,15 +50,20 @@ exports.register = async (req, res) => {
   }
 };
 
-// 🔐 LOGIN (UPDATED SAFE RESPONSE)
+// 🔐 LOGIN (Email OR Phone Number + Password)
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const identifier = req.body.identifier || req.body.email || req.body.phone;
+    const { password } = req.body;
+
+    if (!identifier || !password) {
+      return sendBadRequest(res, "Email/phone and password are required.");
+    }
 
     // Call service
-    const { token, user } = await AuthService.loginUser(email, password);
+    const { token, user } = await AuthService.loginUser(identifier, password);
 
-    // ✅ SET HTTP-ONLY COOKIE
+    // Set cookie
     res.cookie("token", token, authCookieOptions);
 
     return sendSuccess(res, "Login successful", { user });
@@ -156,12 +161,16 @@ exports.googleLogin = async (req, res) => {
   }
 };
 
-// 📱 PHONE LOGIN WITH OTP
-exports.phoneLogin = async (req, res) => {
+// 🔑 RESET PASSWORD WITH PHONE OTP
+exports.resetPasswordWithPhoneToken = async (req, res) => {
   try {
-    const { idToken } = req.body;
-    if (!idToken) {
-      return res.status(400).json({ success: false, message: "idToken is required" });
+    const { idToken, newPassword } = req.body;
+    if (!idToken || !newPassword) {
+      return res.status(400).json({ success: false, message: "ID token and new password are required." });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ success: false, message: "Password must be at least 8 characters." });
     }
 
     const admin = require("../config/firebaseAdmin");
@@ -169,47 +178,31 @@ exports.phoneLogin = async (req, res) => {
     const phoneNumber = decodedToken.phone_number;
 
     if (!phoneNumber) {
-      return res.status(400).json({ success: false, message: "Invalid phone token" });
+      return res.status(400).json({ success: false, message: "Invalid phone token." });
     }
 
-    // Find user by phone number
-    let user = await User.findOne({ phone: phoneNumber });
+    const cleanPhone = phoneNumber.replace(/\D/g, "");
+    const formattedPhone = cleanPhone.length === 10 ? `+91${cleanPhone}` : phoneNumber;
+
+    const user = await User.findOne({
+      $or: [{ phone: phoneNumber }, { phone: formattedPhone }, { phone: cleanPhone }]
+    });
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        isNewUser: true,
-        phoneNumber,
-        message: "No user found with this phone number. Please register first.",
-      });
+      return res.status(404).json({ success: false, message: "No account registered with this phone number." });
     }
 
-    // Mark phone as verified if not already
-    if (!user.isPhoneVerified) {
-      user.isPhoneVerified = true;
-      await user.save();
-    }
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" }
-    );
-
-    // Set cookie
-    res.cookie("token", token, authCookieOptions);
-
-    const userObj = user.toObject();
-    delete userObj.password;
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    user.isPhoneVerified = true;
+    await user.save();
 
     return res.json({
       success: true,
-      message: "Phone login successful",
-      user: userObj,
+      message: "Password reset successful. You can now log in with your new password.",
     });
   } catch (error) {
-    console.error("Phone login error:", error);
-    return res.status(400).json({ success: false, message: "Phone login failed: " + error.message });
+    console.error("Reset password error:", error);
+    return res.status(400).json({ success: false, message: "Password reset failed: " + error.message });
   }
 };

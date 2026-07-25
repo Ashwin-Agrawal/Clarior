@@ -2,34 +2,35 @@ import { useState, useEffect } from "react";
 import { auth, RecaptchaVerifier, signInWithPhoneNumber } from "../config/firebase";
 import api from "../services/api";
 
-export default function PhoneVerificationModal({ isOpen, onClose, onSuccess }) {
+export default function ResetPasswordModal({ isOpen, onClose, onSuccess }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [step, setStep] = useState("phone"); // 'phone' | 'otp'
+  const [successMessage, setSuccessMessage] = useState("");
+  const [step, setStep] = useState("phone"); // 'phone' | 'reset'
 
   useEffect(() => {
     if (!isOpen) {
       setStep("phone");
       setPhoneNumber("");
       setOtp("");
+      setNewPassword("");
       setError("");
+      setSuccessMessage("");
       setConfirmationResult(null);
       return;
     }
 
-    // Initialize invisible reCAPTCHA when modal opens
-    if (!window.recaptchaVerifier) {
+    if (!window.recaptchaVerifierReset) {
       try {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+        window.recaptchaVerifierReset = new RecaptchaVerifier(auth, "recaptcha-reset-container", {
           size: "invisible",
-          callback: () => {
-            // reCAPTCHA solved
-          },
+          callback: () => {},
           "expired-callback": () => {
-            setError("reCAPTCHA expired. Please try sending OTP again.");
+            setError("reCAPTCHA expired. Please request OTP again.");
           },
         });
       } catch (err) {
@@ -55,10 +56,10 @@ export default function PhoneVerificationModal({ isOpen, onClose, onSuccess }) {
         ? `+${cleanPhone}`
         : `+91${cleanPhone.slice(-10)}`;
 
-      const appVerifier = window.recaptchaVerifier;
+      const appVerifier = window.recaptchaVerifierReset;
       const result = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
       setConfirmationResult(result);
-      setStep("otp");
+      setStep("reset");
     } catch (err) {
       console.error("Firebase send OTP error:", err);
       setError(err.message || "Failed to send OTP code. Please check the mobile number.");
@@ -67,29 +68,32 @@ export default function PhoneVerificationModal({ isOpen, onClose, onSuccess }) {
     }
   };
 
-  const handleVerifyOtp = async (e) => {
+  const handleResetPassword = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
       if (!confirmationResult) {
-        throw new Error("No active OTP request. Please request code again.");
+        throw new Error("No active OTP session. Please try again.");
+      }
+      if (newPassword.length < 8) {
+        throw new Error("New password must be at least 8 characters.");
       }
 
       const userCredential = await confirmationResult.confirm(otp);
       const idToken = await userCredential.user.getIdToken();
 
-      // Send Firebase ID Token to backend to verify and mark phone as verified
-      const res = await api.post("/users/verify-phone-token", { idToken });
+      const res = await api.post("/auth/reset-password-phone", { idToken, newPassword });
 
-      if (onSuccess) {
-        onSuccess(res.data.user || res.data);
-      }
-      onClose();
+      setSuccessMessage(res.data.message || "Password reset successfully!");
+      setTimeout(() => {
+        if (onSuccess) onSuccess();
+        onClose();
+      }, 2000);
     } catch (err) {
-      console.error("Firebase verify OTP error:", err);
-      setError(err.response?.data?.message || "Invalid OTP code. Please try again.");
+      console.error("Password reset error:", err);
+      setError(err.response?.data?.message || err.message || "Password reset failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -97,8 +101,7 @@ export default function PhoneVerificationModal({ isOpen, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 backdrop-blur-sm p-4 animate-fade-in">
-      {/* Container for invisible reCAPTCHA */}
-      <div id="recaptcha-container" />
+      <div id="recaptcha-reset-container" />
 
       <div className="w-full max-w-md rounded-3xl border border-border bg-surface p-6 sm:p-8 shadow-card relative">
         <button
@@ -111,21 +114,27 @@ export default function PhoneVerificationModal({ isOpen, onClose, onSuccess }) {
 
         <div className="text-center space-y-2 mb-6">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-widest text-primary">
-            Mobile Verification
+            Password Reset
           </div>
           <h3 className="text-xl sm:text-2xl font-black text-fg tracking-tight">
-            {step === "phone" ? "Verify Mobile Number" : "Enter Verification Code"}
+            {step === "phone" ? "Reset via Phone OTP" : "Enter OTP & New Password"}
           </h3>
           <p className="text-xs text-muted font-medium">
             {step === "phone"
-              ? "Enter your 10-digit mobile number to receive an instant SMS OTP."
-              : `Enter the 6-digit OTP code sent to your phone.`}
+              ? "Enter your registered mobile number to receive a verification OTP."
+              : `Enter the OTP sent to your phone and choose a new password.`}
           </p>
         </div>
 
         {error && (
           <div className="mb-5 rounded-2xl bg-danger/10 border border-danger/20 p-3.5 text-xs font-bold text-danger text-center">
             {error}
+          </div>
+        )}
+
+        {successMessage && (
+          <div className="mb-5 rounded-2xl bg-success/10 border border-success/20 p-3.5 text-xs font-bold text-success text-center">
+            {successMessage}
           </div>
         )}
 
@@ -150,26 +159,43 @@ export default function PhoneVerificationModal({ isOpen, onClose, onSuccess }) {
               disabled={loading || phoneNumber.replace(/\D/g, "").length < 10}
               className="w-full py-3.5 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-wider shadow-md hover:bg-accent disabled:opacity-50 transition-all cursor-pointer"
             >
-              {loading ? "Sending OTP Code..." : "Send OTP via SMS"}
+              {loading ? "Sending OTP..." : "Send Reset OTP"}
             </button>
           </form>
         ) : (
-          <form onSubmit={handleVerifyOtp} className="space-y-4">
-            <input
-              type="text"
-              placeholder="123456"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-              maxLength={6}
-              required
-              className="w-full px-4 py-3.5 rounded-2xl border border-border bg-surface text-fg font-black text-center text-2xl tracking-[0.5em] focus:border-primary focus:outline-none"
-            />
+          <form onSubmit={handleResetPassword} className="space-y-4">
+            <div>
+              <label className="text-xs font-bold text-fg mb-1 block text-left">6-Digit OTP Code</label>
+              <input
+                type="text"
+                placeholder="123456"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                maxLength={6}
+                required
+                className="w-full px-4 py-3 rounded-xl border border-border bg-surface text-fg font-black text-center text-xl tracking-[0.4em] focus:border-primary focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-fg mb-1 block text-left">New Password</label>
+              <input
+                type="password"
+                placeholder="At least 8 characters"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                minLength={8}
+                required
+                className="w-full px-4 py-3 rounded-xl border border-border bg-surface text-fg font-medium focus:border-primary focus:outline-none"
+              />
+            </div>
+
             <button
               type="submit"
-              disabled={loading || otp.length < 6}
+              disabled={loading || otp.length < 6 || newPassword.length < 8}
               className="w-full py-3.5 rounded-2xl bg-success text-white font-black text-xs uppercase tracking-wider shadow-md hover:bg-emerald-600 disabled:opacity-50 transition-all cursor-pointer"
             >
-              {loading ? "Verifying Token..." : "Verify & Save Phone"}
+              {loading ? "Resetting Password..." : "Confirm & Reset Password"}
             </button>
             <button
               type="button"
