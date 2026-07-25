@@ -139,7 +139,7 @@ function NotificationBell() {
           <div className="max-h-[320px] overflow-y-auto space-y-2.5 pr-1 scrollbar-hide">
             {notifications.length === 0 ? (
               <div className="text-center py-8 text-muted">
-                <div className="text-2xl mb-2">🔔</div>
+                <div className="text-2xl mb-2"></div>
                 <div className="text-xs font-bold uppercase tracking-wider">No notifications yet</div>
               </div>
             ) : (
@@ -164,7 +164,7 @@ function NotificationBell() {
                       "h-8 w-8 rounded-xl border shrink-0 flex items-center justify-center text-xs font-black uppercase",
                       badgeColor
                     )}>
-                      {n.type === "earnings" ? "₹" : n.type === "cancellation" ? "✕" : "✓"}
+                      {n.type === "earnings" ? "₹" : n.type === "cancellation" ? "" : ""}
                     </div>
                     <div className="space-y-0.5 min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">

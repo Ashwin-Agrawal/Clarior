@@ -737,7 +737,7 @@ function Dashboard() {
                             }}
                             className="rounded-xl font-black px-4 py-1.5 text-xs cursor-pointer"
                           >
-                            {copiedNotes ? "✓ Copied!" : "📋 Copy Notes"}
+                            {copiedNotes ? " Copied!" : " Copy Notes"}
                           </Button>
                         </div>
                       )}
@@ -940,7 +940,7 @@ function Dashboard() {
                     })
                   ) : (
                     <div className="py-6 text-center select-none">
-                      <div className="text-2xl mb-2">📅</div>
+                      <div className="text-2xl mb-2"></div>
                       <p className="text-xs font-semibold text-muted italic">No active slots created yet.</p>
                       <Link to="/availability" className="inline-block mt-3 text-xs font-black text-primary hover:text-accent transition-colors">
                         Create some now →
@@ -961,7 +961,7 @@ function Dashboard() {
             {slotRequests.length === 0 ? (
               <Card className="p-8 text-center border-dashed border-2 border-border/70 bg-surface/40">
                 <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary text-xl">
-                  📅
+                  
                 </div>
                 <h4 className="font-black text-fg text-sm uppercase tracking-wider">No custom requests yet</h4>
                 <p className="text-xs text-muted mt-1 font-semibold">Need a slot? Go to a senior's profile and request a custom time.</p>
@@ -989,9 +989,9 @@ function Dashboard() {
                         </div>
                         
                         <div className="flex items-center gap-1.5 text-[10px] font-bold text-fg bg-surface2/60 border border-border/40 px-2.5 py-1.5 rounded-xl">
-                          <span>📅 {new Date(req.preferredDate).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
+                          <span> {new Date(req.preferredDate).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
                           <span className="h-1 w-1 rounded-full bg-primary" />
-                          <span className="capitalize">🕒 {req.preferredTime}</span>
+                          <span className="capitalize"> {req.preferredTime}</span>
                         </div>
                         
                         {req.status === "accepted" && (
@@ -1018,7 +1018,7 @@ function Dashboard() {
             {slotRequests.filter(r => r.status === "pending").length === 0 ? (
               <Card className="p-8 text-center border-dashed border-2 border-border/70 bg-surface/40">
                 <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary text-xl">
-                  📅
+                  
                 </div>
                 <h4 className="font-black text-fg text-sm uppercase tracking-wider">No pending requests</h4>
                 <p className="text-xs text-muted mt-1 font-semibold">Custom slot requests from students will appear here.</p>
@@ -1033,9 +1033,9 @@ function Dashboard() {
                         <div className="text-[10px] text-muted font-bold mt-1 uppercase tracking-wider">{req.student?.college || "Top College"}</div>
                         
                         <div className="flex items-center gap-2 text-xs font-semibold text-fg mt-3.5 bg-surface2/60 border border-border/40 px-3 py-1.5 rounded-xl">
-                          <span>📅 {new Date(req.preferredDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
+                          <span> {new Date(req.preferredDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
                           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                          <span className="capitalize">🕒 {req.preferredTime}</span>
+                          <span className="capitalize"> {req.preferredTime}</span>
                         </div>
                         
                         {req.notes && (

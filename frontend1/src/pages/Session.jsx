@@ -472,7 +472,7 @@ function Session() {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <span className={`text-base select-none ${cameraActive ? "text-emerald-500" : "text-muted"}`}>📹</span>
+                      <span className={`text-base select-none ${cameraActive ? "text-emerald-500" : "text-muted"}`}></span>
                       <span className="text-sm font-black text-fg">Enable Camera Access</span>
                     </div>
                     <div className={`h-6 w-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${
@@ -498,7 +498,7 @@ function Session() {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <span className={`text-base select-none ${micActive ? "text-emerald-500" : "text-muted"}`}>🎙️</span>
+                      <span className={`text-base select-none ${micActive ? "text-emerald-500" : "text-muted"}`}></span>
                       <span className="text-sm font-black text-fg">Enable Microphone Access</span>
                     </div>
                     <div className={`h-6 w-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${
@@ -517,7 +517,7 @@ function Session() {
 
                 {actionError && (
                   <div className="rounded-xl border border-danger/30 bg-danger/5 px-4 py-3 text-xs font-bold text-danger animate-scale-in">
-                    ⚠️ {actionError}
+                    Warning: {actionError}
                   </div>
                 )}
               </div>
@@ -808,7 +808,7 @@ function Session() {
 
                 {actionError && (
                   <div className="rounded-2xl border border-danger/30 bg-danger/5 px-6 py-4 text-xs font-bold text-danger animate-scale-in">
-                    ⚠️ {actionError}
+                    Warning: {actionError}
                   </div>
                 )}
               </Card>
@@ -827,7 +827,7 @@ function Session() {
                       onClick={handleRefreshCall}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider text-primary border border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/45 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
                     >
-                      🔄 Refresh Video Call
+                       Refresh Video Call
                     </button>
                   </div>
                   <Card className="p-2 overflow-hidden bg-slate-950 border border-border/80 rounded-[32px] shadow-hero w-full h-[320px] md:h-[480px] relative">
@@ -906,11 +906,11 @@ function Session() {
                     />
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       {[
-                        "🎓 Placement Stats",
-                        "📚 Branch Change Rules",
-                        "💼 Internships",
-                        "🏠 Campus & Hostel Life",
-                        "💡 Exam Prep"
+                        " Placement Stats",
+                        " Branch Change Rules",
+                        " Internships",
+                        " Campus & Hostel Life",
+                        " Exam Prep"
                       ].map((prompt) => (
                         <button
                           key={prompt}
@@ -958,7 +958,7 @@ function Session() {
                           }}
                           className="rounded-xl font-black px-4 py-1.5 text-xs cursor-pointer"
                         >
-                          📋 Copy Notes
+                           Copy Notes
                         </Button>
                       </div>
                     )}

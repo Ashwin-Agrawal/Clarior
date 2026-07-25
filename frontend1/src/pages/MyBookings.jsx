@@ -342,7 +342,7 @@ function MyBookings() {
                 onClick={() => setNotesModalBooking(null)}
                 className="h-8 w-8 rounded-full bg-surface2 border border-border text-muted hover:text-fg flex items-center justify-center font-bold text-xs cursor-pointer"
               >
-                ✕
+                
               </button>
             </div>
 
@@ -416,7 +416,7 @@ function MyBookings() {
                       }}
                       className="rounded-xl font-black px-4 py-1.5 text-xs cursor-pointer"
                     >
-                      {copiedNotes ? "✓ Copied!" : "📋 Copy Notes"}
+                      {copiedNotes ? " Copied!" : " Copy Notes"}
                     </Button>
                   </div>
                 )}

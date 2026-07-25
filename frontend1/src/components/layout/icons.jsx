@@ -77,7 +77,7 @@ export function BrandMark({ className = "h-5 w-5" }) {
 export function Logo({ size = "navbar", className = "" }) {
   const iconSize =
   size === "navbar"
-    ? "h-10 max-w-[250px]"  // 👈 increased width
+    ? "h-10 max-w-[250px]"  //  increased width
     : size === "sidebar"
     ? "h-12 max-w-[280px]"
     : "h-8 max-w-[180px]";

@@ -26,16 +26,16 @@ const apiBaseUrl = getApiBaseUrl().replace(/\/$/, "");
 
 const api = axios.create({
   baseURL: apiBaseUrl,
-  withCredentials: true, // 🔥 ENABLE COOKIES
-  timeout: 30000, // 🔒 Add request timeout
+  withCredentials: true, //  ENABLE COOKIES
+  timeout: 30000, //  Add request timeout
 });
 
-// 🔒 Guard against rapid session-expired dispatches to prevent navigation loops.
+//  Guard against rapid session-expired dispatches to prevent navigation loops.
 let lastExpiryDispatch = 0;
 const EXPIRY_THROTTLE = 2000;
 const isDev = import.meta.env.DEV;
 
-// 🔥 REQUEST INTERCEPTOR - Add security headers
+//  REQUEST INTERCEPTOR - Add security headers
 api.interceptors.request.use(
   (config) => {
     if (isDev) console.log(`[API] Request: ${config.method?.toUpperCase()} ${config.url}`);
@@ -48,8 +48,8 @@ api.interceptors.request.use(
   }
 );
 
-// 🔥 RESPONSE INTERCEPTOR - Handle auth errors
-// ⚠️ IMPORTANT: We dispatch a custom event instead of using window.location.href
+//  RESPONSE INTERCEPTOR - Handle auth errors
+// Warning: IMPORTANT: We dispatch a custom event instead of using window.location.href
 // window.location.href causes a full page reload → remounts AuthContext → fetchUser fires
 // again → another 401 → another reload → infinite loop.
 api.interceptors.response.use(

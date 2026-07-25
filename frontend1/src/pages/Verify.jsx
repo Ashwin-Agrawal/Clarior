@@ -82,7 +82,7 @@ function Verify() {
       setLoading(true);
       await api.patch('/users/verification-details', { college: college.trim(), upiId: upiId.trim(), affiliatedCollege: isNewGen ? affiliatedCollege.trim() : null });
       await fetchUser?.();
-      setMsg({ type: "success", text: "Details saved! Your profile is now under review. ✅" });
+      setMsg({ type: "success", text: "Details saved! Your profile is now under review. " });
     } catch (err) {
       setMsg({ type: "error", text: err?.response?.data?.message || "Failed to save details" });
     } finally {
