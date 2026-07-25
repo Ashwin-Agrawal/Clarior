@@ -7,7 +7,7 @@ function ProtectedRoute({ children }) {
 
   if (loading) return <div>Loading...</div>;
 
-  //  not logged in - redirect to login with return URL
+  // not logged in - redirect to login with return URL
   if (!user) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }

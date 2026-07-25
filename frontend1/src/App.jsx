@@ -13,7 +13,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import CollegeProfile from "./pages/CollegeProfile";
 
-//  NEW IMPORTS
+// NEW IMPORTS
 import Dashboard from "./pages/Dashboard";
 import Verify from "./pages/Verify";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -37,7 +37,7 @@ function App() {
       <ToastContainer />
       <Routes>
 
-        {/*  PUBLIC ROUTES */}
+        {/* PUBLIC ROUTES */}
         <Route path="/" element={<Home />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/college/:id" element={<CollegeProfile />} />
@@ -68,7 +68,7 @@ function App() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
 
-        {/*  PROTECTED ROUTE */}
+        {/* PROTECTED ROUTE */}
         <Route
           path="/profile"
           element={
@@ -122,7 +122,7 @@ function App() {
           }
         />
 
-        {/*  VERIFY PAGE */}
+        {/* VERIFY PAGE */}
         <Route
           path="/verify"
           element={

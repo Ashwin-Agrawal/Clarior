@@ -34,10 +34,30 @@ function Toast({ toast, onClose }) {
 
   const getIcon = () => {
     switch (type) {
-      case "success": return <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center text-success text-sm"></div>;
-      case "error":   return <div className="h-8 w-8 rounded-full bg-danger/10 flex items-center justify-center text-danger text-sm"></div>;
-      case "warning": return <div className="h-8 w-8 rounded-full bg-warning/10 flex items-center justify-center text-warning text-sm">!</div>;
-      default:        return <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm">i</div>;
+      case "success":
+        return (
+          <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center text-success flex-shrink-0">
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+          </div>
+        );
+      case "error":
+        return (
+          <div className="h-8 w-8 rounded-full bg-danger/10 flex items-center justify-center text-danger flex-shrink-0">
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+          </div>
+        );
+      case "warning":
+        return (
+          <div className="h-8 w-8 rounded-full bg-warning/10 flex items-center justify-center text-warning flex-shrink-0 font-black text-xs">
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+        );
+      default:
+        return (
+          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          </div>
+        );
     }
   };
 

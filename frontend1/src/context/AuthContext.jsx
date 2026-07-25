@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 
   const isDev = import.meta.env.DEV;
 
-  //  Stabilized setter: only update state when the user data actually changes.
+  // Stabilized setter: only update state when the user data actually changes.
   // Without this, every setUser(newObj) — even with identical data — creates a new
   // object reference which triggers all [user]-dependent useEffects.
   const userRef = useRef(null);
