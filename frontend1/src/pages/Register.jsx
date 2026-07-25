@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { Logo } from "../components/layout/icons";
-import useSEO from "../hooks/useSEO";
+import PhoneVerificationModal from "../components/PhoneVerificationModal";
 
 function PasswordStrength({ password }) {
   const checks = [
@@ -45,7 +45,9 @@ function PasswordStrength({ password }) {
 
 function Register() {
   useSEO({ title: "Register", description: "Create an account on Clarior to connect with verified senior mentors." });
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", password: "" });
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
   const navigate = useNavigate();
   const { setUser } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -182,6 +184,57 @@ function Register() {
               iconLeft={<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>} />
             <Input label="Email" id="reg-email" type="email" placeholder="you@example.com" value={form.email} onChange={update("email")} onKeyDown={handleKeyDown} autoComplete="email"
               iconLeft={<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>} />
+            
+            {/* Phone Verification Section */}
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-bold text-fg">Mobile Number (Anonymous & Private)</label>
+                {isPhoneVerified && (
+                  <span className="text-[10px] font-black text-success bg-success/10 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                    ✓ Verified
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  id="reg-phone"
+                  type="tel"
+                  placeholder="9876543210"
+                  value={form.phone}
+                  onChange={update("phone")}
+                  onKeyDown={handleKeyDown}
+                  autoComplete="tel"
+                  className="flex-1"
+                  iconLeft={
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                  }
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsPhoneModalOpen(true)}
+                  className={`px-4 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all cursor-pointer border ${
+                    isPhoneVerified
+                      ? "bg-success/10 border-success/30 text-success"
+                      : "bg-primary text-white border-transparent hover:bg-accent"
+                  }`}
+                >
+                  {isPhoneVerified ? "Verified ✓" : "Verify OTP"}
+                </button>
+              </div>
+            </div>
+
+            <PhoneVerificationModal
+              isOpen={isPhoneModalOpen}
+              onClose={() => setIsPhoneModalOpen(false)}
+              onSuccess={(verifiedUser) => {
+                setIsPhoneVerified(true);
+                if (verifiedUser?.phone) {
+                  setForm(prev => ({ ...prev, phone: verifiedUser.phone }));
+                }
+              }}
+            />
             <div>
               <Input label="Password" id="reg-password" type="password" placeholder="At least 8 characters" value={form.password} onChange={update("password")} onKeyDown={handleKeyDown} autoComplete="new-password"
                 iconLeft={<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>} />

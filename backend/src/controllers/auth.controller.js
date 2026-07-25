@@ -155,3 +155,61 @@ exports.googleLogin = async (req, res) => {
     return res.status(400).json({ success: false, message: error.message });
   }
 };
+
+// 📱 PHONE LOGIN WITH OTP
+exports.phoneLogin = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ success: false, message: "idToken is required" });
+    }
+
+    const admin = require("../config/firebaseAdmin");
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const phoneNumber = decodedToken.phone_number;
+
+    if (!phoneNumber) {
+      return res.status(400).json({ success: false, message: "Invalid phone token" });
+    }
+
+    // Find user by phone number
+    let user = await User.findOne({ phone: phoneNumber });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        isNewUser: true,
+        phoneNumber,
+        message: "No user found with this phone number. Please register first.",
+      });
+    }
+
+    // Mark phone as verified if not already
+    if (!user.isPhoneVerified) {
+      user.isPhoneVerified = true;
+      await user.save();
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    // Set cookie
+    res.cookie("token", token, authCookieOptions);
+
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    return res.json({
+      success: true,
+      message: "Phone login successful",
+      user: userObj,
+    });
+  } catch (error) {
+    console.error("Phone login error:", error);
+    return res.status(400).json({ success: false, message: "Phone login failed: " + error.message });
+  }
+};

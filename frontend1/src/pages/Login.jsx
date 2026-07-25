@@ -7,6 +7,8 @@ import Input from "../components/ui/Input";
 import { Logo } from "../components/layout/icons";
 import useSEO from "../hooks/useSEO";
 
+import PhoneVerificationModal from "../components/PhoneVerificationModal";
+
 const trustPoints = [
   "Verified seniors from colleges worldwide",
   "Honest, experience-based guidance only",
@@ -21,6 +23,7 @@ function Login() {
   
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
     const { setUser } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -236,6 +239,25 @@ function Login() {
             </div>
 
             <div id="google-signin-button" className="w-full flex justify-center" />
+
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={() => setIsPhoneModalOpen(true)}
+                className="w-full py-3 px-4 rounded-xl border border-border bg-surface hover:bg-surface2/80 font-black text-xs text-fg uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
+              >
+                <span>📱</span> Log in with Phone OTP
+              </button>
+            </div>
+
+            <PhoneVerificationModal
+              isOpen={isPhoneModalOpen}
+              onClose={() => setIsPhoneModalOpen(false)}
+              onSuccess={(user) => {
+                setUser(user);
+                navigate("/dashboard", { replace: true });
+              }}
+            />
   
             <p className="mt-5 text-center text-sm text-muted">
               Don't have an account?{" "}
