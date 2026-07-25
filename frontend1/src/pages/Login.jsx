@@ -259,13 +259,13 @@ function Login() {
             </p>
   
             {/* Community Social Proof Badge */}
-            <div className="mt-8 p-4 rounded-2xl bg-surface2 border border-border flex items-center justify-between gap-4 select-none">
+            <div className="mt-8 p-4 rounded-2xl bg-surface2/60 border border-border/80 flex items-center justify-between gap-4 select-none">
               <div>
-                <div className="text-[10px] font-black text-muted uppercase tracking-wider">Join the community</div>
-                <div className="text-xs font-black text-fg mt-0.5">5,000+ students already inside</div>
+                <div className="text-[10px] font-black text-muted uppercase tracking-wider">Verified Network</div>
+                <div className="text-xs font-black text-fg mt-0.5">Connected with top university seniors</div>
               </div>
-              <div className="flex -space-x-2.5 overflow-hidden">
-                {["IITD", "IITB", "BITS", "DTU"].map((initial, i) => (
+              <div className="flex -space-x-2 overflow-hidden">
+                {["IIT", "BITS", "NIT", "DTU"].map((initial, i) => (
                   <div key={i} className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent border-2 border-surface text-[9px] font-black text-white">
                     {initial[0]}
                   </div>
