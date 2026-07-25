@@ -25,7 +25,7 @@ const authCookieOptions = {
 // 🔐 REGISTER
 exports.register = async (req, res) => {      
   try {
-    const { name, email, phone, password, role, college, domain, branch, year, cgpa, bio, linkedin } = req.body;
+    const { name, email, phone, password, role, isPhoneVerified, college, domain, branch, year, cgpa, bio, linkedin } = req.body;
 
     // Call service
     const user = await AuthService.registerUser({
@@ -34,6 +34,7 @@ exports.register = async (req, res) => {
       phone,
       password,
       role,
+      isPhoneVerified,
       college,
       domain,
       branch,

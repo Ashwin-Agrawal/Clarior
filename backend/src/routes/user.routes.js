@@ -20,8 +20,8 @@ const {
 router.post("/apply-senior", authMiddleware, applySenior);
 router.post("/become-senior", authMiddleware, applySenior);
 
-// 📱 VERIFY FIREBASE PHONE TOKEN
-router.post("/verify-phone-token", authMiddleware, verifyPhoneToken);
+// 📱 VERIFY FIREBASE PHONE TOKEN (Public - verifies Firebase ID token cryptographically)
+router.post("/verify-phone-token", verifyPhoneToken);
 
 // ✏️ PROFILE
 router.patch("/profile", authMiddleware, updateProfile);

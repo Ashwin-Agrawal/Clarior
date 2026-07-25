@@ -387,24 +387,30 @@ exports.verifyPhoneToken = async (req, res) => {
       return res.status(400).json({ message: "Invalid phone token. No phone number attached." });
     }
 
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      {
-        $set: {
-          phone: phoneNumber,
-          isPhoneVerified: true,
+    // If user is logged in, update their database record
+    if (req.user?.id) {
+      const user = await User.findByIdAndUpdate(
+        req.user.id,
+        {
+          $set: {
+            phone: phoneNumber,
+            isPhoneVerified: true,
+          },
         },
-      },
-      { new: true }
-    ).select("-password");
+        { new: true }
+      ).select("-password");
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.json({
+        message: "Phone number verified successfully",
+        user,
+        phone: phoneNumber,
+      });
     }
 
+    // If unauthenticated (e.g. registration flow), return verified phone number
     return res.json({
       message: "Phone number verified successfully",
-      user,
+      phone: phoneNumber,
     });
   } catch (err) {
     console.error("Firebase token verification error:", err);

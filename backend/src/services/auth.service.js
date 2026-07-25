@@ -34,6 +34,7 @@ class AuthService {
       name: userData.name,
       email: userData.email,
       phone: userData.phone || null,
+      isPhoneVerified: userData.isPhoneVerified === true || Boolean(userData.phone),
       password: hashedPassword,
       role: userData.role === "senior" ? "senior" : "student",
       isVerified: userData.role === "senior" ? false : true,
