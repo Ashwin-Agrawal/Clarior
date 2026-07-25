@@ -14,7 +14,7 @@ export default function ResetPasswordModal({ isOpen, onClose, onSuccess }) {
   const [step, setStep] = useState("phone"); // 'phone' | 'reset'
   const [countdown, setCountdown] = useState(0);
 
-  const initRecaptcha = () => {
+  const initRecaptcha = async () => {
     try {
       if (window.recaptchaVerifierReset) {
         try { window.recaptchaVerifierReset.clear(); } catch (_) {}
@@ -22,13 +22,14 @@ export default function ResetPasswordModal({ isOpen, onClose, onSuccess }) {
       }
       const container = document.getElementById("recaptcha-reset-container");
       if (!container) return null;
-      window.recaptchaVerifierReset = new RecaptchaVerifier(auth, container, {
+      window.recaptchaVerifierReset = new RecaptchaVerifier(auth, "recaptcha-reset-container", {
         size: "invisible",
         callback: () => {},
         "expired-callback": () => {
-          setError("reCAPTCHA expired. Please request OTP again.");
+          setError("reCAPTCHA verification expired. Please request OTP again.");
         },
       });
+      await window.recaptchaVerifierReset.render();
       return window.recaptchaVerifierReset;
     } catch (err) {
       console.error("reCAPTCHA init error:", err);
@@ -74,8 +75,8 @@ export default function ResetPasswordModal({ isOpen, onClose, onSuccess }) {
         ? `+${cleanPhone}`
         : `+91${cleanPhone.slice(-10)}`;
 
-      const appVerifier = initRecaptcha();
-      if (!appVerifier) throw new Error("Failed to initialize verification. Please refresh the page.");
+      const appVerifier = await initRecaptcha();
+      if (!appVerifier) throw new Error("Failed to initialize verification system. Please refresh the page.");
 
       const result = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
       setConfirmationResult(result);
