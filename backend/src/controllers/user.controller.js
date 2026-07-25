@@ -371,3 +371,45 @@ exports.getMyRequests = async (req, res) => {
   }
 };
 
+// 📱 VERIFY FIREBASE PHONE TOKEN
+exports.verifyPhoneToken = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ message: "Firebase ID token is required" });
+    }
+
+    const admin = require("../config/firebaseAdmin");
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const phoneNumber = decodedToken.phone_number;
+
+    if (!phoneNumber) {
+      return res.status(400).json({ message: "Invalid phone token. No phone number attached." });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        $set: {
+          phone: phoneNumber,
+          isPhoneVerified: true,
+        },
+      },
+      { new: true }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.json({
+      message: "Phone number verified successfully",
+      user,
+    });
+  } catch (err) {
+    console.error("Firebase token verification error:", err);
+    return res.status(401).json({ message: "Phone verification failed: " + err.message });
+  }
+};
+
+
