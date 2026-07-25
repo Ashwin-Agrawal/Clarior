@@ -987,7 +987,7 @@ function Home() {
                               <div className="my-5 p-4 rounded-2xl border border-border bg-surface2 flex items-center justify-between shadow-sm">
                                 <div className="flex items-center gap-3">
                                   <div className="custom-coin-spin h-11 w-11 rounded-2xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shadow-sm">
-                                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 033 3z" /></svg>
+                                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3z" /></svg>
                                   </div>
                                   <div>
                                     <div className="text-[10px] font-black text-muted uppercase tracking-wider">Wallet Balance</div>
