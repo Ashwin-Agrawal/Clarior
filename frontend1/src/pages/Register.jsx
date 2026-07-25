@@ -86,8 +86,13 @@ function Register() {
       setLoading(true);
       setError("");
       const res = await api.post("/auth/google", { idToken: response.credential });
-      setUser(res.data.user);
-      navigate("/dashboard", { replace: true });
+      const loggedUser = res.data.user;
+      setUser(loggedUser);
+      if (!loggedUser?.isPhoneVerified || !loggedUser?.phone) {
+        setIsPhoneModalOpen(true);
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
     } catch (err) {
       setError(err?.response?.data?.message || "Google sign-up failed. Please try again.");
     } finally {
@@ -362,11 +367,25 @@ function Register() {
       {/* Phone Verification Modal */}
       <PhoneVerificationModal
         isOpen={isPhoneModalOpen}
-        onClose={() => setIsPhoneModalOpen(false)}
-        onSuccess={(verifiedUser) => {
+        onClose={() => {
+          setIsPhoneModalOpen(false);
+          if (user?.isPhoneVerified) {
+            navigate("/dashboard", { replace: true });
+          }
+        }}
+        onSuccess={async (verifiedUser) => {
           setIsPhoneVerified(true);
           if (verifiedUser?.phone) {
             setForm(prev => ({ ...prev, phone: verifiedUser.phone.replace("+91", "") }));
+          }
+          if (user) {
+            // User is logged in via Google auth
+            setIsPhoneModalOpen(false);
+            await fetchUser();
+            navigate("/dashboard", { replace: true });
+          } else {
+            // Form registration flow
+            setIsPhoneModalOpen(false);
           }
         }}
       />

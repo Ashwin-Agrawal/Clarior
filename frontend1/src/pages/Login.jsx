@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { Logo } from "../components/layout/icons";
 import useSEO from "../hooks/useSEO";
 import ResetPasswordModal from "../components/ResetPasswordModal";
+import PhoneVerificationModal from "../components/PhoneVerificationModal";
 
 function Login() {
   useSEO({ title: "Login", description: "Login to your Clarior account to connect with verified senior mentors." });
@@ -13,10 +14,11 @@ function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [googleClientId, setGoogleClientId] = useState("");
-  const { setUser } = useAuth();
+  const { setUser, fetchUser } = useAuth();
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
 
@@ -43,8 +45,13 @@ function Login() {
       setLoading(true);
       setError("");
       const res = await api.post("/auth/google", { idToken: response.credential });
-      setUser(res.data.user);
-      navigate("/dashboard", { replace: true });
+      const loggedUser = res.data.user;
+      setUser(loggedUser);
+      if (!loggedUser?.isPhoneVerified || !loggedUser?.phone) {
+        setIsPhoneModalOpen(true);
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
     } catch (err) {
       setError(err?.response?.data?.message || "Google login failed. Please try again.");
     } finally {
@@ -303,6 +310,20 @@ function Login() {
         isOpen={isResetModalOpen}
         onClose={() => setIsResetModalOpen(false)}
         onSuccess={() => setError("")}
+      />
+
+      {/* Phone Verification Modal for Google Auth */}
+      <PhoneVerificationModal
+        isOpen={isPhoneModalOpen}
+        onClose={() => {
+          setIsPhoneModalOpen(false);
+          navigate("/dashboard", { replace: true });
+        }}
+        onSuccess={async () => {
+          setIsPhoneModalOpen(false);
+          await fetchUser();
+          navigate("/dashboard", { replace: true });
+        }}
       />
     </div>
   );

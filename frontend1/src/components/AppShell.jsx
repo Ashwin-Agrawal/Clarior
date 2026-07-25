@@ -70,12 +70,17 @@ function NavItem({ to, label, icon, active }) {
   );
 }
 
+import PhoneVerificationModal from "./PhoneVerificationModal";
+
 function AppShell({ title, subtitle, children }) {
-  const { user, setUser } = useAuth();
+  const { user, setUser, fetchUser } = useAuth();
   const navigate = useNavigate();
   const { theme, toggle: toggleDark } = useTheme();
   const dark = theme === "dark";
   const location = useLocation();
+  const [showPhoneVerifyModal, setShowPhoneVerifyModal] = useState(false);
+
+  const needsPhoneVerification = user && (!user.phone || !user.isPhoneVerified);
 
   const nav = useMemo(() => {
     const items = [
@@ -188,6 +193,25 @@ function AppShell({ title, subtitle, children }) {
         </div>
 
         <div className="min-h-screen bg-bg relative overflow-hidden pb-20 lg:pb-0">
+          {/* Mobile Verification Alert Banner */}
+          {needsPhoneVerification && (
+            <div className="bg-warning/10 border-b border-warning/20 px-4 py-3 text-xs text-warning font-semibold flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="flex-shrink-0">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                <span>Mobile number not verified. Please verify your mobile number via OTP to complete your account setup.</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPhoneVerifyModal(true)}
+                className="px-3.5 py-1.5 rounded-xl bg-warning text-slate-950 font-black uppercase tracking-wider text-[10px] hover:bg-warning/90 transition-all cursor-pointer flex-shrink-0 shadow-sm"
+              >
+                Verify Mobile
+              </button>
+            </div>
+          )}
+
           {/* Ambient Background Glow Orbs */}
           <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
           <div className="absolute bottom-1/3 left-1/4 w-80 h-80 rounded-full bg-accent/5 blur-[100px] pointer-events-none" />
@@ -218,6 +242,15 @@ function AppShell({ title, subtitle, children }) {
             )}
             {children}
           </SiteContainer>
+
+          <PhoneVerificationModal
+            isOpen={showPhoneVerifyModal}
+            onClose={() => setShowPhoneVerifyModal(false)}
+            onSuccess={async () => {
+              setShowPhoneVerifyModal(false);
+              await fetchUser();
+            }}
+          />
         </div>
       </main>
     </div>
