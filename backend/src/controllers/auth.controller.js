@@ -162,7 +162,7 @@ exports.googleLogin = async (req, res) => {
   }
 };
 
-// 🔑 RESET PASSWORD WITH PHONE OTP
+// 🔑 RESET PASSWORD WITH PHONE OTP (Auto-register if user doesn't exist)
 exports.resetPasswordWithPhoneToken = async (req, res) => {
   try {
     const { idToken, newPassword } = req.body;
@@ -185,17 +185,47 @@ exports.resetPasswordWithPhoneToken = async (req, res) => {
     const cleanPhone = phoneNumber.replace(/\D/g, "");
     const formattedPhone = cleanPhone.length === 10 ? `+91${cleanPhone}` : phoneNumber;
 
-    const user = await User.findOne({
+    let user = await User.findOne({
       $or: [{ phone: phoneNumber }, { phone: formattedPhone }, { phone: cleanPhone }]
     });
 
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
     if (!user) {
-      return res.status(404).json({ success: false, message: "No account registered with this phone number." });
+      // Auto-register user if mobile number does not exist in DB yet
+      const defaultEmail = `${cleanPhone.slice(-10)}@clarior.in`;
+      const defaultName = `User ${cleanPhone.slice(-4)}`;
+
+      let existingByEmail = await User.findOne({ email: defaultEmail });
+      if (existingByEmail) {
+        user = existingByEmail;
+        user.phone = formattedPhone;
+        user.password = hashedPassword;
+        user.isPhoneVerified = true;
+        await user.save();
+      } else {
+        user = await User.create({
+          name: defaultName,
+          email: defaultEmail,
+          phone: formattedPhone,
+          password: hashedPassword,
+          role: "student",
+          isVerified: true,
+          isPhoneVerified: true,
+          callCredits: 0,
+        });
+      }
+
+      return res.json({
+        success: true,
+        message: "Account created and password set successfully! You can now log in.",
+        user,
+      });
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     user.isPhoneVerified = true;
+    if (!user.phone) user.phone = formattedPhone;
     await user.save();
 
     return res.json({
