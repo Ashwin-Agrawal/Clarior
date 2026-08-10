@@ -2124,9 +2124,9 @@ function Home() {
         </section>
 
         {/* ═══════════════════════════════════════════════════════
-            STICKY QUICK PASS DOCK (Appears on Scroll)
+            STICKY QUICK PASS DOCK (Appears on Scroll — Desktop Only)
             ═══════════════════════════════════════════════════════ */}
-        <div className={`fixed bottom-6 inset-x-0 z-50 pointer-events-none transition-all duration-500 ${showDock ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
+        <div className={`fixed bottom-6 inset-x-0 z-50 pointer-events-none transition-all duration-500 hidden md:block ${showDock ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
           <div className="max-w-md mx-auto px-4 pointer-events-auto">
             <div className="rounded-full border border-primary/30 bg-surface/95 p-2 pr-2.5 shadow-[0_20px_50px_rgba(37,99,235,0.22)] backdrop-blur-xl flex items-center justify-between gap-3">
               <div className="flex items-center gap-3 pl-3">
