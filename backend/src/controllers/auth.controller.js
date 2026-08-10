@@ -25,7 +25,7 @@ const authCookieOptions = {
 // 🔐 REGISTER
 exports.register = async (req, res) => {      
   try {
-    const { name, email, phone, password, role, isPhoneVerified, college, domain, branch, year, cgpa, bio, linkedin } = req.body;
+    const { name, email, phone, password, role, college, domain, branch, year, cgpa, bio, linkedin } = req.body;
 
     // Call service
     const user = await AuthService.registerUser({
@@ -34,7 +34,6 @@ exports.register = async (req, res) => {
       phone,
       password,
       role,
-      isPhoneVerified,
       college,
       domain,
       branch,
@@ -51,20 +50,15 @@ exports.register = async (req, res) => {
   }
 };
 
-// 🔐 LOGIN (Email OR Phone Number + Password)
+// 🔐 LOGIN (UPDATED SAFE RESPONSE)
 exports.login = async (req, res) => {
   try {
-    const identifier = req.body.identifier || req.body.email || req.body.phone;
-    const { password } = req.body;
-
-    if (!identifier || !password) {
-      return sendBadRequest(res, "Email/phone and password are required.");
-    }
+    const { email, password } = req.body;
 
     // Call service
-    const { token, user } = await AuthService.loginUser(identifier, password);
+    const { token, user } = await AuthService.loginUser(email, password);
 
-    // Set cookie
+    // ✅ SET HTTP-ONLY COOKIE
     res.cookie("token", token, authCookieOptions);
 
     return sendSuccess(res, "Login successful", { user });
@@ -159,81 +153,5 @@ exports.googleLogin = async (req, res) => {
     });
   } catch (error) {
     return res.status(400).json({ success: false, message: error.message });
-  }
-};
-
-// 🔑 RESET PASSWORD WITH PHONE OTP (Auto-register if user doesn't exist)
-exports.resetPasswordWithPhoneToken = async (req, res) => {
-  try {
-    const { idToken, newPassword } = req.body;
-    if (!idToken || !newPassword) {
-      return res.status(400).json({ success: false, message: "ID token and new password are required." });
-    }
-
-    if (newPassword.length < 8) {
-      return res.status(400).json({ success: false, message: "Password must be at least 8 characters." });
-    }
-
-    const admin = require("../config/firebaseAdmin");
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const phoneNumber = decodedToken.phone_number;
-
-    if (!phoneNumber) {
-      return res.status(400).json({ success: false, message: "Invalid phone token." });
-    }
-
-    const cleanPhone = phoneNumber.replace(/\D/g, "");
-    const formattedPhone = cleanPhone.length === 10 ? `+91${cleanPhone}` : phoneNumber;
-
-    let user = await User.findOne({
-      $or: [{ phone: phoneNumber }, { phone: formattedPhone }, { phone: cleanPhone }]
-    });
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    if (!user) {
-      // Auto-register user if mobile number does not exist in DB yet
-      const defaultEmail = `${cleanPhone.slice(-10)}@clarior.in`;
-      const defaultName = `User ${cleanPhone.slice(-4)}`;
-
-      let existingByEmail = await User.findOne({ email: defaultEmail });
-      if (existingByEmail) {
-        user = existingByEmail;
-        user.phone = formattedPhone;
-        user.password = hashedPassword;
-        user.isPhoneVerified = true;
-        await user.save();
-      } else {
-        user = await User.create({
-          name: defaultName,
-          email: defaultEmail,
-          phone: formattedPhone,
-          password: hashedPassword,
-          role: "student",
-          isVerified: true,
-          isPhoneVerified: true,
-          callCredits: 0,
-        });
-      }
-
-      return res.json({
-        success: true,
-        message: "Account created and password set successfully! You can now log in.",
-        user,
-      });
-    }
-
-    user.password = hashedPassword;
-    user.isPhoneVerified = true;
-    if (!user.phone) user.phone = formattedPhone;
-    await user.save();
-
-    return res.json({
-      success: true,
-      message: "Password reset successful. You can now log in with your new password.",
-    });
-  } catch (error) {
-    console.error("Reset password error:", error);
-    return res.status(400).json({ success: false, message: "Password reset failed: " + error.message });
   }
 };

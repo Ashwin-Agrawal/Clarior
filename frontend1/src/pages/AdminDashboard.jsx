@@ -292,7 +292,7 @@ function AdminDashboard() {
         {[
           { label: "Total Users", val: stats.total, color: "primary", i: "●" },
           { label: "Students", val: stats.students, color: "success", i: "●" },
-          { label: "Seniors", val: stats.seniors, color: "accent", i: "" },
+          { label: "Seniors", val: stats.seniors, color: "accent", i: "★" },
           { label: "Admins", val: stats.admins, color: "muted", i: "◆" },
         ].map(s => (
           <Card key={s.label} className="p-6 animate-fade-up">
@@ -308,9 +308,9 @@ function AdminDashboard() {
       {/* Tab Navigation */}
       <div className="flex border-b border-border/50 mb-8 overflow-x-auto scrollbar-hide gap-1">
         {[
-          { id: "queue", label: "Queue Control", count: pendingQueueCount, icon: "" },
-          { id: "tickets", label: "Support Tickets", count: activeTicketsCount, icon: "" },
-          { id: "requests", label: "College Requests", count: pendingRequestsCount, icon: "" },
+          { id: "queue", label: "Queue Control", count: pendingQueueCount, icon: "⚙️" },
+          { id: "tickets", label: "Support Tickets", count: activeTicketsCount, icon: "📧" },
+          { id: "requests", label: "College Requests", count: pendingRequestsCount, icon: "🏫" },
         ].map(t => (
           <button
             key={t.id}
@@ -402,7 +402,8 @@ function AdminDashboard() {
 
                 {pending.length === 0 && !loading && (
                   <div className="py-12 text-center bg-surface2/50 rounded-[40px] border border-dashed border-border">
-                    <h4 className="text-lg font-bold text-fg">Queue clear</h4>
+                    <div className="text-3xl mb-4">✨</div>
+                    <h4 className="text-lg font-bold text-fg">Queue clear!</h4>
                     <p className="text-sm text-muted mt-1">No pending applications to review right now.</p>
                   </div>
                 )}
@@ -453,7 +454,7 @@ function AdminDashboard() {
 
                 {pendingPayouts.length === 0 && !loading && (
                   <div className="py-12 text-center bg-surface2/50 rounded-[40px] border border-dashed border-border">
-                    <div className="text-3xl mb-4"></div>
+                    <div className="text-3xl mb-4">💸</div>
                     <h4 className="text-lg font-bold text-fg">All caught up!</h4>
                     <p className="text-sm text-muted mt-1">No pending payout requests.</p>
                   </div>
@@ -475,7 +476,7 @@ function AdminDashboard() {
                       <div className="flex-1 space-y-4">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-lg font-bold text-primary">
-                            
+                            🎙️
                           </div>
                           <div>
                             <div className="text-sm font-bold text-fg">Session with {b.student?.name}</div>
@@ -487,7 +488,7 @@ function AdminDashboard() {
                           <div className="bg-surface2/60 p-4.5 rounded-2xl border border-border/50 text-xs mt-3 space-y-1.5 shadow-sm">
                             <div className="flex items-center gap-2 font-bold text-fg">
                               <span className="text-amber-500 font-extrabold flex items-center gap-0.5">
-                                 {b.review.rating}/5
+                                ★ {b.review.rating}/5
                               </span>
                               <span className="text-[9px] font-black uppercase tracking-wider text-muted">• Student Review</span>
                             </div>
@@ -521,7 +522,7 @@ function AdminDashboard() {
 
                 {pendingReleases.length === 0 && !loading && (
                   <div className="py-12 text-center bg-surface2/50 rounded-[40px] border border-dashed border-border">
-                    <div className="text-3xl mb-4"></div>
+                    <div className="text-3xl mb-4">🌟</div>
                     <h4 className="text-lg font-bold text-fg">All earnings released!</h4>
                     <p className="text-sm text-muted mt-1">No pending completed sessions.</p>
                   </div>
@@ -583,7 +584,7 @@ function AdminDashboard() {
                         onClick={() => handleResolveTicket(t._id, "resolved")}
                         className="text-success font-black hover:text-emerald-600 transition-colors uppercase tracking-wider cursor-pointer flex items-center gap-1"
                       >
-                        <span className="text-xs"></span> Resolve Ticket
+                        <span className="text-xs">✓</span> Resolve Ticket
                       </button>
                     </div>
                   </div>
@@ -594,7 +595,7 @@ function AdminDashboard() {
             {tickets.filter(t => t.status === "open").length === 0 && !loading && (
               <div className="col-span-2 py-16 text-center bg-surface2/30 rounded-[40px] border border-dashed border-border/80 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-success/[0.01] to-transparent pointer-events-none" />
-                <div className="text-4xl mb-4"></div>
+                <div className="text-4xl mb-4">📥</div>
                 <h4 className="text-lg font-black text-fg tracking-tight">Support queue clear!</h4>
                 <p className="text-xs text-muted mt-1 max-w-xs mx-auto leading-relaxed">Hooray! No pending support inquiries need attention right now.</p>
               </div>
@@ -621,7 +622,7 @@ function AdminDashboard() {
                   <div className="flex-1 space-y-4">
                     <div className="flex items-center gap-3">
                       <div className="h-11 w-11 rounded-2xl bg-accent/10 text-accent flex items-center justify-center text-xl border border-accent/15 shadow-sm">
-                        
+                        🏫
                       </div>
                       <div>
                         <div className="text-base font-black text-fg">{r.name}</div>
@@ -662,7 +663,7 @@ function AdminDashboard() {
             {requests.filter(r => r.status === "pending").length === 0 && !loading && (
               <div className="py-16 text-center bg-surface2/30 rounded-[40px] border border-dashed border-border/80 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-primary/[0.01] to-transparent pointer-events-none" />
-                <div className="text-4xl mb-4"></div>
+                <div className="text-4xl mb-4">🏫</div>
                 <h4 className="text-lg font-black text-fg tracking-tight">No college requests</h4>
                 <p className="text-xs text-muted mt-1 max-w-xs mx-auto leading-relaxed font-semibold">All college addition requests have been reviewed and completed.</p>
               </div>

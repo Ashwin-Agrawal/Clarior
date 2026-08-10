@@ -13,15 +13,11 @@ const {
   getSeniorById,
   updateVerificationDetails,
   getMyRequests,
-  verifyPhoneToken,
 } = require("../controllers/user.controller");
 
 // 🧑‍🏫 APPLY FOR SENIOR ROLE
 router.post("/apply-senior", authMiddleware, applySenior);
 router.post("/become-senior", authMiddleware, applySenior);
-
-// 📱 VERIFY FIREBASE PHONE TOKEN (Public - verifies Firebase ID token cryptographically)
-router.post("/verify-phone-token", verifyPhoneToken);
 
 // ✏️ PROFILE
 router.patch("/profile", authMiddleware, updateProfile);

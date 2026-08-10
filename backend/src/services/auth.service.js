@@ -34,7 +34,6 @@ class AuthService {
       name: userData.name,
       email: userData.email,
       phone: userData.phone || null,
-      isPhoneVerified: userData.isPhoneVerified === true || Boolean(userData.phone),
       password: hashedPassword,
       role: userData.role === "senior" ? "senior" : "student",
       isVerified: userData.role === "senior" ? false : true,
@@ -57,27 +56,12 @@ class AuthService {
   /**
    * Login user and generate JWT
    */
-  static async loginUser(identifier, password) {
+  static async loginUser(email, password) {
     const User = require("../models/User");
     const bcrypt = require("bcryptjs");
     const jwt = require("jsonwebtoken");
 
-    if (!identifier || !password) {
-      throw new Error("INVALID_CREDENTIALS");
-    }
-
-    const cleanIdentifier = String(identifier).trim();
-    const cleanPhone = cleanIdentifier.replace(/\D/g, "");
-    const formattedPhone = cleanPhone.length === 10 ? `+91${cleanPhone}` : cleanIdentifier;
-
-    const user = await User.findOne({
-      $or: [
-        { email: cleanIdentifier.toLowerCase() },
-        { phone: cleanIdentifier },
-        { phone: formattedPhone }
-      ]
-    }).select("+password");
-
+    const user = await User.findOne({ email }).select("+password");
     if (!user) {
       throw new Error("INVALID_CREDENTIALS");
     }
@@ -91,9 +75,10 @@ class AuthService {
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "24h" }
+      { expiresIn: "24h" } // 🔒 Reduced from 7 days to 24 hours
     );
 
+    // Return token and user
     const userObj = user.toObject();
     delete userObj.password;
 

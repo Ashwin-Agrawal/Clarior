@@ -92,7 +92,7 @@ function Contact() {
               <div className="relative z-10 p-5 flex items-start gap-4">
                 {/* Icon */}
                 <div className="h-12 w-12 shrink-0 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
-                  
+                  🏫
                 </div>
 
                 <div className="flex-1 min-w-0">
@@ -130,7 +130,7 @@ function Contact() {
               )}
               {submitted && (
                 <div className="p-4 rounded-xl text-xs font-bold bg-success/5 border border-success/25 text-success animate-scale-in">
-                   Message sent! We will review your support ticket and email you back soon.
+                  🎉 Message sent! We will review your support ticket and email you back soon.
                 </div>
               )}
 

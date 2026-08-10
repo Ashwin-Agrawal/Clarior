@@ -20,11 +20,6 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-    isPhoneVerified: {
-      type: Boolean,
-      default: false,
-    },
-
     password: {
       type: String,
       required: true,

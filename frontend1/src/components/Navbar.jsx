@@ -139,7 +139,7 @@ function NotificationBell() {
           <div className="max-h-[320px] overflow-y-auto space-y-2.5 pr-1 scrollbar-hide">
             {notifications.length === 0 ? (
               <div className="text-center py-8 text-muted">
-                <div className="text-2xl mb-2"></div>
+                <div className="text-2xl mb-2">🔔</div>
                 <div className="text-xs font-bold uppercase tracking-wider">No notifications yet</div>
               </div>
             ) : (
@@ -164,7 +164,7 @@ function NotificationBell() {
                       "h-8 w-8 rounded-xl border shrink-0 flex items-center justify-center text-xs font-black uppercase",
                       badgeColor
                     )}>
-                      {n.type === "earnings" ? "₹" : n.type === "cancellation" ? "" : ""}
+                      {n.type === "earnings" ? "₹" : n.type === "cancellation" ? "✕" : "✓"}
                     </div>
                     <div className="space-y-0.5 min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
@@ -285,7 +285,7 @@ function UserAvatarMenu({ user, handleLogout }) {
             {/* Wallet Credits Bar */}
             <div className="mt-3 pt-2.5 border-t border-border/40 flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted">
-                <svg className="w-3.5 h-3.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3z" /></svg>
+                <svg className="w-3.5 h-3.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
                 <span>Credits:</span>
                 <span className="text-fg font-black">{credits}</span>
               </div>
@@ -335,7 +335,7 @@ function UserAvatarMenu({ user, handleLogout }) {
               onClick={() => { setOpen(false); navigate("/buy-credits"); }}
               className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-fg hover:bg-primary/10 hover:text-primary transition-colors text-left cursor-pointer group"
             >
-              <svg className="w-4 h-4 text-muted group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3z" /></svg>
+              <svg className="w-4 h-4 text-muted group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
               Buy Credits
             </button>
 

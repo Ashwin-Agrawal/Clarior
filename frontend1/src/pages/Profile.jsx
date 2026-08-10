@@ -461,7 +461,7 @@ function Profile() {
                               const pct = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
                               return (
                                 <div key={stars} className="flex items-center gap-3 text-xs">
-                                  <span className="w-8 text-right font-black text-fg">{stars} </span>
+                                  <span className="w-8 text-right font-black text-fg">{stars} ★</span>
                                   <div className="flex-1 h-3 rounded-full bg-border/40 overflow-hidden relative shadow-inner">
                                     <div 
                                       className="absolute top-0 bottom-0 left-0 rounded-full bg-gradient-to-r from-warning to-amber-400 transition-all duration-500" 
@@ -693,7 +693,7 @@ function Profile() {
                                 }}
                                 className="w-full text-center text-xs font-black text-primary hover:underline mt-6 uppercase tracking-wider bg-transparent border-0 cursor-pointer"
                               >
-                                 Request a custom slot time
+                                📅 Request a custom slot time
                               </button>
                             )}
                           </>
@@ -740,7 +740,7 @@ function Profile() {
                                       }}
                                       className="rounded-full px-4 py-2.5 text-[9px] font-black uppercase tracking-wider cursor-pointer border border-border/70 hover:border-primary/30"
                                     >
-                                       Request Slot
+                                      📅 Request Slot
                                     </Button>
                                   )}
                                   <Button 
@@ -809,7 +809,7 @@ function Profile() {
                 onClick={() => { setConfirmOpen(false); setSlotToBook(null); setBookingNotes(""); }}
                 className="h-8 w-8 rounded-full bg-surface2 border border-border text-muted hover:text-fg flex items-center justify-center font-bold text-xs"
               >
-                
+                ✕
               </button>
             </div>
 

@@ -332,7 +332,7 @@ function UserProfile() {
   return (
     <AppShell title="Profile Hub" subtitle="Configure details, manage assets, and access shortcuts on your Clarior space.">
       
-      {/* 1. HERO HEADER CARD (Clean, no cover banner, matching public senior profile) */}
+      {/* 🌟 1. HERO HEADER CARD (Clean, no cover banner, matching public senior profile) */}
       <div className="relative mb-8 rounded-[36px] border border-border/60 bg-surface/85 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-hero shadow-primary/5 animate-fade-in">
         
         {/* Profile Details Row */}
@@ -399,7 +399,7 @@ function UserProfile() {
                   <>
                     <span className="text-border/60 font-normal">•</span>
                     <span className="bg-warning/10 text-warning px-2 py-0.5 rounded-md border border-warning/20">
-                      Rating: {user?.rating ? ` ${user.rating.toFixed(1)}` : "New Mentor"}
+                      Rating: {user?.rating ? `★ ${user.rating.toFixed(1)}` : "New Mentor"}
                     </span>
                     <span className="text-border/60 font-normal">•</span>
                     <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-md border border-primary/20">
@@ -419,7 +419,7 @@ function UserProfile() {
                   ? "bg-success/10 text-success border-success/20"
                   : "bg-warning/10 text-warning border-warning/20 animate-pulse"
               }`}>
-                <span className="text-sm leading-none">{user?.isVerified ? "" : ""}</span>
+                <span className="text-sm leading-none">{user?.isVerified ? "✓" : "⏱"}</span>
                 {user?.isVerified ? "Verified Mentor" : "Verification Pending"}
               </span>
             </div>
@@ -427,7 +427,7 @@ function UserProfile() {
         </div>
       </div>
 
-      {/* 2. NAVIGATION TAB SELECTOR (Premium Pill Style) */}
+      {/* 🌟 2. NAVIGATION TAB SELECTOR (Premium Pill Style) */}
       <div className="flex flex-wrap gap-3 mb-8 animate-fade-in">
         <button
           onClick={() => setActiveTab("overview")}
@@ -453,13 +453,13 @@ function UserProfile() {
         </button>
       </div>
 
-      {/* 3. MAIN TABBED BODY CONTENT */}
+      {/* 🌟 3. MAIN TABBED BODY CONTENT */}
       {activeTab === "overview" ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-scale-in">
           {/* Left Column: Wallet & Completion */}
           <div className="lg:col-span-1 space-y-6">
             
-            {/* PREMIUM METALLIC WALLET CARD */}
+            {/* 💳 PREMIUM METALLIC WALLET CARD */}
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-[#1e1b4b] border border-white/10 shadow-2xl flex flex-col justify-between p-6 text-white aspect-[1.586/1] group transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_20px_50px_rgba(99,102,241,0.2)]">
               {/* Metallic shine reflection effect */}
               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
@@ -472,7 +472,7 @@ function UserProfile() {
                     {user?.role === "student" ? "STUDENT MEMBER PASS" : "PREMIUM MENTOR PASS"}
                   </h4>
                 </div>
-                <div className="text-xl font-black text-indigo-400"></div>
+                <div className="text-xl font-black text-indigo-400">✦</div>
               </div>
 
               {/* Card middle: microchip & balance */}
@@ -523,7 +523,7 @@ function UserProfile() {
               </div>
             </div>
 
-            {/* PROFILE STRENGTH GRAPHIC WIDGET */}
+            {/* 🎯 PROFILE STRENGTH GRAPHIC WIDGET */}
             <Card className="p-5 bg-surface/50 backdrop-blur-xl border border-border/40 shadow-soft flex items-center gap-5 hover:border-primary/30 transition-all duration-300">
               <div className="h-16 w-16 shrink-0 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-pink-500/10 border border-primary/20 flex items-center justify-center text-2xl font-black text-primary">
                 {completionPercent}%
@@ -554,7 +554,7 @@ function UserProfile() {
                   Profile Attributes
                 </h3>
                 
-                {/* Edit Profile Trigger */}
+                {/* 🔒 Edit Profile Trigger */}
                 {user?.role === "senior" && (
                   <Button 
                     variant="secondary" 
@@ -666,7 +666,7 @@ function UserProfile() {
           </div>
         </div>
       ) : (
-        /*  BENTO GRID SHORTCUTS TAB */
+        /* 🌟 BENTO GRID SHORTCUTS TAB */
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-scale-in">
           
           <Link to="/dashboard" className="group">
@@ -828,7 +828,7 @@ function UserProfile() {
         </div>
       )}
 
-      {/* 4. EDIT PROFILE MODAL */}
+      {/* 🌟 4. EDIT PROFILE MODAL */}
       {isEditModalOpen && (
         <div
           style={{

@@ -135,7 +135,7 @@ function CollegeProfile() {
         <main className="bg-bg min-h-screen pt-24 pb-16">
           <SiteContainer>
             <div className="text-center py-20 bg-surface/50 border border-border/80 rounded-[32px] max-w-lg mx-auto">
-              <div className="text-5xl mb-6"></div>
+              <div className="text-5xl mb-6">🏫</div>
               <h2 className="text-2xl font-black text-fg mb-3">College Not Found</h2>
               <p className="text-muted max-w-xs mx-auto mb-8">
                 The college profile you are looking for does not exist or could not be loaded.
@@ -320,7 +320,7 @@ function CollegeProfile() {
               </div>
             ) : (
               <div className="py-20 text-center bg-surface/30 border border-border/60 rounded-[32px] p-8 max-w-2xl mx-auto animate-scale-in">
-                <div className="text-4xl mb-4"></div>
+                <div className="text-4xl mb-4">💬</div>
                 <h3 className="text-xl font-black text-fg">No seniors registered yet</h3>
                 <p className="text-muted mt-2 max-w-sm mx-auto text-sm leading-relaxed">
                   {seniors.length === 0

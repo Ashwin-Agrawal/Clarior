@@ -987,7 +987,7 @@ function Home() {
                               <div className="my-5 p-4 rounded-2xl border border-border bg-surface2 flex items-center justify-between shadow-sm">
                                 <div className="flex items-center gap-3">
                                   <div className="custom-coin-spin h-11 w-11 rounded-2xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shadow-sm">
-                                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3z" /></svg>
+                                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 033 3z" /></svg>
                                   </div>
                                   <div>
                                     <div className="text-[10px] font-black text-muted uppercase tracking-wider">Wallet Balance</div>
@@ -999,7 +999,7 @@ function Home() {
                                 </div>
                                 <span className="text-[10px] font-black text-success bg-success/10 border border-success/30 px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 shadow-sm">
                                   <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
-                                   Added
+                                  ✓ Added
                                 </span>
                               </div>
 
@@ -1043,7 +1043,7 @@ function Home() {
                                       Verified Senior
                                       <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                                     </span>
-                                    <span className="text-[10px] font-black text-warning bg-warning/10 px-2 py-0.5 rounded-full border border-warning/20"> 4.9 (42)</span>
+                                    <span className="text-[10px] font-black text-warning bg-warning/10 px-2 py-0.5 rounded-full border border-warning/20">★ 4.9 (42)</span>
                                   </div>
 
                                   <div className="flex gap-1.5 mt-2 flex-wrap">
@@ -1221,7 +1221,7 @@ function Home() {
                               {/* Booking Mock Card */}
                               <div className="my-4 p-4 rounded-2xl border border-border bg-surface2 flex gap-3 items-center justify-between shadow-sm">
                                 <div className="flex items-center gap-2.5">
-                                  <div className="h-8 w-8 rounded-full bg-success/10 text-success border border-success/20 flex items-center justify-center text-xs font-black"></div>
+                                  <div className="h-8 w-8 rounded-full bg-success/10 text-success border border-success/20 flex items-center justify-center text-xs font-black">✓</div>
                                   <div>
                                     <div className="text-xs font-black text-fg">Anonymous Student Booking</div>
                                     <div className="text-[10px] text-muted font-bold mt-0.5">Topic: CSE Placement Reality</div>
@@ -1494,7 +1494,7 @@ function Home() {
                               {motivationTips[activeTip].badge}
                             </span>
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface text-muted border border-border/60 text-[10px] font-black uppercase tracking-wider shadow-sm">
-                              <span></span>
+                              <span>★</span>
                               ₹69 Fixed Price
                             </span>
                           </div>
@@ -1519,10 +1519,10 @@ function Home() {
 
                           <div className="space-y-2 pt-1.5 border-t border-border/40">
                             <div className="flex items-center gap-2 text-xs text-muted font-semibold">
-                              <span className="text-danger font-extrabold"></span> Unverified, biased advice online
+                              <span className="text-danger font-extrabold">✗</span> Unverified, biased advice online
                             </div>
                             <div className="flex items-center gap-2 text-xs text-fg font-extrabold">
-                              <span className="text-success font-extrabold"></span> 1-on-1 verified college seniors
+                              <span className="text-success font-extrabold">✓</span> 1-on-1 verified college seniors
                             </div>
                           </div>
                         </div>
@@ -1890,11 +1890,11 @@ function Home() {
                         {row.factor}
                       </div>
                       <div className="text-xs text-muted font-medium leading-relaxed pr-3 flex items-start gap-2">
-                        <span className="text-danger/70 font-black shrink-0 text-sm"></span>
+                        <span className="text-danger/70 font-black shrink-0 text-sm">✕</span>
                         <span>{row.traditional}</span>
                       </div>
                       <div className="text-xs text-primary font-bold leading-relaxed flex items-start gap-2 bg-primary/5 p-2.5 rounded-xl border border-primary/15">
-                        <span className="text-success font-black shrink-0 text-sm"></span>
+                        <span className="text-success font-black shrink-0 text-sm">✓</span>
                         <span>{row.clarior}</span>
                       </div>
                     </div>
