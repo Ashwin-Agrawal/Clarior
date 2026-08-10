@@ -36,9 +36,11 @@ function CollegeCard({ college, index = 0 }) {
     }
   };
 
+  const targetId = _id || college.slug || encodeURIComponent(name);
+
   return (
     <div
-      onClick={() => navigate(`/college/${_id}`)}
+      onClick={() => navigate(`/college/${targetId}`)}
       className="bg-surface border border-border/80 rounded-[28px] overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card hover:border-primary/25 group cursor-pointer flex flex-col h-full animate-fade-up animated-border"
       style={{ animationDelay: `${index * 50}ms` }}
     >

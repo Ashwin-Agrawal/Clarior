@@ -40,10 +40,24 @@ exports.getAllColleges = async (req, res) => {
     }
 
     const collegesWithSeniors = colleges.map((c) => {
-      const key = (c.name && typeof c.name === "string") ? c.name.trim().toLowerCase() : "";
+      const fullKey = (c.name && typeof c.name === "string") ? c.name.trim().toLowerCase() : "";
+      const shortKey = fullKey.split("(")[0].trim();
+      
+      let count = 0;
+      for (const [sCollege, sCount] of Object.entries(seniorCountMap)) {
+        if (
+          sCollege === fullKey ||
+          sCollege === shortKey ||
+          (fullKey && sCollege.includes(fullKey)) ||
+          (shortKey && shortKey.length > 3 && sCollege.includes(shortKey)) ||
+          (sCollege && sCollege.length > 3 && fullKey.includes(sCollege))
+        ) {
+          count += sCount;
+        }
+      }
       return {
         ...c,
-        seniorCount: key ? (seniorCountMap[key] || 0) : 0
+        seniorCount: count
       };
     });
 
@@ -65,21 +79,39 @@ exports.getCollegeById = async (req, res) => {
   try {
     const { id } = req.params;
     const mongoose = require("mongoose");
+    let college = null;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, message: "Invalid college ID" });
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      college = await College.findById(id);
     }
 
-    const college = await College.findById(id);
+    if (!college) {
+      const decoded = decodeURIComponent(id).replace(/-/g, " ").trim();
+      college = await College.findOne({
+        $or: [
+          { slug: id },
+          { name: { $regex: `^${decoded.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, $options: "i" } }
+        ]
+      });
+    }
+
     if (!college) {
       return res.status(404).json({ success: false, message: "College not found" });
     }
 
-    // Find all verified seniors whose college name matches (case-insensitive)
+    // Find all verified seniors whose college name matches flexibly (case-insensitive)
+    const collegeName = college.name.trim();
+    const shortName = collegeName.split("(")[0].trim();
+    const escapeRegex = (str) => str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
     const seniors = await User.find({
       role: "senior",
       isVerified: true,
-      college: { $regex: `^${college.name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, $options: "i" }
+      $or: [
+        { college: { $regex: `^${escapeRegex(collegeName)}$`, $options: "i" } },
+        { college: { $regex: `^${escapeRegex(shortName)}`, $options: "i" } },
+        { college: { $regex: escapeRegex(shortName.length > 3 ? shortName : collegeName), $options: "i" } }
+      ]
     }).select("name college affiliatedCollege branch domain bio rating numReviews isVerified year linkedin sessionsCompleted").lean();
 
     // Fetch active slot count for each senior in a single database aggregation query (fixes N+1 database call bottleneck)

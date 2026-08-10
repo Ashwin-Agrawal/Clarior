@@ -265,7 +265,7 @@ function CollegeProfile() {
                           onClick={() => setDomainFilter(domain)}
                           className={`px-5 py-2.5 rounded-full text-[11px] font-black tracking-wider transition-all duration-300 cursor-pointer uppercase ${
                             domainFilter === domain
-                              ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white border-transparent shadow-md shadow-blue-500/20 scale-[1.03]"
+                              ? "bg-primary text-primary-fg border border-primary/20 shadow-xs font-bold"
                               : "bg-surface border border-border text-muted hover:border-primary/40 hover:text-fg"
                           }`}
                         >
@@ -287,7 +287,7 @@ function CollegeProfile() {
                           onClick={() => setBranchFilter(branch)}
                           className={`px-4 py-2 rounded-full text-[10px] font-black tracking-wider transition-all duration-300 cursor-pointer flex-shrink-0 uppercase ${
                             branchFilter === branch
-                              ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white border-transparent shadow-md shadow-blue-500/20"
+                              ? "bg-primary text-primary-fg border border-primary/20 shadow-xs font-bold"
                               : "bg-surface border border-border text-muted hover:border-primary/40 hover:text-fg"
                           }`}
                         >
