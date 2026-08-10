@@ -12,7 +12,7 @@ function Footer() {
           <div className="col-span-2 lg:col-span-2">
             <Link to="/" className="flex items-center gap-3 transition hover:opacity-90">
               <Logo size="footer" />
-              <span className="brand-text font-extrabold text-2xl tracking-wide" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <span className="brand-text font-extrabold text-2xl tracking-wide">
                 Clarior
               </span>
             </Link>
@@ -85,12 +85,12 @@ function Footer() {
         {/* Bottom Bar */}
         <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="text-xs font-medium text-muted">
-            © {currentYear} Clarior Mentorship. Built by students with ️ for students.
+            © {currentYear} Clarior Mentorship. Built by students for students.
           </div>
           <div className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
             <span className="text-xs font-bold text-fg tracking-wide uppercase">
-              One conversation worth a Coffee ️ for Saving Lakhs.
+              One conversation worth a coffee for saving lakhs.
             </span>
           </div>
         </div>

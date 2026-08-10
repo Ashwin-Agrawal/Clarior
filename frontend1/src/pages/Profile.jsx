@@ -223,10 +223,8 @@ function Profile() {
     <>
       <Navbar />
       <main className="bg-bg min-h-screen pb-24 relative overflow-hidden">
-        {/* Ambient background glow orbs */}
-        <div className="absolute top-[-5%] left-[-5%] w-[60%] h-[60%] rounded-full bg-gradient-to-tr from-primary/10 to-accent/5 blur-[130px] pointer-events-none animate-float-slow" />
-        <div className="absolute bottom-[10%] right-[-5%] w-[50%] h-[50%] rounded-full bg-gradient-to-bl from-accent/10 to-primary/5 blur-[140px] pointer-events-none animate-float" style={{ animationDelay: '-3s' }} />
-        <div className="absolute top-[40%] left-[20%] w-[40%] h-[40%] rounded-full bg-indigo-500/5 blur-[120px] pointer-events-none animate-float-slow" style={{ animationDelay: '-6s' }} />
+        {/* Ambient background glow */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-primary/5 blur-[140px] pointer-events-none" />
 
         <SiteContainer className="max-w-6xl relative">
           {loading && (
@@ -290,7 +288,7 @@ function Profile() {
                       <div className="flex flex-col sm:flex-row sm:items-center gap-6 pt-2">
                         <div className="relative group/avatar shrink-0">
                           {/* Inner glowing aura */}
-                          <div className={`absolute -inset-1.5 rounded-full bg-gradient-to-tr ${gradient} opacity-60 blur-lg group-hover/avatar:opacity-90 transition-opacity duration-500 animate-pulse`} />
+                          <div className={`absolute -inset-1.5 rounded-full bg-gradient-to-tr ${gradient} opacity-40 blur-md group-hover/avatar:opacity-80 transition-opacity duration-300`} />
                           
                           {/* Main avatar */}
                           <div className={`relative flex h-24 w-24 md:h-28 md:w-28 items-center justify-center rounded-full border-[5px] border-surface bg-gradient-to-tr ${gradient} text-2xl md:text-4xl font-black text-white shadow-xl transition-all duration-500 group-hover/avatar:scale-105 group-hover/avatar:rotate-3`}>

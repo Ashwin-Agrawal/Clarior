@@ -105,9 +105,17 @@ function Register() {
           client_id: googleClientId,
           callback: handleGoogleLogin,
         });
+        const isDark = document.documentElement.classList.contains("dark");
         window.google.accounts.id.renderButton(
           document.getElementById("google-signup-button"),
-          { theme: "outline", size: "large", width: 384, text: "continue_with" }
+          {
+            theme: isDark ? "filled_black" : "outline",
+            size: "large",
+            width: 384,
+            text: "continue_with",
+            shape: "pill",
+            logo_alignment: "center",
+          }
         );
       } else {
         setTimeout(initGoogle, 100);
@@ -123,24 +131,24 @@ function Register() {
   return (
     <div className="min-h-screen flex">
       {/* Branding panel */}
-      <div className="hidden lg:flex lg:w-[46%] flex-col justify-between relative overflow-hidden bg-[radial-gradient(ellipse_at_bottom_left,#2563eb,#0f2851)] p-12">
+      <div className="hidden lg:flex lg:w-[46%] flex-col justify-between relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-slate-900 p-12 text-white">
         {/* Background grid */}
         <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
         
         <Link to="/" className="relative flex items-center gap-3 transition hover:opacity-90">
           <Logo size="footer" />
-          <span className="text-white font-extrabold text-2xl" style={{ fontFamily: "'Playfair Display', serif" }}>Clarior</span>
+          <span className="text-white font-extrabold text-2xl">Clarior</span>
         </Link>
         <div className="relative space-y-6">
           <h2 className="text-4xl font-extrabold text-white leading-tight tracking-tight">
             Join thousands of students getting real clarity.
           </h2>
           <p className="text-blue-100 text-base leading-7">
-            One account. Access to verified seniors from IIT, AIIMS, BITS, and more — all for less than a coffee.
+            One account. Access to verified seniors from top colleges — all for less than a coffee.
           </p>
           <div className="grid grid-cols-2 gap-4 mt-8">
             {[["500+","Active seniors"],["₹69","Starting price"],["20min","Per session"],["4.9","Avg. rating"]].map(([v, l]) => (
-              <div key={l} className="rounded-2xl bg-[#2563eb]/30 border border-[#3b82f6]/40 backdrop-blur-sm p-4 text-center">
+              <div key={l} className="rounded-2xl bg-white/10 border border-white/20 backdrop-blur-sm p-4 text-center">
                 <div className="text-2xl font-extrabold text-white">{v}</div>
                 <div className="text-blue-200 text-xs mt-1">{l}</div>
               </div>
@@ -198,7 +206,9 @@ function Register() {
             <div className="flex-grow border-t border-border"></div>
           </div>
 
-          <div id="google-signup-button" className="w-full flex justify-center" />
+          <div className="w-full flex justify-center py-1">
+            <div id="google-signup-button" className="w-full flex justify-center transition-all hover:opacity-95" />
+          </div>
           <p className="mt-5 text-center text-sm text-muted">
             Already have an account?{" "}
             <Link to="/login" className="text-primary font-semibold hover:underline">Login</Link>

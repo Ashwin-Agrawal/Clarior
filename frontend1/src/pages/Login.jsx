@@ -77,9 +77,17 @@ function Login() {
             client_id: googleClientId,
             callback: handleGoogleLogin,
           });
+          const isDark = document.documentElement.classList.contains("dark");
           window.google.accounts.id.renderButton(
             document.getElementById("google-signin-button"),
-            { theme: "outline", size: "large", width: 384, text: "continue_with" }
+            {
+              theme: isDark ? "filled_black" : "outline",
+              size: "large",
+              width: 384,
+              text: "continue_with",
+              shape: "pill",
+              logo_alignment: "center",
+            }
           );
         } else {
           setTimeout(initGoogle, 100);
@@ -96,14 +104,14 @@ function Login() {
     return (
       <div className="min-h-screen flex">
         {/* ── Left Panel — Branding ─────────────────────────────── */}
-        <div className="hidden lg:flex lg:w-[48%] xl:w-[44%] flex-col justify-between relative overflow-hidden bg-[radial-gradient(ellipse_at_bottom_left,#2563eb,#0f2851)] p-12">
+        <div className="hidden lg:flex lg:w-[48%] xl:w-[44%] flex-col justify-between relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-slate-900 p-12 text-white">
           {/* Background grid */}
           <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
   
           {/* Logo */}
           <Link to="/" className="relative flex items-center gap-3 transition hover:opacity-90">
             <Logo size="footer" />
-            <span className="text-white font-brand font-extrabold text-2xl tracking-wide" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <span className="text-white font-brand font-extrabold text-2xl tracking-wide">
               Clarior
             </span>
           </Link>
@@ -114,21 +122,21 @@ function Login() {
               Your best decision starts with the right conversation.
             </h2>
             <p className="text-blue-100 text-base leading-7">
-              Thousands of students have already gotten clarity from verified seniors who've been exactly where they are.
+              Join thousands of students who got clarity directly from verified seniors.
             </p>
   
             {/* Trust bullets */}
             <ul className="space-y-3 mt-8">
               {trustPoints.map((point) => (
                 <li key={point} className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#2563eb] text-white text-xs font-bold flex-shrink-0"></span>
+                  <span className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-white text-xs font-bold flex-shrink-0">✓</span>
                   <span className="text-blue-50 text-sm leading-6">{point}</span>
                 </li>
               ))}
             </ul>
   
             {/* Testimonial snippet */}
-            <div className="mt-8 rounded-2xl bg-[#2563eb]/50 border border-[#3b82f6]/50 backdrop-blur p-5">
+            <div className="mt-8 rounded-2xl bg-white/10 border border-white/20 backdrop-blur p-5">
               <div className="flex gap-0.5 mb-3">
                 {[...Array(5)].map((_, i) => (
                   <svg key={i} width="14" height="14" fill="#fbbf24" viewBox="0 0 24 24">
@@ -235,7 +243,9 @@ function Login() {
               <div className="flex-grow border-t border-border"></div>
             </div>
 
-            <div id="google-signin-button" className="w-full flex justify-center" />
+            <div className="w-full flex justify-center py-1">
+              <div id="google-signin-button" className="w-full flex justify-center transition-all hover:opacity-95" />
+            </div>
   
             <p className="mt-5 text-center text-sm text-muted">
               Don't have an account?{" "}

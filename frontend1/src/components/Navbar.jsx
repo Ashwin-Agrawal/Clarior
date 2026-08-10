@@ -221,7 +221,7 @@ function UserAvatarMenu({ user, handleLogout }) {
         title={`${user?.name} (${roleLabel})`}
       >
         {/* Avatar Ring Circle */}
-        <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-white font-black text-xs tracking-wider shadow-sm overflow-hidden ring-1 ring-primary/20">
+        <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-primary to-accent text-white font-black text-xs tracking-wider shadow-sm overflow-hidden ring-1 ring-primary/20">
           {hasAvatar ? (
             <img
               src={user.avatar}
@@ -252,11 +252,11 @@ function UserAvatarMenu({ user, handleLogout }) {
 
       {/* Luxury Account Dropdown Panel */}
       {open && (
-        <div className="absolute right-0 mt-3 w-72 rounded-3xl border border-border/80 bg-surface p-2.5 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.18)] dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] backdrop-blur-xl z-[120] animate-slide-down">
+        <div className="absolute right-0 mt-3 w-72 rounded-2xl border border-border bg-surface p-2.5 shadow-card backdrop-blur-xl z-[120] animate-slide-down">
           {/* Header Card */}
-          <div className="p-3.5 rounded-2xl bg-surface2/70 border border-border/50 mb-2">
+          <div className="p-3.5 rounded-xl bg-surface2 border border-border/50 mb-2">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary via-indigo-600 to-accent text-white font-black text-sm shadow-sm overflow-hidden ring-1 ring-primary/20">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-white font-black text-sm shadow-sm overflow-hidden ring-1 ring-primary/20">
                 {hasAvatar ? (
                   <img
                     src={user.avatar}
@@ -425,7 +425,7 @@ function Navbar() {
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="flex min-w-0 items-center gap-2 rounded-full px-2 py-1 hover:bg-surface2 transition duration-300 hover:scale-[1.03] transform cursor-pointer"
+            className="flex min-w-0 items-center gap-2 rounded-full px-2 py-1 hover:bg-surface2 transition duration-200 cursor-pointer"
           >
             <Logo size="navbar" />
             <span className="brand-text font-extrabold text-[19px] tracking-wide hidden sm:block">Clarior</span>

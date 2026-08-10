@@ -486,9 +486,9 @@ function Dashboard() {
                 <div className="text-2xl font-black text-fg capitalize mt-1.5 flex items-center gap-2">
                   {user?.role || "—"}
                   <span className={`h-2.5 w-2.5 rounded-full ${
-                    user?.role === "student" ? "bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)]" :
-                    user?.role === "senior" ? "bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]" :
-                    "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"
+                    user?.role === "student" ? "bg-accent shadow-xs" :
+                    user?.role === "senior" ? "bg-primary shadow-xs" :
+                    "bg-danger shadow-xs"
                   }`} />
                 </div>
               </div>
@@ -524,13 +524,13 @@ function Dashboard() {
                     </>
                   ) : (
                     <>
-                      <span className="text-cyan-500">{user?.callCredits ?? 0}</span>
+                      <span className="text-primary">{user?.callCredits ?? 0}</span>
                       <span className="text-xs font-bold text-muted uppercase tracking-wider ml-1">Credits</span>
                     </>
                   )}
                 </div>
               </div>
-              <StatIcon tint={user?.role === "senior" ? "bg-success/10 text-success" : "bg-cyan-500/10 text-cyan-500"}>
+              <StatIcon tint={user?.role === "senior" ? "bg-success/10 text-success" : "bg-primary/10 text-primary"}>
                 <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
               </StatIcon>
             </div>

@@ -371,13 +371,7 @@ function Home() {
     return () => clearTimeout(timer);
   }, [tutorialStep, tutorialAutoplay, tutorialRole]);
 
-  // Motivation quotes auto-play: rotate quote every 6.5s
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveTip((prev) => (prev + 1) % motivationTips.length);
-    }, 6500);
-    return () => clearInterval(timer);
-  }, []);
+
 
   const sliderRef = useRef(null);
   const requestRef = useRef();
@@ -689,10 +683,9 @@ function Home() {
                     </span>
                   </h1>
                   
-                  {/* Subtext with premium ₹69 price highlight */}
+                  {/* Subtext */}
                   <p className="scroll-reveal reveal-up stagger-2 mt-6 text-xl md:text-2xl text-muted leading-tight font-medium tracking-tight">
-                    1:1 calls with verified seniors for just{" "}
-                    <span className="price-highlight text-xl md:text-2xl">₹69</span>
+                    1:1 calls with verified seniors for just ₹69
                   </p>
 
                   {/* CTA Buttons */}
@@ -752,60 +745,6 @@ function Home() {
 
                 {/* Right Column: Redesigned Premium SaaS Interactive Simulator */}
                 <div className="lg:col-span-5 relative flex flex-col items-center justify-center min-h-[600px] w-full mt-12 lg:mt-0 select-none">
-
-                  <style>{`
-                    @keyframes floatCard {
-                      0%, 100% { transform: translateY(0px) rotate(0deg); }
-                      50% { transform: translateY(-8px) rotate(0.5deg); }
-                    }
-                    @keyframes floatPillSlow {
-                      0%, 100% { transform: translateY(0px); }
-                      50% { transform: translateY(-6px); }
-                    }
-                    @keyframes floatPillReverse {
-                      0%, 100% { transform: translateY(0px); }
-                      50% { transform: translateY(6px); }
-                    }
-                    @keyframes spinCoin {
-                      0% { transform: rotateY(0deg) translateY(0); }
-                      50% { transform: rotateY(180deg) translateY(-5px); }
-                      100% { transform: rotateY(360deg) translateY(0); }
-                    }
-                    @keyframes barProgress {
-                      from { width: 0%; }
-                      to { width: 100%; }
-                    }
-                    @keyframes audioWave {
-                      0%, 100% { height: 6px; }
-                      50% { height: 26px; }
-                    }
-                    @keyframes confettiBurst {
-                      0%   { transform: translate(0,0) rotate(0deg) scale(1);   opacity: 1; }
-                      60%  { opacity: 1; }
-                      100% { transform: translate(var(--cx), var(--cy)) rotate(var(--cr)) scale(0.5); opacity: 0; }
-                    }
-                    @keyframes trophyBounce {
-                      0%   { transform: scale(0.3) rotate(-10deg); opacity: 0; }
-                      60%  { transform: scale(1.15) rotate(3deg); opacity: 1; }
-                      80%  { transform: scale(0.95) rotate(-2deg); }
-                      100% { transform: scale(1) rotate(0deg); opacity: 1; }
-                    }
-                    .custom-simulator-float { animation: floatCard 6s ease-in-out infinite; }
-                    .custom-float-pill-1 { animation: floatPillSlow 4.5s ease-in-out infinite; }
-                    .custom-float-pill-2 { animation: floatPillReverse 5.2s ease-in-out infinite 0.5s; }
-                    .custom-coin-spin { animation: spinCoin 2.5s ease-in-out infinite; }
-                    .custom-audio-wave { animation: audioWave 1.2s ease-in-out infinite; }
-                    .custom-confetti-burst {
-                      position: absolute;
-                      top: 50%;
-                      left: 50%;
-                      animation: confettiBurst var(--cd) cubic-bezier(0.22,1,0.36,1) var(--delay) forwards;
-                      pointer-events: none;
-                    }
-                    .custom-trophy-bounce {
-                      animation: trophyBounce 0.65s cubic-bezier(0.34,1.56,0.64,1) forwards;
-                    }
-                  `}</style>
 
                   {/* Floating Micro Badge 1 — Top Right */}
                   <div className="custom-float-pill-1 absolute -top-5 -right-3 z-30 hidden sm:flex items-center gap-2 rounded-2xl border border-border bg-surface px-3.5 py-2 text-[10px] font-black text-fg shadow-md gpu-layer pointer-events-none">

@@ -142,8 +142,8 @@ function Explore() {
                       onClick={() => setTypeFilter(type)}
                       className={`px-6 py-2.5 rounded-full text-xs font-black tracking-wider transition-all duration-300 cursor-pointer uppercase ${
                         typeFilter === type
-                          ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white border-transparent shadow-md shadow-blue-500/20 scale-[1.03]"
-                          : "bg-white border border-slate-200 text-slate-600 hover:border-blue-400 hover:text-blue-600 dark:bg-surface/50 dark:border-border/75 dark:text-muted dark:hover:text-primary"
+                          ? "bg-primary text-primary-fg border border-primary/20 shadow-xs font-bold"
+                          : "bg-surface border border-border text-muted hover:border-primary/40 hover:text-fg font-semibold"
                       }`}
                     >
                       {type === "All" ? "All Types" : type}
@@ -162,8 +162,8 @@ function Explore() {
                       onClick={() => setStateFilter(state)}
                       className={`px-5 py-2.5 rounded-full text-xs font-black tracking-wider transition-all duration-300 cursor-pointer flex-shrink-0 uppercase ${
                         stateFilter === state
-                          ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white border-transparent shadow-md shadow-blue-500/20 scale-[1.03]"
-                          : "bg-white border border-slate-200 text-slate-600 hover:border-blue-400 hover:text-blue-600 dark:bg-surface/50 dark:border-border/75 dark:text-muted dark:hover:text-primary"
+                          ? "bg-primary text-primary-fg border border-primary/20 shadow-xs font-bold"
+                          : "bg-surface border border-border text-muted hover:border-primary/40 hover:text-fg font-semibold"
                       }`}
                     >
                       {state === "All" ? "All States" : state}
