@@ -121,7 +121,7 @@ function Login() {
             <ul className="space-y-3 mt-8">
               {trustPoints.map((point) => (
                 <li key={point} className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#2563eb] text-white text-xs font-bold flex-shrink-0">✓</span>
+                  <span className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#2563eb] text-white text-xs font-bold flex-shrink-0"></span>
                   <span className="text-blue-50 text-sm leading-6">{point}</span>
                 </li>
               ))}
@@ -158,7 +158,7 @@ function Login() {
   
           <div className="w-full max-w-md animate-fade-up">
             <div className="mb-8">
-              <h1 className="text-3xl font-extrabold tracking-tight text-fg">Good to see you again 👋</h1>
+              <h1 className="text-3xl font-extrabold tracking-tight text-fg">Good to see you again </h1>
               <p className="text-muted mt-2 text-sm">Your clarity journey continues here.</p>
             </div>
   

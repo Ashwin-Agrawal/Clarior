@@ -34,8 +34,8 @@ function Toast({ toast, onClose }) {
 
   const getIcon = () => {
     switch (type) {
-      case "success": return <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center text-success text-sm">✓</div>;
-      case "error":   return <div className="h-8 w-8 rounded-full bg-danger/10 flex items-center justify-center text-danger text-sm">✕</div>;
+      case "success": return <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center text-success text-sm"></div>;
+      case "error":   return <div className="h-8 w-8 rounded-full bg-danger/10 flex items-center justify-center text-danger text-sm"></div>;
       case "warning": return <div className="h-8 w-8 rounded-full bg-warning/10 flex items-center justify-center text-warning text-sm">!</div>;
       default:        return <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm">i</div>;
     }

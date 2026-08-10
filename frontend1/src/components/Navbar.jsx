@@ -139,7 +139,7 @@ function NotificationBell() {
           <div className="max-h-[320px] overflow-y-auto space-y-2.5 pr-1 scrollbar-hide">
             {notifications.length === 0 ? (
               <div className="text-center py-8 text-muted">
-                <div className="text-2xl mb-2">🔔</div>
+                <div className="text-2xl mb-2"></div>
                 <div className="text-xs font-bold uppercase tracking-wider">No notifications yet</div>
               </div>
             ) : (
@@ -164,7 +164,7 @@ function NotificationBell() {
                       "h-8 w-8 rounded-xl border shrink-0 flex items-center justify-center text-xs font-black uppercase",
                       badgeColor
                     )}>
-                      {n.type === "earnings" ? "₹" : n.type === "cancellation" ? "✕" : "✓"}
+                      {n.type === "earnings" ? "₹" : n.type === "cancellation" ? "" : ""}
                     </div>
                     <div className="space-y-0.5 min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
@@ -417,10 +417,10 @@ function Navbar() {
   const filteredItems = navItems.filter(item => item.to !== "/dashboard" || user);
 
   return (
-    <div className={cx("sticky top-0 z-[100] w-full transition-all duration-300", scrolled ? "bg-bg/60 backdrop-blur-lg border-b border-border/40 py-1.5" : "bg-transparent py-3")}>
+    <div className={cx("sticky top-0 z-[100] w-full transition-all duration-200 gpu-layer", scrolled ? "bg-bg/90 border-b border-border/60 py-2 shadow-sm" : "bg-transparent py-3")}>
       {/* Desktop floating pill navbar */}
       <SiteContainer>
-        <div className="mx-auto flex w-full max-w-[960px] items-center gap-2 rounded-2xl border border-border/80 bg-surface/90 dark:bg-surface/80 px-3 py-2.5 shadow-[0_12px_40px_-12px_rgba(37,99,235,0.12)] hover:shadow-[0_16px_48px_-12px_rgba(37,99,235,0.18)] transition-all duration-300 backdrop-blur-xl sm:rounded-full sm:px-4">
+        <div className="mx-auto flex w-full max-w-[960px] items-center gap-2 rounded-2xl border border-border bg-surface px-3 py-2 shadow-card transition-all duration-200 sm:rounded-full sm:px-4">
           {/* Logo + Brand */}
           <button
             type="button"

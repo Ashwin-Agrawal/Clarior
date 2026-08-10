@@ -808,7 +808,7 @@ function Home() {
                   `}</style>
 
                   {/* Floating Micro Badge 1 — Top Right */}
-                  <div className="custom-float-pill-1 absolute -top-5 -right-3 z-30 hidden sm:flex items-center gap-2 rounded-2xl border border-border bg-surface px-3.5 py-2 text-[10px] font-black text-fg shadow-lg backdrop-blur pointer-events-none">
+                  <div className="custom-float-pill-1 absolute -top-5 -right-3 z-30 hidden sm:flex items-center gap-2 rounded-2xl border border-border bg-surface px-3.5 py-2 text-[10px] font-black text-fg shadow-md gpu-layer pointer-events-none">
                     <span className="flex h-2 w-2 relative">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -817,7 +817,7 @@ function Home() {
                   </div>
 
                   {/* Floating Micro Badge 2 — Bottom Left */}
-                  <div className="custom-float-pill-2 absolute -bottom-4 -left-3 z-30 hidden sm:flex items-center gap-2 rounded-2xl border border-border bg-surface px-3.5 py-2 text-[10px] font-black text-fg shadow-lg backdrop-blur pointer-events-none">
+                  <div className="custom-float-pill-2 absolute -bottom-4 -left-3 z-30 hidden sm:flex items-center gap-2 rounded-2xl border border-border bg-surface px-3.5 py-2 text-[10px] font-black text-fg shadow-md gpu-layer pointer-events-none">
                     <svg className="w-3.5 h-3.5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
                     <span>100% Private & Verified</span>
                   </div>
@@ -999,7 +999,7 @@ function Home() {
                                 </div>
                                 <span className="text-[10px] font-black text-success bg-success/10 border border-success/30 px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 shadow-sm">
                                   <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
-                                  ✓ Added
+                                   Added
                                 </span>
                               </div>
 
@@ -1043,7 +1043,7 @@ function Home() {
                                       Verified Senior
                                       <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                                     </span>
-                                    <span className="text-[10px] font-black text-warning bg-warning/10 px-2 py-0.5 rounded-full border border-warning/20">★ 4.9 (42)</span>
+                                    <span className="text-[10px] font-black text-warning bg-warning/10 px-2 py-0.5 rounded-full border border-warning/20"> 4.9 (42)</span>
                                   </div>
 
                                   <div className="flex gap-1.5 mt-2 flex-wrap">
@@ -1221,7 +1221,7 @@ function Home() {
                               {/* Booking Mock Card */}
                               <div className="my-4 p-4 rounded-2xl border border-border bg-surface2 flex gap-3 items-center justify-between shadow-sm">
                                 <div className="flex items-center gap-2.5">
-                                  <div className="h-8 w-8 rounded-full bg-success/10 text-success border border-success/20 flex items-center justify-center text-xs font-black">✓</div>
+                                  <div className="h-8 w-8 rounded-full bg-success/10 text-success border border-success/20 flex items-center justify-center text-xs font-black"></div>
                                   <div>
                                     <div className="text-xs font-black text-fg">Anonymous Student Booking</div>
                                     <div className="text-[10px] text-muted font-bold mt-0.5">Topic: CSE Placement Reality</div>
@@ -1494,7 +1494,7 @@ function Home() {
                               {motivationTips[activeTip].badge}
                             </span>
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface text-muted border border-border/60 text-[10px] font-black uppercase tracking-wider shadow-sm">
-                              <span>★</span>
+                              <span></span>
                               ₹69 Fixed Price
                             </span>
                           </div>
@@ -1519,10 +1519,10 @@ function Home() {
 
                           <div className="space-y-2 pt-1.5 border-t border-border/40">
                             <div className="flex items-center gap-2 text-xs text-muted font-semibold">
-                              <span className="text-danger font-extrabold">✗</span> Unverified, biased advice online
+                              <span className="text-danger font-extrabold"></span> Unverified, biased advice online
                             </div>
                             <div className="flex items-center gap-2 text-xs text-fg font-extrabold">
-                              <span className="text-success font-extrabold">✓</span> 1-on-1 verified college seniors
+                              <span className="text-success font-extrabold"></span> 1-on-1 verified college seniors
                             </div>
                           </div>
                         </div>
@@ -1890,11 +1890,11 @@ function Home() {
                         {row.factor}
                       </div>
                       <div className="text-xs text-muted font-medium leading-relaxed pr-3 flex items-start gap-2">
-                        <span className="text-danger/70 font-black shrink-0 text-sm">✕</span>
+                        <span className="text-danger/70 font-black shrink-0 text-sm"></span>
                         <span>{row.traditional}</span>
                       </div>
                       <div className="text-xs text-primary font-bold leading-relaxed flex items-start gap-2 bg-primary/5 p-2.5 rounded-xl border border-primary/15">
-                        <span className="text-success font-black shrink-0 text-sm">✓</span>
+                        <span className="text-success font-black shrink-0 text-sm"></span>
                         <span>{row.clarior}</span>
                       </div>
                     </div>

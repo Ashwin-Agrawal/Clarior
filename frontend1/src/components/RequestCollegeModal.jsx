@@ -87,7 +87,7 @@ function RequestCollegeModal({ isOpen, onClose }) {
           {/* Success */}
           {submitted && (
             <div className="px-3.5 py-2.5 rounded-2xl bg-success/10 border border-success/20 text-success text-xs font-bold">
-              🎉 Request submitted! Our team will verify and add the college to the platform.
+               Request submitted! Our team will verify and add the college to the platform.
             </div>
           )}
 

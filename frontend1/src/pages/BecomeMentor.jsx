@@ -92,7 +92,7 @@ function BecomeMentor() {
     return (
       <AppShell title="Already Verified">
         <div className="text-center py-20 animate-scale-in">
-          <div className="text-5xl mb-6 select-none">✅</div>
+          <div className="text-5xl mb-6 select-none"></div>
           <h2 className="text-2xl font-black text-fg mb-3">You are already a verified senior</h2>
           <p className="text-muted max-w-sm mx-auto leading-relaxed">
             Your senior profile is active and visible on the explore page. You can manage your availability and slots inside the dashboard.

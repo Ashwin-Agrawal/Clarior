@@ -12,7 +12,7 @@ function ThemeToggle() {
       aria-label="Toggle theme"
       title="Toggle theme"
     >
-      <span className="text-base leading-none">{isDark ? "🌙" : "☀️"}</span>
+      <span className="text-base leading-none">{isDark ? "" : "️"}</span>
       <span className="hidden sm:inline">{isDark ? "Dark" : "Light"}</span>
     </button>
   );

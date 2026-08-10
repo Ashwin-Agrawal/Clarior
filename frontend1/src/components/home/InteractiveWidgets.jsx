@@ -125,7 +125,7 @@ export function ValueSlider() {
               </p>
             </div>
             <div className="text-[10px] font-black uppercase text-rose-500 tracking-wider flex items-center gap-1.5 pt-1">
-              <span>✕ High Chance of Regret</span>
+              <span> High Chance of Regret</span>
             </div>
           </div>
 
@@ -144,7 +144,7 @@ export function ValueSlider() {
             </div>
             <div className="text-[10px] font-black uppercase text-success tracking-wider flex items-center gap-1.5 pt-1">
               <span className="h-2 w-2 rounded-full bg-success live-pulse-active" />
-              <span>✓ Verified Insider Information</span>
+              <span> Verified Insider Information</span>
             </div>
           </div>
         </div>
@@ -236,7 +236,7 @@ export function SpeedBookingBoard() {
                           {mentor.name || "Verified Senior"}
                         </span>
                         <div className="flex items-center gap-0.5 text-[9px] font-black text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-lg shrink-0">
-                          <span>★</span>
+                          <span></span>
                           <span>{mentor.rating?.toFixed(1) || "5.0"}</span>
                         </div>
                       </div>

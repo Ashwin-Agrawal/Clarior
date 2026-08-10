@@ -76,9 +76,9 @@ function MentorCard({ mentor }) {
           navigate(`/profile/${mentor._id}`);
         }
       }}
-      className={`group relative rounded-[32px] border bg-surface shadow-card hover:shadow-2xl hover:-translate-y-2 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 cursor-pointer overflow-hidden animated-border ${
+      className={`group relative rounded-3xl border bg-surface shadow-card hover:shadow-lg hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-150 cursor-pointer overflow-hidden gpu-layer ${
         mentor.isVerified 
-          ? "border-primary/30 bg-gradient-to-br from-surface to-primary/2 hover:border-primary" 
+          ? "border-primary/40 hover:border-primary" 
           : "border-border hover:border-primary/40"
       }`}
     >
