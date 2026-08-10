@@ -1,246 +1,290 @@
-import { useMemo, useState, useEffect, useRef } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useMemo, useState, useEffect, useRef, useCallback } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function cx(...parts) { return parts.filter(Boolean).join(" "); }
 
-// ── SVG Icons ──────────────────────────────────────────
-const IconHome = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+// ─── Icons ────────────────────────────────────────────────────
+const IcHome = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
     <polyline points="9 22 9 12 15 12 15 22"/>
   </svg>
 );
-
-const IconCompass = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+const IcExplore = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10"/>
     <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
   </svg>
 );
-
-const IconSessions = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-    <line x1="16" y1="2" x2="16" y2="6"/>
-    <line x1="8" y1="2" x2="8" y2="6"/>
+const IcSessions = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2"/>
+    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
     <line x1="3" y1="10" x2="21" y2="10"/>
   </svg>
 );
-
-const IconDashboard = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+const IcDashboard = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="3" width="7" height="7" rx="1.5"/>
     <rect x="14" y="3" width="7" height="7" rx="1.5"/>
     <rect x="14" y="14" width="7" height="7" rx="1.5"/>
     <rect x="3" y="14" width="7" height="7" rx="1.5"/>
   </svg>
 );
-
-const IconCalendar = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-    <line x1="16" y1="2" x2="16" y2="6"/>
-    <line x1="8" y1="2" x2="8" y2="6"/>
-    <line x1="3" y1="10" x2="21" y2="10"/>
-    <line x1="12" y1="14" x2="12" y2="18"/>
+const IcCalendar = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2"/>
+    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+    <line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/>
   </svg>
 );
-
-const IconGuide = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+const IcGuide = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
     <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
   </svg>
 );
-
-const IconLogin = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+const IcCredits = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="1" y="4" width="22" height="16" rx="2"/>
+    <line x1="1" y1="10" x2="23" y2="10"/>
+  </svg>
+);
+const IcMentor = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+    <polyline points="2 17 12 22 22 17"/>
+    <polyline points="2 12 12 17 22 12"/>
+  </svg>
+);
+const IcLogin = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
     <polyline points="10 17 15 12 10 7"/>
     <line x1="15" y1="12" x2="3" y2="12"/>
   </svg>
 );
+const IcRegister = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+    <circle cx="8.5" cy="7" r="4"/>
+    <line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/>
+  </svg>
+);
+const IcProfile = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="7" r="4"/>
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+  </svg>
+);
 
-function MobileBottomNav() {
+// ─── Component ────────────────────────────────────────────────
+export default function MobileBottomNav() {
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isVisible, setIsVisible]     = useState(true);
+  const lastScrollY = useRef(0);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const isDragging  = useRef(false);
 
-  // Swipe / Drag gesture state
-  const navRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragPx, setDragPx] = useState(0);
-  const startXRef = useRef(0);
+  // Hide on fullscreen pages
+  const hideOnPaths = ["/session"];
+  const shouldHide  = hideOnPaths.some(p => location.pathname.startsWith(p));
 
-  // Hide on fullscreen/modal pages
-  const hideOnPaths = ["/login", "/register", "/session"];
-  const shouldHide = hideOnPaths.some(p => location.pathname.startsWith(p));
-
-  // Build items based on user authentication state and role
+  // Nav items by role
   const navItems = useMemo(() => {
-    if (!user) {
-      return [
-        { to: "/",              label: "Home",         icon: <IconHome /> },
-        { to: "/explore",       label: "Explore",      icon: <IconCompass /> },
-        { to: "/how-it-works",  label: "Guide",        icon: <IconGuide /> },
-        { to: "/login",         label: "Login",        icon: <IconLogin /> }
-      ];
-    }
-
-    if (user.role === "senior") {
-      return [
-        { to: "/",             label: "Home",         icon: <IconHome /> },
-        { to: "/my-bookings",  label: "Sessions",     icon: <IconSessions /> },
-        { to: "/senior-slots", label: "Slots",        icon: <IconCalendar /> },
-        { to: "/dashboard",    label: "Dashboard",    icon: <IconDashboard /> }
-      ];
-    }
-
+    if (!user) return [
+      { to: "/",              label: "Home",     Icon: IcHome },
+      { to: "/explore",       label: "Explore",  Icon: IcExplore },
+      { to: "/how-it-works",  label: "Guide",    Icon: IcGuide },
+      { to: "/become-mentor", label: "Mentor",   Icon: IcMentor },
+      { to: "/login",         label: "Sign in",  Icon: IcLogin },
+      { to: "/register",      label: "Register", Icon: IcRegister },
+    ];
+    if (user.role === "senior") return [
+      { to: "/",             label: "Home",      Icon: IcHome },
+      { to: "/my-bookings",  label: "Sessions",  Icon: IcSessions },
+      { to: "/senior-slots", label: "Slots",     Icon: IcCalendar },
+      { to: "/dashboard",    label: "Dashboard", Icon: IcDashboard },
+      { to: "/profile",      label: "Profile",   Icon: IcProfile },
+      { to: "/how-it-works", label: "Guide",     Icon: IcGuide },
+    ];
     return [
-      { to: "/",              label: "Home",         icon: <IconHome /> },
-      { to: "/explore",       label: "Explore",      icon: <IconCompass /> },
-      { to: "/my-bookings",   label: "Sessions",     icon: <IconSessions /> },
-      { to: "/dashboard",     label: "Dashboard",    icon: <IconDashboard /> }
+      { to: "/",              label: "Home",      Icon: IcHome },
+      { to: "/explore",       label: "Explore",   Icon: IcExplore },
+      { to: "/my-bookings",   label: "Sessions",  Icon: IcSessions },
+      { to: "/dashboard",     label: "Dashboard", Icon: IcDashboard },
+      { to: "/buy-credits",   label: "Credits",   Icon: IcCredits },
+      { to: "/profile",       label: "Profile",   Icon: IcProfile },
+      { to: "/become-mentor", label: "Mentor",    Icon: IcMentor },
+      { to: "/how-it-works",  label: "Guide",     Icon: IcGuide },
     ];
   }, [user]);
 
-  // Find active index for sliding indicator
-  const activeIndex = useMemo(() => {
-    const idx = navItems.findIndex(item => {
-      if (item.to === "/") return location.pathname === "/";
-      return location.pathname.startsWith(item.to);
-    });
-    return idx >= 0 ? idx : 0;
+  const N = navItems.length;
+
+  // Sync active index on route change
+  useEffect(() => {
+    const idx = navItems.findIndex(item =>
+      item.to === "/" ? location.pathname === "/" : location.pathname.startsWith(item.to)
+    );
+    if (idx >= 0) setActiveIndex(idx);
   }, [location.pathname, navItems]);
 
-  // Scroll auto-hide behavior (Slice app behavior)
+  // Page scroll auto-hide
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY < 40) {
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY + 10) {
-        setIsVisible(false); // Scroll down -> hide
-      } else if (currentScrollY < lastScrollY - 10) {
-        setIsVisible(true);  // Scroll up -> show
-      }
-      setLastScrollY(currentScrollY);
+    const onScroll = () => {
+      const y = window.scrollY;
+      if      (y < 40)                         setIsVisible(true);
+      else if (y > lastScrollY.current + 10)   setIsVisible(false);
+      else if (y < lastScrollY.current - 10)   setIsVisible(true);
+      lastScrollY.current = y;
     };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  // Navigate to index with circular wrap
+  const goTo = useCallback((idx) => {
+    const wrapped = ((idx % N) + N) % N;
+    setActiveIndex(wrapped);
+    navigate(navItems[wrapped].to);
+  }, [N, navItems, navigate]);
 
-  // Touch / Drag Gesture Handlers for center sliding handle
-  const handleTouchStart = (e) => {
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    startXRef.current = clientX;
-    setIsDragging(true);
+  // Touch gesture handlers
+  const onTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    isDragging.current = false;
   };
-
-  const handleTouchMove = (e) => {
-    if (!isDragging) return;
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const deltaX = clientX - startXRef.current;
-    setDragPx(deltaX);
+  const onTouchMove = (e) => {
+    const dx = Math.abs(e.touches[0].clientX - touchStartX.current);
+    const dy = Math.abs(e.touches[0].clientY - touchStartY.current);
+    if (dx > 8) isDragging.current = true;
+    if (dx > dy && isDragging.current) e.preventDefault();
   };
-
-  const handleTouchEnd = () => {
-    if (!isDragging) return;
-    if (!navRef.current) {
-      setIsDragging(false);
-      setDragPx(0);
-      return;
+  const onTouchEnd = (e) => {
+    if (!isDragging.current) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(dx) > 40) {
+      goTo(activeIndex + (dx < 0 ? 1 : -1));
     }
-
-    const containerWidth = navRef.current.clientWidth;
-    const colWidth = containerWidth / navItems.length;
-    const shiftCols = Math.round(dragPx / colWidth);
-    const targetIndex = Math.max(0, Math.min(navItems.length - 1, activeIndex + shiftCols));
-
-    setIsDragging(false);
-    setDragPx(0);
-
-    if (targetIndex !== activeIndex) {
-      navigate(navItems[targetIndex].to);
-    }
+    isDragging.current = false;
   };
 
   if (shouldHide) return null;
 
-  const numItems = navItems.length;
-  const colWidthPct = 100 / numItems;
+  // How many slots to render around the center
+  const VISIBLE = 2; // items on each side of center
 
   return (
     <nav
       className={cx(
-        "fixed bottom-4 inset-x-4 z-[90] max-w-md mx-auto md:hidden transition-all duration-300 ease-out gpu-layer select-none",
+        "fixed bottom-4 inset-x-3 z-[90] max-w-md mx-auto md:hidden gpu-layer select-none",
+        "transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
         isVisible ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0 pointer-events-none"
       )}
-      aria-label="Mobile Floating Dock Navigation"
+      aria-label="Mobile Navigation Dock"
     >
-      {/* Container adapting to Theme Colors (Light & Dark) */}
+      {/*
+        Container: uses design system tokens only.
+        Light mode:  bg = rgb(255 255 255) = white    border = rgb(226 232 240) = slate-200
+        Dark mode:   bg = rgb(15 29 51)    = navy     border = rgb(35 57 92)   = navy-700
+      */}
       <div
-        ref={navRef}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onMouseDown={handleTouchStart}
-        onMouseMove={handleTouchMove}
-        onMouseUp={handleTouchEnd}
-        onMouseLeave={handleTouchEnd}
-        className="relative rounded-full border border-border/80 bg-surface/95 dark:bg-slate-950/95 dark:border-slate-800 p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.12)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)] backdrop-blur-2xl overflow-hidden cursor-grab active:cursor-grabbing"
+        className="relative overflow-hidden rounded-full border border-border bg-surface shadow-[0_12px_40px_rgba(0,0,0,0.10)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.45)] backdrop-blur-3xl"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
-        {/* SLIDEABLE ACTIVE PILL WITH THEME ACCENT GRADIENT */}
-        <div
-          className={cx(
-            "absolute top-1.5 bottom-1.5 rounded-full bg-gradient-to-r from-primary to-accent shadow-md shadow-primary/30",
-            isDragging ? "transition-none" : "transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
-          )}
-          style={{
-            left: `calc(${activeIndex * colWidthPct}% + 6px + ${dragPx}px)`,
-            width: `calc(${colWidthPct}% - 12px)`,
-          }}
-        >
-          {/* Subtle center drag handle indicator */}
-          <div className="absolute top-1 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full bg-white/40" />
+        {/* Frosted center spotlight — a soft ring exactly behind the active item */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-20 h-11 rounded-full bg-primary/8 dark:bg-primary/12 blur-sm" />
         </div>
 
-        {/* Tab Items */}
-        <div className="relative z-10 flex items-center justify-between pointer-events-auto">
-          {navItems.map((item, idx) => {
-            const isActive = idx === activeIndex;
+        {/* The 3-D carousel track */}
+        <div
+          className="relative flex items-center justify-center h-[58px] px-4"
+          style={{ perspective: "600px" }}
+        >
+          {Array.from({ length: N }).map((_, rawIdx) => {
+            // Calculate offset from active center (-N/2 … +N/2) with circular wrap
+            let offset = rawIdx - activeIndex;
+            // Wrap to shortest path for smooth circular effect
+            if (offset >  N / 2) offset -= N;
+            if (offset < -N / 2) offset += N;
+
+            const visible = Math.abs(offset) <= VISIBLE;
+            const isActive = offset === 0;
+
+            // Per-offset visual weights
+            const absOff = Math.abs(offset);
+            const scale   = isActive ? 1.0 : absOff === 1 ? 0.76 : 0.60;
+            const rotateY = offset * 30; // degrees
+            const tx      = offset * 64; // px horizontal shift
+            const opacity = isActive ? 1 : absOff === 1 ? 0.52 : 0.28;
+            const zIndex  = 10 - absOff;
+
+            const { to, label, Icon } = navItems[rawIdx];
+
             return (
-              <Link
-                key={item.to}
-                to={item.to}
+              <div
+                key={to}
+                onClick={() => goTo(rawIdx)}
+                aria-hidden={!visible}
                 className={cx(
-                  "flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-full transition-all duration-200 cursor-pointer active:scale-90 select-none",
-                  isActive 
-                    ? "text-white font-black" 
-                    : "text-muted hover:text-fg dark:text-slate-400 dark:hover:text-slate-200 font-bold"
+                  "absolute flex flex-col items-center justify-center gap-1 cursor-pointer",
+                  "transition-all duration-350 ease-[cubic-bezier(0.4,0,0.2,1)]",
+                  !visible && "pointer-events-none"
                 )}
+                style={{
+                  transform: `translateX(${tx}px) rotateY(${rotateY}deg) scale(${scale})`,
+                  opacity,
+                  zIndex,
+                  transformStyle: "preserve-3d",
+                  width: 72,
+                }}
               >
-                <span className={cx(
-                  "flex items-center justify-center transition-transform duration-300",
-                  isActive ? "scale-110 text-white" : "scale-100 text-muted dark:text-slate-400"
-                )}>
-                  {item.icon}
+                {/* Icon chip */}
+                <span
+                  className={cx(
+                    "flex items-center justify-center w-9 h-7 rounded-xl transition-all duration-300",
+                    isActive
+                      ? "bg-primary/12 dark:bg-primary/20 text-primary"
+                      : "text-muted"
+                  )}
+                >
+                  <Icon />
                 </span>
-                <span className="text-[10px] tracking-wide leading-none uppercase">
-                  {item.label}
+
+                {/* Label */}
+                <span
+                  className={cx(
+                    "leading-none tracking-tight uppercase transition-all duration-300",
+                    isActive
+                      ? "text-[10px] font-bold text-primary"
+                      : "text-[9px] font-medium text-muted"
+                  )}
+                >
+                  {label}
                 </span>
-              </Link>
+
+                {/* Active underline pip */}
+                {isActive && (
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-[3px] rounded-full bg-primary" />
+                )}
+              </div>
             );
           })}
         </div>
+
+
       </div>
     </nav>
   );
 }
-
-export default MobileBottomNav;
