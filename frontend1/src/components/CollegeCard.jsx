@@ -1,4 +1,3 @@
-import { memo } from "react";
 import { useNavigate } from "react-router-dom";
 
 function LocationIcon({ className = "h-4 w-4" }) {
@@ -107,4 +106,4 @@ function CollegeCard({ college, index = 0 }) {
   );
 }
 
-export default memo(CollegeCard);
+export default CollegeCard;

@@ -17,21 +17,15 @@ export const AuthProvider = ({ children }) => {
   // object reference which triggers all [user]-dependent useEffects.
   const userRef = useRef(null);
   const setUser = useCallback((next) => {
-    // Fast shallow comparison: compare IDs and updatedAt timestamps
-    // Avoids the O(n) cost of JSON.stringify on every auth update
-    const currUser = userRef.current;
-    const isSame =
-      next === currUser ||
-      (next && currUser &&
-        next._id === currUser._id &&
-        next.updatedAt === currUser.updatedAt &&
-        next.callCredits === currUser.callCredits &&
-        next.role === currUser.role);
-    if (!isSame) {
+    const nextStr = next ? JSON.stringify(next) : null;
+    const currStr = userRef.current ? JSON.stringify(userRef.current) : null;
+    if (isDev) console.log("[AuthContext] setUser call - same:", nextStr === currStr);
+    if (nextStr !== currStr) {
+      if (isDev) console.log("[AuthContext] Updating user state...");
       userRef.current = next;
       setUserRaw(next);
     }
-  }, []);
+  }, [isDev]);
 
   useEffect(() => {
     if (isDev) console.log("[AuthContext] Render - user:", user?._id, "loading:", loading);

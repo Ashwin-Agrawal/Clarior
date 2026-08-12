@@ -30,9 +30,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <!-- Async font loading to prevent render-blocking -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" /></noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
     <title>Talk to Verified College Seniors | 1:1 College & Branch Guidance</title>
 
     <!-- Open Graph / Facebook -->
@@ -51,8 +49,9 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- 🔒 Only load Razorpay from official CDN -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js" crossorigin="anonymous"></script>
     <!-- Google Identity Services Web Client SDK -->
-    <!-- NOTE: Razorpay is loaded on-demand in BuyCredits page only -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>

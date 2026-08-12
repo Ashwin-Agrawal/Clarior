@@ -410,29 +410,23 @@ function Home() {
     return [...slicedColleges, ...slicedColleges];
   }, [slicedColleges]);
 
-  // ── Mouse Parallax for Hero (RAF-throttled, passive) ─────────
+  // ── Mouse Parallax for Hero ─────────────────────────────────
   useEffect(() => {
-    let rafId = null;
     const handleMouseMove = (e) => {
-      if (rafId) return; // Skip if frame already queued
-      rafId = requestAnimationFrame(() => {
-        if (!heroRef.current) { rafId = null; return; }
-        const rect = heroRef.current.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width - 0.5;
-        const y = (e.clientY - rect.top) / rect.height - 0.5;
-        setMousePos({ x, y });
-        rafId = null;
-      });
+      if (!heroRef.current) return;
+      const rect = heroRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      setMousePos({ x, y });
     };
 
     const heroEl = heroRef.current;
     if (heroEl) {
-      heroEl.addEventListener("mousemove", handleMouseMove, { passive: true });
+      heroEl.addEventListener("mousemove", handleMouseMove);
     }
 
     return () => {
       if (heroEl) heroEl.removeEventListener("mousemove", handleMouseMove);
-      if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
 
@@ -648,24 +642,17 @@ function Home() {
       setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
     }, 4500);
 
-    // RAF-throttled, passive scroll handler for smooth 60fps progress tracking
-    let rafId = null;
     const handleScroll = () => {
-      if (rafId) return;
-      rafId = requestAnimationFrame(() => {
-        const progress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
-        setScrolled(Math.min(progress, 1));
-        setShowDock(window.scrollY > 450);
-        rafId = null;
-      });
+      const progress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+      setScrolled(Math.min(progress, 1));
+      setShowDock(window.scrollY > 450);
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll);
     return () => {
       clearTimeout(timer);
       window.clearInterval(tipTimer);
       window.clearInterval(testimonialTimer);
       window.removeEventListener("scroll", handleScroll);
-      if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
 

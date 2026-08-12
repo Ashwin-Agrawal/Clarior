@@ -86,10 +86,6 @@ export function Logo({ size = "navbar", className = "" }) {
       src={logoImage}
       alt="Clarior Logo"
       className={`${iconSize} object-contain ${className}`}
-      fetchpriority="high"
-      decoding="async"
-      width="250"
-      height="40"
     />
   );
 }

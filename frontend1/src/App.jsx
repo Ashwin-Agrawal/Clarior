@@ -6,14 +6,12 @@ import MobileBottomNav from "./components/MobileBottomNav";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/RoleRoute";
 
-// Home is the LCP page — loaded eagerly for instant first render
+// Core static routes for instant LCP & initial load
 import Home from "./pages/Home";
-
-// All other pages are lazy-loaded to minimize initial bundle size
-const Explore = lazy(() => import("./pages/Explore"));
-const Profile = lazy(() => import("./pages/Profile"));
-const Login = lazy(() => import("./pages/Login"));
-const Register = lazy(() => import("./pages/Register"));
+import Explore from "./pages/Explore";
+import Profile from "./pages/Profile";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 // Lazy-loaded secondary & protected routes for optimal code-splitting
 const UserProfile = lazy(() => import("./pages/UserProfile"));
