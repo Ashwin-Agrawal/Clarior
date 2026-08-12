@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function cx(...parts) { return parts.filter(Boolean).join(" "); }
@@ -76,8 +76,6 @@ const IcProfile = () => (
 export default function MobileBottomNav() {
   const { user } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
-
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
 
@@ -148,12 +146,11 @@ export default function MobileBottomNav() {
             const { to, label, Icon } = item;
 
             return (
-              <button
+              <Link
                 key={to}
-                type="button"
-                onClick={() => navigate(to)}
+                to={to}
                 className={cx(
-                  "relative flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all duration-300 cursor-pointer focus:outline-none",
+                  "relative flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all duration-300 cursor-pointer focus:outline-none no-underline",
                   isActive
                     ? "text-primary font-black scale-[1.03]"
                     : "text-muted hover:text-fg active:scale-95"
@@ -184,7 +181,7 @@ export default function MobileBottomNav() {
                 {isActive && (
                   <span className="relative z-10 -bottom-0.5 h-1 w-3 rounded-full bg-primary" />
                 )}
-              </button>
+              </Link>
             );
           })}
         </div>

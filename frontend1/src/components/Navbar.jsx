@@ -81,12 +81,13 @@ function NotificationBell() {
   const { user } = useAuth();
 
   const loadNotifications = async () => {
+    if (document.hidden) return; // Don't poll when tab is in background
     try {
       const res = await api.get("/notifications");
       setNotifications(res.data.notifications || []);
       setUnreadCount(res.data.unreadCount || 0);
     } catch (err) {
-      console.error("Error loading notifications:", err.message);
+      // Silent in production — console stripped by build
     }
   };
 
@@ -104,7 +105,7 @@ function NotificationBell() {
         setOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside, { passive: true });
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
@@ -401,11 +402,19 @@ function Navbar() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
+    let rafId = null;
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 20);
+        rafId = null;
+      });
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   // Close dropdown menus on route transition

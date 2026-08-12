@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./ui/Button";
 
@@ -177,4 +178,4 @@ function MentorCard({ mentor }) {
   );
 }
 
-export default MentorCard;
+export default memo(MentorCard);

@@ -410,23 +410,29 @@ function Home() {
     return [...slicedColleges, ...slicedColleges];
   }, [slicedColleges]);
 
-  // ── Mouse Parallax for Hero ─────────────────────────────────
+  // ── Mouse Parallax for Hero (RAF-throttled, passive) ─────────
   useEffect(() => {
+    let rafId = null;
     const handleMouseMove = (e) => {
-      if (!heroRef.current) return;
-      const rect = heroRef.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width - 0.5;
-      const y = (e.clientY - rect.top) / rect.height - 0.5;
-      setMousePos({ x, y });
+      if (rafId) return; // Skip if frame already queued
+      rafId = requestAnimationFrame(() => {
+        if (!heroRef.current) { rafId = null; return; }
+        const rect = heroRef.current.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        setMousePos({ x, y });
+        rafId = null;
+      });
     };
 
     const heroEl = heroRef.current;
     if (heroEl) {
-      heroEl.addEventListener("mousemove", handleMouseMove);
+      heroEl.addEventListener("mousemove", handleMouseMove, { passive: true });
     }
 
     return () => {
       if (heroEl) heroEl.removeEventListener("mousemove", handleMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
 
@@ -642,17 +648,24 @@ function Home() {
       setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
     }, 4500);
 
+    // RAF-throttled, passive scroll handler for smooth 60fps progress tracking
+    let rafId = null;
     const handleScroll = () => {
-      const progress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
-      setScrolled(Math.min(progress, 1));
-      setShowDock(window.scrollY > 450);
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        const progress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+        setScrolled(Math.min(progress, 1));
+        setShowDock(window.scrollY > 450);
+        rafId = null;
+      });
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       clearTimeout(timer);
       window.clearInterval(tipTimer);
       window.clearInterval(testimonialTimer);
       window.removeEventListener("scroll", handleScroll);
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
 

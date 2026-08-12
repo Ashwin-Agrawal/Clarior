@@ -15,21 +15,37 @@ export default defineConfig({
     },
   },
   build: {
-    // 🔒 Security: disable source maps in production to prevent code exposure
+    // Remove console.* in production to save bytes and prevent info leakage
     sourcemap: false,
-    // 🔒 Security: minify and optimize
-    minify: true,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
+      },
+    },
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          axios: ['axios']
-        }
-      }
-    }
+        manualChunks(id) {
+          // React core — smallest, most-cached chunk
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+            return 'react-core';
+          }
+          // React Router — changes less often than app code
+          if (id.includes('node_modules/react-router')) {
+            return 'react-router';
+          }
+          // Axios — tiny, separate for cache efficiency
+          if (id.includes('node_modules/axios')) {
+            return 'axios';
+          }
+        },
+      },
+    },
   },
   define: {
-    // 🔒 Security: remove debug code in production
+    // Remove debug code in production
     __DEV__: false,
-  }
+  },
 })

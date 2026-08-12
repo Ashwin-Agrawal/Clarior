@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap');
+/* Fonts are loaded async via <link> in index.html for non-blocking LCP */
 @import "tailwindcss";
 
 @theme {
@@ -201,28 +201,18 @@ html.dark {
   --shadow-glow: 0 0 0 3px rgba(96, 165, 250, 0.30);
 }
 
-/* ─── Theme Transition ────────────────────────────────────────── */
-html.theme-animate,
+/* ─── Theme Transition (scoped, not universal *) ─────────────────── */
 html.theme-animate body,
-html.theme-animate div,
-html.theme-animate section,
 html.theme-animate header,
-html.theme-animate footer,
 html.theme-animate nav,
-html.theme-animate button,
-html.theme-animate input,
-html.theme-animate select,
-html.theme-animate textarea,
-html.theme-animate a,
-html.theme-animate p,
-html.theme-animate h1,
-html.theme-animate h2,
-html.theme-animate h3,
-html.theme-animate h4,
-html.theme-animate h5,
-html.theme-animate h6 {
-  transition-property: background-color, border-color, color, fill, stroke;
-  transition-duration: 200ms;
+html.theme-animate main,
+html.theme-animate footer,
+html.theme-animate section,
+html.theme-animate .card,
+html.theme-animate .btn,
+html.theme-animate .badge {
+  transition-property: background-color, border-color, color;
+  transition-duration: 180ms;
   transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -824,6 +814,7 @@ html.dark .bg-grid-pattern {
 }
 
 /* ─── Noise / Grain Texture Overlay ──────────────────────────── */
+/* Uses CSS-only noise to avoid expensive SVG feTurbulence rasterization */
 .grain-overlay {
   position: fixed;
   top: 0;
@@ -832,14 +823,16 @@ html.dark .bg-grid-pattern {
   height: 100%;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.025;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.018;
+  /* Static pre-compressed noise tile — no live SVG filter compositing */
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4t5eXlzc3OLi4ubm5uVlZWPj4+NjY19fX2JiYl/f39ra2uRkZGZmZlpaWmXl5dvb29xcXGTk5NnZ2c8TV1mAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAvEOwtAAAFVklEQVR4XpWWB67c2BUFb3g557T/hRo9/WUMZHlgr4Bg8Z4qQgQJlHI4A8SzFVrapvmTF9O7dmYRFZ60YiBhJRCgh1FYhiLAmdvX0CzTOpNE77ME0Zty/nWWzchDtiqrmQDeuv3powQ5ta2eN0FY0InkqDD73lT9c9lEzwUNqgFHs9VQce3TVClFCQrSTfOiYkVJQBmpbq2L6iZavPnAPcoU0dSw0SUTqz/GtrGuXfbyyBniKykOWQWGqwwma1wtZ/NhtMxU7DmZQeQVA0V3aWWvlCGThGMzwHhRDTTMhPCFY5DkJY8Ej8qH0IFAaqdT1Z3qvAhfmOZIi40r5dDgzpaqLKRHKqLKhJT5LqvA/LvFCnLiQKYGJgCEFjDaOjh8BnHfnkMpKBiJyEP7UPxOcKbeMlIGEtCqGaWxSYQeIblhMpvCx1bM2kFLKCMQQBlmI4S3GkjrGFXoHqovCItWuTNFBilBi2j3KrLfOUMN+PGa3LgMpSaJ2gC5nB7vC1uyIUSTjHBdBCm6YjgKIZkpMnjCWgVUfJ2gmA5mOnzQ8oHfxmGHRjmW0FhzJHiC5kgJPJlilJUCTVm+nkKtI15oJLVwxqERpJdkNqDyNKBbbFAGSZJFv7ZDT61Ps5E3YLxF6A2iKb6YtBE=");
   background-repeat: repeat;
-  mix-blend-mode: overlay;
+  background-size: 128px 128px;
+  will-change: auto;
 }
 
 html.dark .grain-overlay {
-  opacity: 0.04;
+  opacity: 0.03;
 }
 
 /* ─── Hero Glow Ring Pulse ───────────────────────────────────── */
@@ -1561,4 +1554,45 @@ html.dark .tab-active-glow {
   background-size: 300% 100%;
   animation: auroraShine 3s ease-in-out infinite;
   pointer-events: none;
+}
+/* ─── Performance: content-visibility for below-fold sections ─── */
+/* Allows browser to skip rendering off-screen sections until needed */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px; /* Estimated height to prevent layout shift */
+}
+
+/* ─── Performance: will-change hints for animated elements ─────── */
+.animated-orb,
+.glow-ring {
+  will-change: transform, opacity;
+}
+
+/* ─── Performance: prefers-reduced-motion support ──────────────── */
+/* Users who have requested reduced motion get instant, no-animation UI */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .glow-ring,
+  .aurora-shine::after,
+  .slogan-letter,
+  .word-reveal {
+    animation: none !important;
+  }
+}
+
+/* ─── Performance: image lazy-load fade-in ────────────────────── */
+img[loading="lazy"] {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+img[loading="lazy"].loaded {
+  opacity: 1;
 }
