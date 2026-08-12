@@ -115,6 +115,31 @@ function CollegeProfile() {
     : "View details of top colleges and discover verified mentors.";
   useSEO(seoTitle, seoDesc);
 
+  useEffect(() => {
+    if (!college) return;
+    const schemaData = {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": college.name,
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": college.city,
+        "addressRegion": college.state
+      },
+      "image": college.image
+    };
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "json-ld-college";
+    script.text = JSON.stringify(schemaData);
+    document.head.appendChild(script);
+
+    return () => {
+      const existing = document.getElementById("json-ld-college");
+      if (existing) existing.remove();
+    };
+  }, [college]);
+
   if (loading) {
     return (
       <>

@@ -60,6 +60,7 @@ function MentorCard({ mentor }) {
     <div
       role="button"
       tabIndex={0}
+      aria-label={`View mentor profile of ${mentor.name}`}
       onClick={() => navigate(`/profile/${mentor._id}`)}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {

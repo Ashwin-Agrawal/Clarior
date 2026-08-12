@@ -40,7 +40,16 @@ function CollegeCard({ college, index = 0 }) {
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={`View college details for ${name}`}
       onClick={() => navigate(`/college/${targetId}`)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          navigate(`/college/${targetId}`);
+        }
+      }}
       className="bg-surface border border-border/80 rounded-[28px] overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card hover:border-primary/25 group cursor-pointer flex flex-col h-full animate-fade-up animated-border"
       style={{ animationDelay: `${index * 50}ms` }}
     >
@@ -51,6 +60,7 @@ function CollegeCard({ college, index = 0 }) {
           alt={name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           loading="lazy"
+          decoding="async"
           onError={(e) => {
             e.target.src = "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=800&auto=format&fit=crop";
           }}

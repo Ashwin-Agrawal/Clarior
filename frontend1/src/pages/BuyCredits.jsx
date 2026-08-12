@@ -115,6 +115,24 @@ function BuyCredits() {
             <p className="mt-6 text-lg text-muted leading-relaxed">
               Unlock direct access to verified seniors. No hidden fees, no subscriptions. Just pure guidance when you need it.
             </p>
+
+            {/* User Available Credits Badge */}
+            {user && (
+              <div className="mt-8 inline-flex items-center gap-3.5 rounded-full border border-primary/25 bg-surface/90 px-6 py-2.5 shadow-card backdrop-blur-xl animate-fade-up">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20 shrink-0">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
+                </div>
+                <div className="text-left">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-muted">Current Balance</div>
+                  <div className="text-sm font-black text-fg flex items-baseline gap-1.5">
+                    <span className="text-primary font-black text-lg">{user?.callCredits ?? 0}</span>
+                    <span className="text-xs font-bold text-muted">Session {user?.callCredits === 1 ? "Credit Available" : "Credits Available"}</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </SiteContainer>
         </div>
 

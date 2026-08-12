@@ -2,11 +2,11 @@ function cx(...parts) {
   return parts.filter(Boolean).join(" ");
 }
 
-function Input({ label, hint, error, className = "", iconLeft, iconRight, ...props }) {
+function Input({ label, hint, error, className = "", iconLeft, iconRight, id, ...props }) {
   return (
-    <label className="block">
+    <label htmlFor={id} className="block cursor-pointer">
       {label && (
-        <div className="text-sm font-semibold text-fg mb-1.5">{label}</div>
+        <span className="block text-sm font-semibold text-fg mb-1.5">{label}</span>
       )}
       <div className="relative">
         {iconLeft && (
@@ -15,6 +15,8 @@ function Input({ label, hint, error, className = "", iconLeft, iconRight, ...pro
           </span>
         )}
         <input
+          id={id}
+          aria-invalid={Boolean(error)}
           className={cx(
             "w-full rounded-xl border bg-surface px-4 py-3 text-sm text-fg outline-none transition-all duration-200",
             "placeholder:text-muted/60",
@@ -34,8 +36,8 @@ function Input({ label, hint, error, className = "", iconLeft, iconRight, ...pro
         )}
       </div>
       {error ? (
-        <div className="mt-1.5 text-xs text-danger flex items-center gap-1">
-          <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20">
+        <div role="alert" className="mt-1.5 text-xs text-danger flex items-center gap-1">
+          <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
           </svg>
           {error}

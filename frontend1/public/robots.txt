@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /bookings
+Disallow: /admin
+Disallow: /session/
 
-Sitemap: https://www.clarior.in/sitemap.xml
+Sitemap: https://clarior.in/sitemap.xml

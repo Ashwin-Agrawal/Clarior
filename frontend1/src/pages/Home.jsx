@@ -319,6 +319,8 @@ function Home() {
   const [activeTip, setActiveTip] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [activeHubTab, setActiveHubTab] = useState("value");
+  const [showMoreFeatures, setShowMoreFeatures] = useState(false);
+  const [showMoreCompare, setShowMoreCompare] = useState(false);
   const [heroSeniors, setHeroSeniors] = useState([]);
   const [collegesList, setCollegesList] = useState([]);
   const [collegesLoading, setCollegesLoading] = useState(true);
@@ -544,7 +546,50 @@ function Home() {
     };
   }, [collegesLoading, repeatedList]);
 
-  useSEO("Home", "Talk to verified seniors from colleges worldwide for ₹69. Get clarity on college, branch, placements and more.");
+  useSEO("Talk to Verified College Seniors | 1:1 College & Branch Guidance", "Talk to verified college seniors for 1:1 admission, branch, and career guidance. Explore top colleges, get honest student reviews, and clear your doubts.");
+
+  useEffect(() => {
+    const faqSchema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How can I talk to verified college seniors for 1:1 guidance?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Browse the explore directory, select a verified senior studying your target branch or college, choose an available time slot, and book a 1:1 private call for personalized advice."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I get honest advice on college placements, branches, and campus life?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! All mentors on Clarior are verified current students or recent alumni who provide authentic, unbiased insights on placement reality, branch workload, and campus culture."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does a 1:1 student mentorship call cost?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "1:1 sessions start at just ₹69 for a 20-minute call, making direct senior mentorship affordable for every student."
+          }
+        }
+      ]
+    };
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "json-ld-faq";
+    script.text = JSON.stringify(faqSchema);
+    document.head.appendChild(script);
+
+    return () => {
+      const existing = document.getElementById("json-ld-faq");
+      if (existing) existing.remove();
+    };
+  }, []);
 
   useEffect(() => {
     const fetchColleges = async () => {
@@ -653,7 +698,7 @@ function Home() {
           <div className="absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-accent/8 dark:bg-accent/3 blur-[120px] pointer-events-none" />
 
           <SiteContainer className="relative">
-            <div ref={heroRevealRef} className="max-w-7xl mx-auto space-y-16">
+            <div ref={heroRevealRef} className="max-w-7xl mx-auto space-y-6 sm:space-y-16">
               
               {/* Top Row: Split grid for headline & mockup preview */}
               <div className="grid lg:grid-cols-12 gap-12 items-center">
@@ -688,19 +733,19 @@ function Home() {
                     1:1 calls with verified seniors for just ₹69
                   </p>
 
-                  {/* CTA Buttons */}
-                  <div className="scroll-reveal reveal-up stagger-3 mt-8 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-                    <Link to="/explore" className="w-full sm:w-auto">
-                      <Button size="xl" className="aurora-shine relative w-full sm:w-auto overflow-hidden rounded-full px-10 shadow-[0_18px_45px_rgba(37,99,235,0.28)] group hover:-translate-y-1.5 transition-all duration-300">
-                        <span className="relative z-10 flex items-center gap-2 justify-center">
+                  {/* CTA Buttons — Single row on mobile */}
+                  <div className="scroll-reveal reveal-up stagger-3 mt-8 flex flex-row items-center justify-center lg:justify-start gap-2.5 sm:gap-4 w-full">
+                    <Link to="/explore" className="flex-1 sm:flex-initial min-w-0">
+                      <Button size="lg" className="aurora-shine relative w-full overflow-hidden rounded-full px-3.5 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-base font-extrabold group hover:-translate-y-1 transition-all duration-300">
+                        <span className="relative z-10 flex items-center gap-1.5 justify-center truncate">
                           Explore Seniors
-                          <LineIcon name="arrow" className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                          <LineIcon name="arrow" className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1 shrink-0" />
                         </span>
                       </Button>
                     </Link>
-                    <Link to="/become-mentor" className="w-full sm:w-auto">
-                      <Button variant="secondary" size="xl" className="w-full sm:w-auto rounded-full px-10 hover:-translate-y-1 transition-transform shadow-[0_12px_30px_rgba(15,23,42,0.08)] border-2">
-                        Become a Senior
+                    <Link to="/become-mentor" className="flex-1 sm:flex-initial min-w-0">
+                      <Button variant="secondary" size="lg" className="w-full rounded-full px-3.5 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-base font-extrabold hover:-translate-y-1 transition-transform border-2 truncate">
+                        Become Senior
                       </Button>
                     </Link>
                   </div>
@@ -1285,9 +1330,10 @@ function Home() {
               </div>
 
               {/* Bottom Row: Stats & Motivation Tips */}
-              <div className="space-y-12 pt-16 w-full flex flex-col items-center justify-center">
+              <div className="space-y-6 sm:space-y-12 pt-4 sm:pt-12 w-full flex flex-col items-center justify-center">
                 {/* Animated Stats with Counter */}
-                <div className="scroll-reveal reveal-up stagger-4 grid grid-cols-1 sm:grid-cols-3 gap-5 w-full max-w-5xl px-4 mx-auto">
+                {/* Animated Stats with Counter — Single row on mobile */}
+                <div className="scroll-reveal reveal-up stagger-4 grid grid-cols-3 gap-2 sm:gap-6 w-full max-w-5xl px-2 sm:px-4 mx-auto">
                   {[
                     {
                       ...stats[0],
@@ -1325,26 +1371,14 @@ function Home() {
                   ].map((s) => (
                     <div
                       key={s.label}
-                      className={`group relative overflow-hidden rounded-[24px] border border-border/70 bg-surface p-6 shadow-card ${s.borderHover} hover:shadow-lift transition-all duration-300 ease-out hover:-translate-y-1.5 scroll-reveal reveal-scale stagger-5`}
+                      className={`group relative overflow-hidden rounded-[20px] sm:rounded-[24px] border border-border/70 bg-surface p-2.5 sm:p-6 shadow-card ${s.borderHover} hover:shadow-lift transition-all duration-300 ease-out hover:-translate-y-1 scroll-reveal reveal-scale stagger-5`}
                     >
                       {/* Top gradient accent bar */}
-                      <div className={`absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r ${s.accent} opacity-70 group-hover:opacity-100 transition-opacity duration-300`} />
+                      <div className={`absolute top-0 inset-x-0 h-[2px] sm:h-[3px] bg-gradient-to-r ${s.accent} opacity-70 group-hover:opacity-100 transition-opacity duration-300`} />
 
-                      {/* Hover inner glow */}
-                      <div
-                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-[24px]"
-                        style={{ background: `radial-gradient(ellipse 80% 70% at 50% 0%, ${s.glow} 0%, transparent 70%)` }}
-                      />
-
-                      {/* Decorative faint grid dots */}
-                      <div
-                        className="absolute inset-0 opacity-[0.025] pointer-events-none"
-                        style={{ backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)", backgroundSize: "18px 18px" }}
-                      />
-
-                      <div className="relative z-10">
+                      <div className="relative z-10 flex flex-col items-center sm:items-start text-center sm:text-left">
                         {/* Icon badge + Label row */}
-                        <div className="flex items-center justify-between mb-5">
+                        <div className="hidden sm:flex items-center justify-between mb-5 w-full">
                           <div className={`flex h-11 w-11 items-center justify-center rounded-xl border ${s.iconBg} ${s.iconHover} transition-all duration-300 shadow-xs group-hover:scale-105 group-hover:shadow-md`}>
                             <LineIcon name={s.icon} className="h-5 w-5" />
                           </div>
@@ -1355,16 +1389,16 @@ function Home() {
 
                         {/* Big number */}
                         <div
-                          className={`text-5xl font-black tracking-tight text-fg ${s.numColor} transition-colors duration-300`}
+                          className={`text-xl sm:text-5xl font-black tracking-tight text-fg ${s.numColor} transition-colors duration-300`}
                           style={{ fontFamily: "'Outfit', sans-serif" }}
                         >
                           <AnimatedCounter target={s.numericValue} suffix={s.suffix} displayAs={s.displayAs} />
                         </div>
 
-                        {/* Label + subtle divider */}
-                        <div className="mt-3 flex items-center gap-2">
-                          <div className={`h-px flex-1 bg-gradient-to-r ${s.accent} opacity-20 group-hover:opacity-50 transition-opacity duration-300`} />
-                          <span className="text-[11px] font-bold uppercase tracking-widest text-muted group-hover:text-fg transition-colors duration-300 shrink-0">
+                        {/* Label */}
+                        <div className="mt-1 sm:mt-3 flex items-center gap-2 w-full justify-center sm:justify-start">
+                          <div className={`hidden sm:block h-px flex-1 bg-gradient-to-r ${s.accent} opacity-20 group-hover:opacity-50 transition-opacity duration-300`} />
+                          <span className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider sm:tracking-widest text-muted group-hover:text-fg transition-colors duration-300 shrink-0 truncate">
                             {s.label}
                           </span>
                         </div>
@@ -1560,11 +1594,11 @@ function Home() {
         {/* ═══════════════════════════════════════════════════════
             WHY CLARIOR — Bento Box features grid
             ═══════════════════════════════════════════════════════ */}
-        <section className="py-32 relative">
+        <section className="py-16 md:py-20 relative">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-primary/5 blur-[120px] pointer-events-none section-glow" />
 
           <SiteContainer>
-            <div ref={featuresRevealRef} className="space-y-16">
+            <div ref={featuresRevealRef} className="space-y-10 md:space-y-14">
               <div className="text-center max-w-3xl mx-auto space-y-4">
                 <div className="scroll-reveal reveal-up inline-flex items-center gap-3">
                   <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-accent/10 via-primary/8 to-accent/10 border border-accent/25 text-[10px] font-black text-accent uppercase tracking-[0.25em] shadow-sm">
@@ -1633,7 +1667,7 @@ function Home() {
                 </div>
 
                 {/* Bento Card 3: 100% Manual Verification (Small: Col-span-1) */}
-                <div className="scroll-reveal reveal-up stagger-5 md:col-span-1 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-success/5 p-7 flex flex-col justify-between shadow-soft hover:shadow-lift hover:border-success/30 transition-all duration-300 relative overflow-hidden group bento-hover-glow">
+                <div className={`scroll-reveal reveal-up stagger-5 md:col-span-1 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-success/5 p-7 flex-col justify-between shadow-soft hover:shadow-lift hover:border-success/30 transition-all duration-300 relative overflow-hidden group bento-hover-glow ${!showMoreFeatures ? "hidden md:flex" : "flex"}`}>
                   <div className="absolute -right-8 -bottom-8 h-40 w-40 bg-success/8 blur-3xl rounded-full group-hover:bg-success/15 transition-all duration-500" />
                   <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-success/60 via-emerald-400/80 to-success/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="flex gap-4">
@@ -1651,7 +1685,7 @@ function Home() {
                 </div>
 
                 {/* Bento Card 4: Prep Notes Workspace (Wide: Col-span-2) */}
-                <div className="scroll-reveal reveal-up stagger-6 md:col-span-2 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-amber-500/5 p-7 flex flex-col justify-between shadow-soft hover:shadow-lift hover:border-amber-400/30 transition-all duration-300 relative overflow-hidden group bento-hover-glow">
+                <div className={`scroll-reveal reveal-up stagger-6 md:col-span-2 rounded-[32px] border border-border/60 bg-gradient-to-br from-surface to-amber-500/5 p-7 flex-col justify-between shadow-soft hover:shadow-lift hover:border-amber-400/30 transition-all duration-300 relative overflow-hidden group bento-hover-glow ${!showMoreFeatures ? "hidden md:flex" : "flex"}`}>
                   <div className="absolute -right-8 -bottom-8 h-40 w-40 bg-amber-500/8 blur-3xl rounded-full group-hover:bg-amber-500/15 transition-all duration-500" />
                   <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-amber-500/60 via-yellow-400/80 to-amber-500/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="flex gap-5">
@@ -1672,6 +1706,18 @@ function Home() {
                 </div>
 
               </div>
+
+              {/* View More Options Toggle Button for Mobile */}
+              <div className="md:hidden flex justify-center mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowMoreFeatures(!showMoreFeatures)}
+                  className="btn-view-more"
+                >
+                  {showMoreFeatures ? "Show Less" : "View More Options"}
+                  <svg className={`h-3.5 w-3.5 transition-transform duration-300 ${showMoreFeatures ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                </button>
+              </div>
             </div>
           </SiteContainer>
         </section>
@@ -1679,14 +1725,14 @@ function Home() {
         {/* ═══════════════════════════════════════════════════════
             SOCIAL PROOF & TRUST — Testimonials & Comparison Side-by-Side
             ═══════════════════════════════════════════════════════ */}
-        <section className="py-24 bg-surface2/35 border-y border-border/40 relative overflow-hidden">
+        <section className="py-16 md:py-20 bg-surface2/35 border-y border-border/40 relative overflow-hidden">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-primary/5 blur-[100px] pointer-events-none" />
 
           <SiteContainer>
             <div className="grid lg:grid-cols-5 gap-10 items-start">
               
               {/* Left Column (2/5 width): Testimonials Slider */}
-              <div className="lg:col-span-2 space-y-6">
+              <div className="lg:col-span-2 space-y-6 w-full max-w-full overflow-hidden">
                 <div className="space-y-3">
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-primary/8 via-accent/5 to-primary/8 border border-primary/20 text-[9px] font-black text-primary uppercase tracking-widest overflow-hidden relative">
                     <span className="shimmer-badge absolute inset-0 pointer-events-none" />
@@ -1700,16 +1746,16 @@ function Home() {
                   </h2>
                 </div>
 
-                <div className="relative w-full">
+                <div className="relative w-full max-w-full overflow-hidden">
                   <div className="absolute -inset-4 bg-gradient-to-tr from-primary/5 to-accent/10 rounded-[48px] blur-3xl pointer-events-none opacity-60" />
                   
-                  <div className="relative overflow-hidden rounded-[28px] border border-border/60 bg-surface shadow-card">
+                  <div className="relative overflow-hidden rounded-[28px] border border-border/60 bg-surface shadow-card w-full max-w-full">
                     <div 
-                      className="flex transition-transform duration-700 ease-out"
+                      className="flex transition-transform duration-700 ease-out w-full"
                       style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}
                     >
                       {testimonials.map((t) => (
-                        <div key={t.name} className="w-full flex-shrink-0 p-6 flex flex-col justify-between group min-h-[270px] relative overflow-hidden">
+                        <div key={t.name} className="w-full shrink-0 min-w-full max-w-full box-border p-4 sm:p-6 flex flex-col justify-between group min-h-[250px] relative overflow-hidden">
                           <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-4">
                               <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr border text-sm font-black uppercase shadow-md transition-transform duration-500 ${t.avatarGlow}`}>
@@ -1721,7 +1767,7 @@ function Home() {
                               </div>
                             </div>
                             
-                            <p className="text-sm text-fg/80 leading-relaxed pl-1">
+                            <p className="text-xs sm:text-sm text-fg/80 leading-relaxed pl-1">
                               {t.quote}
                             </p>
                           </div>
@@ -1779,7 +1825,7 @@ function Home() {
               </div>
 
               {/* Right Column (3/5 width): Comparison Matrix */}
-              <div className="lg:col-span-3 space-y-6">
+              <div className="lg:col-span-3 space-y-6 w-full max-w-full overflow-hidden">
                 <div className="space-y-2">
                   <div className="inline-block px-3 py-1 rounded-full bg-success/5 border border-success/20 text-[9px] font-black text-success uppercase tracking-widest">Compare & Decide</div>
                   <h2 className="heading-display text-2xl md:text-3xl font-black text-fg tracking-tight">
@@ -1841,7 +1887,7 @@ function Home() {
                 </div>
 
                 {/* Mobile View: High-fidelity Comparison Cards */}
-                <div className="block md:hidden space-y-4">
+                <div className="block md:hidden space-y-3.5 w-full max-w-full overflow-hidden">
                   {[
                     {
                       factor: "Credibility",
@@ -1864,24 +1910,36 @@ function Home() {
                       clarior: "Instant 20-min focused check-in. Safe, in-app call."
                     }
                   ].map((row, idx) => (
-                    <div key={idx} className="rounded-2xl border border-border/60 bg-surface p-5 space-y-3 shadow-sm">
+                    <div key={idx} className={`rounded-2xl border border-border/60 bg-surface p-4 space-y-2.5 shadow-sm ${idx >= 2 && !showMoreCompare ? "hidden" : "block"}`}>
                       <div className="flex items-center justify-between border-b border-border/30 pb-2">
                         <span className="text-xs font-black text-fg uppercase tracking-widest">{row.factor}</span>
-                        <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-[8px] font-black uppercase tracking-wider text-primary">Clarior Difference</span>
+                        <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-primary">Clarior Difference</span>
                       </div>
                       
-                      <div className="space-y-2.5 pt-1">
+                      <div className="space-y-2 pt-0.5">
                         <div>
-                          <span className="text-[8px] font-black uppercase text-muted tracking-wider block mb-1">Traditional Advice</span>
+                          <span className="text-[8px] font-black uppercase text-muted tracking-wider block mb-0.5">Traditional Advice</span>
                           <p className="text-xs text-muted leading-relaxed font-semibold">{row.traditional}</p>
                         </div>
                         <div>
-                          <span className="text-[8px] font-black uppercase text-primary tracking-wider block mb-1">Clarior Difference</span>
+                          <span className="text-[8px] font-black uppercase text-primary tracking-wider block mb-0.5">Clarior Difference</span>
                           <p className="text-xs text-fg font-black leading-relaxed">{row.clarior}</p>
                         </div>
                       </div>
                     </div>
                   ))}
+
+                  {/* Mobile View More Comparisons Button */}
+                  <div className="md:hidden flex justify-center pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowMoreCompare(!showMoreCompare)}
+                      className="btn-view-more"
+                    >
+                      {showMoreCompare ? "Show Less" : "View More Comparisons"}
+                      <svg className={`h-3.5 w-3.5 transition-transform duration-300 ${showMoreCompare ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -1895,7 +1953,7 @@ function Home() {
         {/* ═══════════════════════════════════════════════════════
             PRICING — 3D Tilt Cards + Animated Borders + Scroll Reveal
             ═══════════════════════════════════════════════════════ */}
-        <section id="pricing" className="scroll-mt-28 py-24 bg-gradient-to-b from-bg to-surface2 relative overflow-hidden">
+        <section id="pricing" className="scroll-mt-28 py-16 md:py-20 bg-gradient-to-b from-bg to-surface2 relative overflow-hidden">
           <div className="absolute inset-0 bg-grid-pattern opacity-30 pointer-events-none" />
 
           <SiteContainer className="relative">
@@ -2012,7 +2070,7 @@ function Home() {
         {/* ═══════════════════════════════════════════════════════
             CLARITY HUB — Risk Slider, Real Live Board & FAQ Accordion
             ═══════════════════════════════════════════════════════ */}
-        <section className="py-24 relative overflow-hidden border-t border-border/40">
+        <section className="py-16 md:py-20 relative overflow-hidden border-t border-border/40">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-primary/5 blur-3xl pointer-events-none" />
           
           <SiteContainer>

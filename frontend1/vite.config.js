@@ -19,10 +19,17 @@ export default defineConfig({
     sourcemap: false,
     // 🔒 Security: minify and optimize
     minify: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          axios: ['axios']
+        }
+      }
+    }
   },
   define: {
     // 🔒 Security: remove debug code in production
     __DEV__: false,
   }
 })
-

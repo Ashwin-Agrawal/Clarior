@@ -22,8 +22,8 @@ const TYPES = ["All", "Government", "Private", "New-Gen"];
 
 function Explore() {
   useSEO(
-    "Explore Colleges",
-    "Browse colleges worldwide and connect with verified seniors studying there. Get clear guidance on admissions, branches, and career paths."
+    "Explore Top Colleges & Compare Branches | Senior Mentorship",
+    "Explore top engineering, management, and private colleges in India. Connect with verified seniors for 1:1 admission, branch selection, and placement guidance."
   );
 
   const [colleges, setColleges] = useState([]);

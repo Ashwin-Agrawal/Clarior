@@ -216,7 +216,40 @@ function Profile() {
       setSlotToBook(null);
       setBookingNotes("");
     }
-  };  const gradient = getGradient(mentor?.domain, mentor?.name || "");
+  };
+
+  const seoTitle = mentor ? `${mentor.name} — ${mentor.college || "Senior"} Mentor` : "Mentor Profile";
+  const seoDesc = mentor
+    ? `Book a 1:1 call with ${mentor.name}, studying ${mentor.branch || mentor.domain || "college"} at ${mentor.college || "top college"}.`
+    : "View mentor profile and book 1:1 mentorship sessions.";
+  useSEO(seoTitle, seoDesc);
+
+  useEffect(() => {
+    if (!mentor) return;
+    const schemaData = {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": mentor.name,
+      "jobTitle": `${mentor.branch || "Student"} Senior Mentor`,
+      "worksFor": {
+        "@type": "EducationalOrganization",
+        "name": mentor.college || "College"
+      },
+      "description": mentor.bio
+    };
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "json-ld-mentor";
+    script.text = JSON.stringify(schemaData);
+    document.head.appendChild(script);
+
+    return () => {
+      const existing = document.getElementById("json-ld-mentor");
+      if (existing) existing.remove();
+    };
+  }, [mentor]);
+
+  const gradient = getGradient(mentor?.domain, mentor?.name || "");
   const initials = mentor?.name?.trim().split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase() || "?";
 
   return (
