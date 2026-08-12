@@ -454,7 +454,7 @@ function Navbar() {
       {/* Navbar Container */}
       <SiteContainer>
         <div className="mx-auto flex w-full max-w-[960px] items-center gap-2 rounded-2xl border border-border bg-surface px-3 py-2 shadow-card transition-all duration-200 sm:rounded-full sm:px-4">
-          {/* Logo + Brand */}
+          {/* Logo + Brand (Full name visible on mobile too) */}
           <button
             type="button"
             aria-label="Clarior Home"
@@ -462,7 +462,7 @@ function Navbar() {
             className="flex min-w-0 items-center gap-2 rounded-full px-2 py-1 hover:bg-surface2 transition duration-200 cursor-pointer"
           >
             <Logo size="navbar" />
-            <span className="brand-text font-extrabold text-[19px] tracking-wide hidden sm:block">Clarior</span>
+            <span className="brand-text font-extrabold text-[19px] tracking-wide block">Clarior</span>
           </button>
 
           {/* Desktop Nav Links */}
@@ -490,10 +490,11 @@ function Navbar() {
 
           {/* Right side actions */}
           <div className="flex items-center gap-2 ml-auto">
+            {/* Theme Toggle Button (Desktop top bar) */}
             <button
               type="button"
               onClick={toggleDark}
-              className="group flex h-9.5 w-9.5 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-border bg-surface text-muted hover:text-primary hover:bg-primary/10 hover:border-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/30 active:scale-95 active:bg-primary/15 active:text-primary transition duration-300 shadow-xs cursor-pointer"
+              className="hidden md:flex group h-9 w-9 items-center justify-center rounded-full border border-border bg-surface text-muted hover:text-primary hover:bg-primary/10 hover:border-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/30 active:scale-95 active:bg-primary/15 active:text-primary transition duration-300 shadow-xs cursor-pointer"
               aria-label="Toggle dark mode"
             >
               <span className="transition-transform duration-500 group-hover:rotate-45 block">
@@ -501,7 +502,10 @@ function Navbar() {
               </span>
             </button>
 
-            <NotificationBell />
+            {/* Notification Bell (Desktop top bar) */}
+            <div className="hidden md:block">
+              <NotificationBell />
+            </div>
 
             {user ? (
               <UserAvatarMenu user={user} handleLogout={handleLogout} />
@@ -550,7 +554,28 @@ function Navbar() {
 
         {/* Mobile Glassmorphic Navigation Drawer */}
         {menuOpen && (
-          <div className="md:hidden mt-2.5 w-full rounded-[24px] border border-border/80 bg-surface/98 backdrop-blur-2xl p-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.25)] space-y-2.5 animate-slide-down z-[110]">
+          <div className="md:hidden mt-2.5 w-full rounded-[24px] border border-border/80 bg-surface/98 backdrop-blur-2xl p-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.25)] space-y-3 animate-slide-down z-[110]">
+            {/* Top Drawer Controls: Theme Switcher & Notifications */}
+            <div className="flex items-center justify-between pb-2.5 border-b border-border/40 px-1">
+              <button
+                type="button"
+                onClick={toggleDark}
+                className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-border/80 bg-surface2/60 text-fg hover:border-primary/40 active:scale-95 transition-all text-xs font-bold cursor-pointer"
+                aria-label="Toggle dark mode"
+              >
+                <span className="text-primary">{dark ? <SunIcon /> : <MoonIcon />}</span>
+                <span className="uppercase text-[10px] tracking-wider font-extrabold">{dark ? "Light Mode" : "Dark Mode"}</span>
+              </button>
+
+              {user && (
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase text-muted tracking-wider">Alerts</span>
+                  <NotificationBell />
+                </div>
+              )}
+            </div>
+
+            {/* Navigation Links */}
             <div className="space-y-1">
               {filteredItems.map((item) => {
                 const isActive = item.to === "/#footer"
@@ -586,22 +611,15 @@ function Navbar() {
               })}
             </div>
 
+            {/* Logged Out Login CTA */}
             {!user && (
-              <div className="pt-2 border-t border-border/50 grid grid-cols-2 gap-2">
+              <div className="pt-2 border-t border-border/50">
                 <Link
                   to="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center py-3 rounded-xl border border-border bg-surface2 text-xs font-black uppercase tracking-wider text-fg hover:border-primary/30 transition-all text-center"
+                  className="flex items-center justify-center py-3 rounded-xl border border-border bg-surface2 text-xs font-black uppercase tracking-wider text-fg hover:border-primary/30 transition-all text-center w-full"
                 >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center py-3 rounded-xl bg-gradient-to-r from-primary to-accent text-white text-xs font-black uppercase tracking-wider shadow-md hover:shadow-primary/25 transition-all text-center gap-1.5"
-                >
-                  <span>Join Now</span>
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.8"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6-6 6 6-6 6" /></svg>
+                  Sign In to Account
                 </Link>
               </div>
             )}

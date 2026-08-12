@@ -679,7 +679,7 @@ function Home() {
         {/* ═══════════════════════════════════════════════════════
             HERO SECTION — Animated Grid + Text Reveal
             ═══════════════════════════════════════════════════════ */}
-        <section ref={heroRef} className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-20 overflow-hidden">
+        <section ref={heroRef} className="relative min-h-[90vh] flex items-center justify-center pt-8 sm:pt-28 pb-12 sm:pb-20 overflow-hidden">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
           {/* Mouse-parallax premium glow blobs */}
