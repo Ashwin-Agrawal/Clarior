@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import ScrollToHash from "./components/ScrollToHash";
 import { ToastContainer } from "./components/Toast";
 import MobileBottomNav from "./components/MobileBottomNav";
+import PhoneVerifyBanner from "./components/PhoneVerifyBanner";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/RoleRoute";
 
@@ -30,6 +31,8 @@ const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const About = lazy(() => import("./pages/About"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
+const VerifyPhone = lazy(() => import("./pages/VerifyPhone"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 
 function RouteLoader() {
   return (
@@ -54,6 +57,7 @@ function App() {
           <Route path="/buy-credits" element={<BuyCredits />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/mentor-guidelines" element={<MentorGuidelines />} />
           <Route
             path="/become-mentor"
@@ -158,8 +162,18 @@ function App() {
               </ProtectedRoute>
             }
           />
+          {/* PHONE VERIFY (auth protected) */}
+          <Route
+            path="/verify-phone"
+            element={
+              <ProtectedRoute>
+                <VerifyPhone />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Suspense>
+      <PhoneVerifyBanner />
       <MobileBottomNav />
     </>
   );

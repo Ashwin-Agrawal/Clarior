@@ -47,8 +47,14 @@ function Login() {
         setLoading(true);
         setError("");
         const res = await api.post("/auth/google", { idToken: response.credential });
-        setUser(res.data.user);
-        navigate("/dashboard", { replace: true });
+        const loggedUser = res.data.user;
+        setUser(loggedUser);
+        // 📱 Redirect to phone verification if not verified yet
+        if (!loggedUser.isPhoneVerified) {
+          navigate("/verify-phone", { replace: true });
+        } else {
+          navigate("/dashboard", { replace: true });
+        }
       } catch (err) {
         setError(err?.response?.data?.message || "Google login failed.");
       } finally {
@@ -200,9 +206,7 @@ function Login() {
                 <div className="flex items-center justify-between mb-1">
                   <label htmlFor="login-password" className="text-sm font-bold text-fg">Password</label>
                   <button 
-                    onClick={() => {
-                      setError("Password reset is not configured yet. Please contact support at support@clarior.in");
-                    }}
+                    onClick={() => navigate("/forgot-password")}
                     className="text-xs font-semibold text-primary hover:underline cursor-pointer"
                   >
                     Forgot password?

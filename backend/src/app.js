@@ -20,6 +20,7 @@ const globalErrorHandler = require("./middleware/errorHandler.middleware");
 const paymentRoutes = require("./routes/payments.routes");
 const notificationRoutes = require("./routes/notification.routes");
 const slotRequestRoutes = require("./routes/slotRequest.routes");
+const otpRoutes = require("./routes/otp.routes");
 
 const app = express();
 
@@ -155,10 +156,18 @@ const paymentLimiter = rateLimit({
   },
 });
 
+const otpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: isDev ? 1000 : 5,
+  message: { success: false, message: "Too many OTP requests. Please wait 15 minutes." },
+  skipSuccessfulRequests: false,
+});
+
 app.use(limiter);
 app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
 app.use("/api/payment", paymentLimiter);
+app.use("/api/otp", otpLimiter);
 
 // 🧠 Body Parser
 app.use(express.json({ limit: "1mb" }));
@@ -195,6 +204,7 @@ app.use("/api/support", supportRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/slot-requests", slotRequestRoutes);
+app.use("/api/otp", otpRoutes);
 
 // ❗ 404
 app.use((req, res) => {
