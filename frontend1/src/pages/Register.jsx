@@ -75,14 +75,8 @@ function Register() {
       setLoading(true);
       setError("");
       const res = await api.post("/auth/google", { idToken: response.credential });
-      const loggedUser = res.data.user;
-      setUser(loggedUser);
-      // 📱 New Google users always go to phone verification first
-      if (!loggedUser.isPhoneVerified) {
-        navigate("/verify-phone", { replace: true });
-      } else {
-        navigate("/dashboard", { replace: true });
-      }
+      setUser(res.data.user);
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       setError(err?.response?.data?.message || "Google signup failed.");
     } finally {

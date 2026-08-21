@@ -720,7 +720,7 @@ function Home() {
                   </div>
                   
                   {/* Hero Title — Static "Stop" + animated word */}
-                  <h1 className="scroll-reveal reveal-up stagger-1 heading-display text-4xl sm:text-5xl md:text-7xl lg:text-[76px] xl:text-[84px] font-black text-fg leading-[0.95] tracking-tighter">
+                  <h1 className="scroll-reveal reveal-up stagger-1 heading-display text-4xl sm:text-5xl md:text-7xl lg:text-[76px] xl:text-[84px] font-black text-fg leading-[0.95] tracking-[-0.045em]">
                     <DynamicSlogan />
                     <br />
                     <span className="gradient-text-animated inline-block mt-1">
@@ -729,8 +729,9 @@ function Home() {
                   </h1>
                   
                   {/* Subtext */}
-                  <p className="scroll-reveal reveal-up stagger-2 mt-6 text-xl md:text-2xl text-muted leading-tight font-medium tracking-tight">
-                    1:1 calls with verified seniors for just ₹69
+                  <p className="scroll-reveal reveal-up stagger-2 mt-6 text-lg md:text-xl text-muted leading-snug font-semibold tracking-tight">
+                    1:1 calls with verified college seniors.
+                    <span className="text-fg font-black"> Starting at ₹69.</span>
                   </p>
 
                   {/* CTA Buttons — Single row on mobile */}
@@ -1492,10 +1493,16 @@ function Home() {
 
                           <div className="space-y-2 pt-1.5 border-t border-border/40">
                             <div className="flex items-center gap-2 text-xs text-muted font-semibold">
-                              <span className="text-danger font-extrabold"></span> Unverified, biased advice online
+                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-danger/10 shrink-0">
+                                <svg className="h-2.5 w-2.5 text-danger" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                              </span>
+                              Unverified, biased advice online
                             </div>
                             <div className="flex items-center gap-2 text-xs text-fg font-extrabold">
-                              <span className="text-success font-extrabold"></span> 1-on-1 verified college seniors
+                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-success/10 shrink-0">
+                                <svg className="h-2.5 w-2.5 text-success" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7"/></svg>
+                              </span>
+                              1-on-1 verified college seniors
                             </div>
                           </div>
                         </div>
@@ -1875,11 +1882,15 @@ function Home() {
                         {row.factor}
                       </div>
                       <div className="text-xs text-muted font-medium leading-relaxed pr-3 flex items-start gap-2">
-                        <span className="text-danger/70 font-black shrink-0 text-sm"></span>
+                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-danger/10 shrink-0 mt-0.5">
+                          <svg className="h-2.5 w-2.5 text-danger" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </span>
                         <span>{row.traditional}</span>
                       </div>
                       <div className="text-xs text-primary font-bold leading-relaxed flex items-start gap-2 bg-primary/5 p-2.5 rounded-xl border border-primary/15">
-                        <span className="text-success font-black shrink-0 text-sm"></span>
+                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-success/10 shrink-0 mt-0.5">
+                          <svg className="h-2.5 w-2.5 text-success" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7"/></svg>
+                        </span>
                         <span>{row.clarior}</span>
                       </div>
                     </div>
@@ -1919,11 +1930,21 @@ function Home() {
                       <div className="space-y-2 pt-0.5">
                         <div>
                           <span className="text-[8px] font-black uppercase text-muted tracking-wider block mb-0.5">Traditional Advice</span>
-                          <p className="text-xs text-muted leading-relaxed font-semibold">{row.traditional}</p>
+                          <div className="flex items-start gap-2">
+                            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-danger/10 shrink-0 mt-0.5">
+                              <svg className="h-2.5 w-2.5 text-danger" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </span>
+                            <p className="text-xs text-muted leading-relaxed font-semibold">{row.traditional}</p>
+                          </div>
                         </div>
                         <div>
                           <span className="text-[8px] font-black uppercase text-primary tracking-wider block mb-0.5">Clarior Difference</span>
-                          <p className="text-xs text-fg font-black leading-relaxed">{row.clarior}</p>
+                          <div className="flex items-start gap-2">
+                            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-success/10 shrink-0 mt-0.5">
+                              <svg className="h-2.5 w-2.5 text-success" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7"/></svg>
+                            </span>
+                            <p className="text-xs text-fg font-black leading-relaxed">{row.clarior}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2030,7 +2051,8 @@ function Home() {
                             </span>
                           )}
                           {plan.badge && (
-                            <span className="bg-success/10 text-success text-[10px] font-bold px-2 py-1 rounded-lg">
+                            <span className="flex items-center gap-1 bg-success/10 text-success text-[10px] font-black px-2.5 py-1 rounded-full border border-success/25 uppercase tracking-wider">
+                              <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7"/></svg>
                               {plan.badge}
                             </span>
                           )}

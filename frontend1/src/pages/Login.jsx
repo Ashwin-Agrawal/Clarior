@@ -47,14 +47,8 @@ function Login() {
         setLoading(true);
         setError("");
         const res = await api.post("/auth/google", { idToken: response.credential });
-        const loggedUser = res.data.user;
-        setUser(loggedUser);
-        // 📱 Redirect to phone verification if not verified yet
-        if (!loggedUser.isPhoneVerified) {
-          navigate("/verify-phone", { replace: true });
-        } else {
-          navigate("/dashboard", { replace: true });
-        }
+        setUser(res.data.user);
+        navigate("/dashboard", { replace: true });
       } catch (err) {
         setError(err?.response?.data?.message || "Google login failed.");
       } finally {
@@ -206,7 +200,7 @@ function Login() {
                 <div className="flex items-center justify-between mb-1">
                   <label htmlFor="login-password" className="text-sm font-bold text-fg">Password</label>
                   <button 
-                    onClick={() => navigate("/forgot-password")}
+                    onClick={() => setError("Password reset coming soon. Contact support@clarior.in")}
                     className="text-xs font-semibold text-primary hover:underline cursor-pointer"
                   >
                     Forgot password?

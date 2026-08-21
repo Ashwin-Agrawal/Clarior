@@ -20,20 +20,6 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-    // 📱 PHONE VERIFICATION
-    isPhoneVerified: {
-      type: Boolean,
-      default: false,
-    },
-    otpCode: {
-      type: String,
-      default: null,
-    },
-    otpExpiry: {
-      type: Date,
-      default: null,
-    },
-
     password: {
       type: String,
       required: true,

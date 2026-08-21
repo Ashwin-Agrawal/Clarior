@@ -464,8 +464,10 @@ html.dark .brand-text { color: rgb(var(--fg)); }
 
 .heading-display {
   font-family: 'Outfit', sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  font-feature-settings: 'ss01', 'cv01';
+  text-rendering: optimizeLegibility;
 }
 
 /* ─── Global Link Hover ──────────────────────────────────── */
@@ -689,35 +691,79 @@ html.dark .bg-grid-pattern {
 
 .gradient-text-animated {
   background: linear-gradient(
-    135deg,
+    110deg,
     rgb(var(--primary)) 0%,
-    rgb(var(--accent)) 25%,
-    #a78bfa 50%,
-    rgb(var(--accent)) 75%,
+    #6366f1 20%,
+    rgb(var(--accent)) 40%,
+    #a78bfa 60%,
+    rgb(var(--accent)) 80%,
     rgb(var(--primary)) 100%
   );
   background-size: 300% 300%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: gradientShimmer 4s ease-in-out infinite;
+  animation: gradientShimmer 5s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.15));
+}
+
+html.dark .gradient-text-animated {
+  filter: drop-shadow(0 0 28px rgba(139, 92, 246, 0.35));
 }
 
 /* Fix for word-reveal blocks nested inside gradient-text-animated */
 .gradient-text-animated .word-reveal {
   background: linear-gradient(
-    135deg,
+    110deg,
     rgb(var(--primary)) 0%,
-    rgb(var(--accent)) 25%,
-    #a78bfa 50%,
-    rgb(var(--accent)) 75%,
+    #6366f1 20%,
+    rgb(var(--accent)) 40%,
+    #a78bfa 60%,
+    rgb(var(--accent)) 80%,
     rgb(var(--primary)) 100%
   );
   background-size: 300% 300%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: wordReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) both, gradientShimmer 4s ease-in-out infinite;
+  animation: wordReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) both, gradientShimmer 5s ease-in-out infinite;
+}
+
+/* ─── Section Divider Line ───────────────────────────────────── */
+.section-divider-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgb(var(--primary)) 30%, rgb(var(--accent)) 70%, transparent);
+  border-radius: 999px;
+  opacity: 0.6;
+}
+
+/* ─── Bento Metric Pill ──────────────────────────────────────── */
+.bento-metric {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-width: 1px;
+  border-style: solid;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* ─── Bento Hover Glow ───────────────────────────────────────── */
+.bento-hover-glow {
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.bento-hover-glow:hover {
+  transform: translateY(-3px) scale(1.005);
+}
+
+/* ─── Bento Icon Badge ───────────────────────────────────────── */
+.bento-icon-badge {
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+  flex-shrink: 0;
 }
 
 /* ─── 3D Tilt Card ───────────────────────────────────────────── */
