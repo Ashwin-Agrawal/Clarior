@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import ScrollToHash from "./components/ScrollToHash";
 import { ToastContainer } from "./components/Toast";
 import MobileBottomNav from "./components/MobileBottomNav";
@@ -158,6 +158,10 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* FALLBACK / REMOVED ROUTE REDIRECTS */}
+          <Route path="/verify-phone" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
       <MobileBottomNav />

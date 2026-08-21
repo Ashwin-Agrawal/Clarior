@@ -419,7 +419,11 @@ function UserProfile() {
                   ? "bg-success/10 text-success border-success/20"
                   : "bg-warning/10 text-warning border-warning/20 animate-pulse"
               }`}>
-                <span className="text-sm leading-none">{user?.isVerified ? "" : "⏱"}</span>
+                {user?.isVerified ? (
+                  <svg className="w-4 h-4 text-success" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7"/></svg>
+                ) : (
+                  <svg className="w-4 h-4 text-warning" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                )}
                 {user?.isVerified ? "Verified Mentor" : "Verification Pending"}
               </span>
             </div>
@@ -472,7 +476,12 @@ function UserProfile() {
                     {user?.role === "student" ? "STUDENT MEMBER PASS" : "PREMIUM MENTOR PASS"}
                   </h4>
                 </div>
-                <div className="text-xl font-black text-indigo-400"></div>
+                <div className="text-xl font-black text-indigo-400">
+                  <svg className="w-6 h-6 text-indigo-300/80" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <rect x="2" y="5" width="20" height="14" rx="2"/>
+                    <line x1="2" y1="10" x2="22" y2="10"/>
+                  </svg>
+                </div>
               </div>
 
               {/* Card middle: microchip & balance */}

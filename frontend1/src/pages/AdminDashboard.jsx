@@ -584,7 +584,8 @@ function AdminDashboard() {
                         onClick={() => handleResolveTicket(t._id, "resolved")}
                         className="text-success font-black hover:text-emerald-600 transition-colors uppercase tracking-wider cursor-pointer flex items-center gap-1"
                       >
-                        <span className="text-xs"></span> Resolve Ticket
+                        <svg className="w-3.5 h-3.5 text-success" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7"/></svg>
+                        Resolve Ticket
                       </button>
                     </div>
                   </div>
