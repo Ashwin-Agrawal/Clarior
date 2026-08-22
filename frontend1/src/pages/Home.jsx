@@ -807,9 +807,9 @@ function Home() {
         </div>
 
         {/* ═══════════════════════════════════════════════════════
-            HERO SECTION — Sticky 3D Redesign
+            CARD 1: HERO SECTION — Sticky Stack
             ═══════════════════════════════════════════════════════ */}
-        <section ref={heroRef} className="sticky top-0 z-0 min-h-[88vh] flex items-center justify-center pt-10 sm:pt-20 pb-24 overflow-hidden">
+        <section ref={heroRef} className="sticky top-0 z-10 min-h-[85vh] flex items-center justify-center pt-10 sm:pt-20 pb-24 overflow-hidden bg-bg">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
           {/* Dynamic background ambient glows & animated light mesh */}
@@ -925,12 +925,10 @@ function Home() {
         </section>
 
         {/* ═══════════════════════════════════════════════════════
-            OVERLAPPING SCROLL SHEET — Covers Hero as user scrolls down
+            CARD 2: METRICS & GUARANTEES — Sticky Stack Over Hero
             ═══════════════════════════════════════════════════════ */}
-        <div className="relative z-10 bg-bg rounded-t-[44px] shadow-[0_-25px_60px_rgba(0,0,0,0.18)] dark:shadow-[0_-25px_60px_rgba(0,0,0,0.6)] border-t border-border/60">
-          
-          {/* Content inside the overlapping sheet */}
-          <SiteContainer className="pt-12 pb-16">
+        <section className="sticky top-14 z-20 bg-bg rounded-t-[44px] md:rounded-t-[56px] shadow-[0_-25px_60px_rgba(0,0,0,0.18)] dark:shadow-[0_-25px_60px_rgba(0,0,0,0.5)] border-t border-border/60 py-16 md:py-20">
+          <SiteContainer>
             <div className="max-w-7xl mx-auto space-y-16">
               
               {/* Platform Metrics Bar */}
@@ -1000,6 +998,7 @@ function Home() {
 
             </div>
           </SiteContainer>
+        </section>
 
         {/* Wave Divider leading to Colleges Marquee */}
         <WaveDivider color="rgb(var(--surface-2))" />
@@ -1008,9 +1007,9 @@ function Home() {
         <WaveDivider color="rgb(var(--surface-2))" />
 
         {/* ═══════════════════════════════════════════════════════
-            COLLEGES MARQUEE STRIP — Continuous Scroll
+            CARD 3: COLLEGES MARQUEE STRIP — Sticky Stack
             ═══════════════════════════════════════════════════════ */}
-        <section className="pt-10 pb-16 relative overflow-hidden bg-surface/30 border-y border-border/40">
+        <section className="sticky top-20 z-30 pt-12 pb-16 relative overflow-hidden bg-surface/95 backdrop-blur-2xl rounded-t-[44px] md:rounded-t-[56px] shadow-[0_-25px_60px_rgba(0,0,0,0.22)] dark:shadow-[0_-25px_60px_rgba(0,0,0,0.6)] border-t border-border/60">
           <SiteContainer>
             <div ref={collegesRevealRef} className="space-y-8">
               {/* Header */}
@@ -1071,13 +1070,10 @@ function Home() {
           </SiteContainer>
         </section>
 
-        {/* Wave Divider */}
-        <WaveDivider flip color="rgb(var(--bg))" />
-
         {/* ═══════════════════════════════════════════════════════
-            WHY CLARIOR — Bento Box features grid
+            CARD 4: WHY CLARIOR — Bento Box features grid
             ═══════════════════════════════════════════════════════ */}
-        <section className="py-16 md:py-20 relative">
+        <section className="sticky top-24 z-40 py-16 md:py-20 relative bg-bg rounded-t-[44px] md:rounded-t-[56px] shadow-[0_-25px_60px_rgba(0,0,0,0.25)] dark:shadow-[0_-25px_60px_rgba(0,0,0,0.65)] border-t border-border/60">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-primary/5 blur-[120px] pointer-events-none section-glow" />
 
           <SiteContainer>
@@ -1444,13 +1440,10 @@ function Home() {
           </SiteContainer>
         </section>
 
-        {/* Wave Divider */}
-        <WaveDivider color="rgb(var(--surface-2))" />
-
         {/* ═══════════════════════════════════════════════════════
-            PRICING — 3D Tilt Cards + Animated Borders + Scroll Reveal
+            CARD 5: PRICING & CLARITY HUB — Sticky Stack Top Layer
             ═══════════════════════════════════════════════════════ */}
-        <section id="pricing" className="scroll-mt-28 py-16 md:py-20 bg-gradient-to-b from-bg to-surface2 relative overflow-hidden">
+        <section id="pricing" className="sticky top-28 z-50 py-16 md:py-24 bg-surface/95 backdrop-blur-2xl rounded-t-[44px] md:rounded-t-[56px] shadow-[0_-25px_60px_rgba(0,0,0,0.28)] dark:shadow-[0_-25px_60px_rgba(0,0,0,0.7)] border-t border-border/60 mb-20 overflow-hidden">
           <div className="absolute inset-0 bg-grid-pattern opacity-30 pointer-events-none" />
 
           <SiteContainer className="relative">
@@ -1617,7 +1610,6 @@ function Home() {
             </div>
           </SiteContainer>
         </section>
-      </div>
 
         {/* ═══════════════════════════════════════════════════════
             STICKY QUICK PASS DOCK (Appears on Scroll — Desktop Only)
