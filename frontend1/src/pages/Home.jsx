@@ -273,42 +273,45 @@ function AnimatedCounter({ target, suffix = "", displayAs, duration = 1800 }) {
   );
 }
 
-// ── Dynamic Slogan Component — Letter-by-Letter Word Reveal ────
-const SLOGAN_WORDS = ["guessing", "overthinking", "doubting", "stressing"];
+const SLOGAN_ITEMS = [
+  { text: "Overthinking.", gradient: "from-primary via-accent to-indigo-400" },
+  { text: "Guessing.",     gradient: "from-violet-500 via-purple-400 to-pink-400" },
+  { text: "Stressing.",    gradient: "from-amber-500 via-orange-400 to-rose-400" },
+  { text: "Doubting.",     gradient: "from-emerald-500 via-teal-400 to-cyan-400" },
+  { text: "Regretting.",   gradient: "from-sky-500 via-blue-400 to-indigo-400" },
+];
 
 function DynamicSlogan() {
   const [index, setIndex] = useState(0);
-  const [key, setKey] = useState(0); // remount trigger for re-animation
+  const [animating, setAnimating] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % SLOGAN_WORDS.length);
-      setKey((prev) => prev + 1);
-    }, 3000);
-    return () => clearInterval(interval);
+    const timer = setInterval(() => {
+      setAnimating(true);
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % SLOGAN_ITEMS.length);
+        setAnimating(false);
+      }, 350);
+    }, 2800);
+    return () => clearInterval(timer);
   }, []);
 
-  const word = SLOGAN_WORDS[index];
+  const current = SLOGAN_ITEMS[index];
 
   return (
-    <span className="inline">
-      {/* Static "Stop " — never moves */}
-      <span className="text-fg">Stop{" "}</span>
-      {/* Animated word — letters cascade in one by one */}
+    <span className="inline-block">
+      <span className="text-fg font-black">Stop{" "}</span>
       <span
-        key={key}
-        className="inline"
-        aria-label={word}
+        className={`inline-block transition-all duration-300 ease-out bg-gradient-to-r ${current.gradient} bg-clip-text text-transparent`}
+        style={{
+          transform: animating
+            ? "translateY(20px) scale(0.92) rotateX(-50deg)"
+            : "translateY(0) scale(1) rotateX(0deg)",
+          opacity: animating ? 0 : 1,
+          filter: animating ? "blur(8px)" : "blur(0px)",
+        }}
       >
-        {word.split("").map((char, i) => (
-          <span
-            key={i}
-            className="slogan-letter"
-            style={{ animationDelay: `${i * 0.045}s` }}
-          >
-            {char === "." ? <span className="text-primary">{char}</span> : char}
-          </span>
-        ))}
+        {current.text}
       </span>
     </span>
   );
@@ -393,6 +396,61 @@ function useMagnetic(strength = 0.3) {
   }, []);
 
   return { ref, handleMouseMove, handleMouseLeave };
+}
+
+
+function HolographicGlobeWidget() {
+  return (
+    <div className="relative w-full max-w-[420px] aspect-square flex items-center justify-center select-none">
+      {/* Outer ambient glow rings */}
+      <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary/25 via-accent/20 to-purple-500/15 blur-3xl animate-pulse" />
+      <div className="absolute inset-4 rounded-full border border-primary/25 animate-spin" style={{ animationDuration: '28s' }} />
+      <div className="absolute inset-12 rounded-full border border-dashed border-accent/30 animate-spin" style={{ animationDuration: '40s', animationDirection: 'reverse' }} />
+
+      {/* Central 3D Globe Visual */}
+      <div className="relative w-56 h-56 rounded-full bg-gradient-to-br from-primary/15 via-surface to-accent/15 border border-primary/40 shadow-[0_0_90px_rgba(37,99,235,0.3)] flex items-center justify-center overflow-hidden backdrop-blur-2xl">
+        {/* Globe Grid lines */}
+        <div className="absolute inset-0 rounded-full border border-primary/30 opacity-70" style={{ transform: 'rotateX(65deg)' }} />
+        <div className="absolute inset-0 rounded-full border border-accent/30 opacity-70" style={{ transform: 'rotateY(65deg)' }} />
+        <div className="absolute inset-4 rounded-full border border-primary/20 opacity-50" />
+        
+        {/* Pulsing Core */}
+        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary via-accent to-indigo-500 opacity-80 blur-md animate-ping" style={{ animationDuration: '2.5s' }} />
+        <div className="absolute w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent shadow-[0_0_35px_rgba(37,99,235,0.9)] flex items-center justify-center text-white">
+          <LineIcon name="call" className="w-8 h-8" />
+        </div>
+      </div>
+
+      {/* Floating 3D Micro Glass Badges orbiting */}
+      <div className="absolute top-2 left-0 animate-float" style={{ animationDuration: '6.5s' }}>
+        <div className="rounded-2xl border border-primary/30 bg-surface/90 backdrop-blur-xl px-4 py-2.5 shadow-lift flex items-center gap-2 text-xs font-black text-primary">
+          <LineIcon name="gem" className="w-4 h-4 text-primary" />
+          ₹69 Flat Pass
+        </div>
+      </div>
+
+      <div className="absolute top-8 right-0 animate-float" style={{ animationDuration: '8.5s', animationDelay: '-2s' }}>
+        <div className="rounded-2xl border border-success/30 bg-surface/90 backdrop-blur-xl px-4 py-2.5 shadow-lift flex items-center gap-2 text-xs font-black text-success">
+          <LineIcon name="shield" className="w-4 h-4 text-success" />
+          100% Refund
+        </div>
+      </div>
+
+      <div className="absolute bottom-8 left-2 animate-float" style={{ animationDuration: '7.5s', animationDelay: '-4s' }}>
+        <div className="rounded-2xl border border-accent/30 bg-surface/90 backdrop-blur-xl px-4 py-2.5 shadow-lift flex items-center gap-2 text-xs font-black text-accent">
+          <LineIcon name="spark" className="w-4 h-4 text-accent" />
+          Private In-App Call
+        </div>
+      </div>
+
+      <div className="absolute bottom-2 right-2 animate-float" style={{ animationDuration: '9.5s', animationDelay: '-1s' }}>
+        <div className="rounded-2xl border border-amber-500/30 bg-surface/90 backdrop-blur-xl px-4 py-2.5 shadow-lift flex items-center gap-2 text-xs font-black text-amber-500">
+          <LineIcon name="users" className="w-4 h-4 text-amber-500" />
+          Verified Insiders
+        </div>
+      </div>
+    </div>
+  );
 }
 
 
@@ -749,22 +807,22 @@ function Home() {
         </div>
 
         {/* ═══════════════════════════════════════════════════════
-            HERO SECTION — High-Tech Interactive 3D Redesign
+            HERO SECTION — Sticky 3D Redesign
             ═══════════════════════════════════════════════════════ */}
-        <section ref={heroRef} className="relative min-h-[90vh] flex items-center justify-center pt-10 sm:pt-20 pb-16 overflow-hidden">
+        <section ref={heroRef} className="sticky top-0 z-0 min-h-[88vh] flex items-center justify-center pt-10 sm:pt-20 pb-24 overflow-hidden">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
-          {/* Dynamic background ambient glows */}
+          {/* Dynamic background ambient glows & animated light mesh */}
           <div 
-            className="absolute top-1/4 left-1/4 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-primary/15 via-accent/10 to-transparent blur-[140px] pointer-events-none transition-transform duration-500 ease-out" 
+            className="absolute top-1/4 left-1/4 h-[550px] w-[550px] rounded-full bg-gradient-to-br from-primary/20 via-accent/15 to-purple-500/10 blur-[150px] pointer-events-none transition-transform duration-500 ease-out animate-pulse" 
             style={{
-              transform: `translate(${mousePos.x * 40}px, ${mousePos.y * 40}px)`
+              transform: `translate(${mousePos.x * 45}px, ${mousePos.y * 45}px)`
             }}
           />
           <div 
-            className="absolute bottom-1/4 right-1/4 h-[450px] w-[450px] rounded-full bg-gradient-to-tr from-purple-500/12 via-accent/8 to-transparent blur-[120px] pointer-events-none transition-transform duration-500 ease-out" 
+            className="absolute bottom-1/4 right-1/4 h-[500px] w-[500px] rounded-full bg-gradient-to-tr from-purple-500/15 via-accent/10 to-indigo-500/10 blur-[130px] pointer-events-none transition-transform duration-500 ease-out animate-pulse" 
             style={{
-              transform: `translate(${mousePos.x * -40}px, ${mousePos.y * -40}px)`
+              transform: `translate(${mousePos.x * -45}px, ${mousePos.y * -45}px)`
             }}
           />
           <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
@@ -787,9 +845,9 @@ function Home() {
                     Direct 1:1 Senior Advice • ₹69 Pass
                   </div>
                   
-                  {/* Main Title */}
+                  {/* Main Title with Gorgeous 3D Dynamic Word Rotator */}
                   <h1 className="scroll-reveal reveal-up stagger-1 heading-display text-4xl sm:text-6xl md:text-7xl lg:text-[76px] font-black text-fg leading-[0.96] tracking-tight">
-                    Stop Overthinking. <br />
+                    <DynamicSlogan /> <br />
                     <span className="gradient-text-animated inline-block mt-2">
                       <WordReveal text="Talk to someone inside." baseDelay={0.2} />
                     </span>
@@ -856,84 +914,27 @@ function Home() {
                   </div>
                 </div>
 
-                {/* Right Column: 3D Interactive WebRTC HUD Widget */}
+                {/* Right Column: Holographic Globe Visual */}
                 <div className="lg:col-span-5 relative flex items-center justify-center">
-                  
-                  {/* Floating 3D Micro Status Badges */}
-                  <div className="absolute -top-4 -right-2 z-20 animate-float hidden sm:flex items-center gap-2 rounded-2xl border border-primary/30 bg-surface/90 backdrop-blur-xl px-3.5 py-2 text-[10px] font-black text-primary shadow-lift">
-                    <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-                    WebRTC 1:1 HD Video
-                  </div>
-                  
-                  <div className="absolute -bottom-4 -left-2 z-20 animate-float hidden sm:flex items-center gap-2 rounded-2xl border border-accent/30 bg-surface/90 backdrop-blur-xl px-3.5 py-2 text-[10px] font-black text-accent shadow-lift" style={{ animationDelay: '-3s' }}>
-                    <LineIcon name="shield" className="w-3.5 h-3.5 text-accent" />
-                    Encrypted & Private
-                  </div>
-
-                  {/* Main HUD Card */}
-                  <div className="relative w-full max-w-[430px] rounded-[36px] border border-border/80 bg-gradient-to-b from-surface via-surface to-surface2 p-6 shadow-hero space-y-5 overflow-hidden animated-border">
-                    
-                    {/* Top Status Header */}
-                    <div className="flex items-center justify-between pb-3 border-b border-border/40">
-                      <div className="flex items-center gap-2">
-                        <span className="flex h-2.5 w-2.5 relative">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75" />
-                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success" />
-                        </span>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-fg">Live Call Simulator</span>
-                      </div>
-                      <span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-                        20:00 Timer Active
-                      </span>
-                    </div>
-
-                    {/* Senior Profile Chip */}
-                    <div className="p-4 rounded-2xl bg-surface2/80 border border-border/60 flex items-center gap-3.5 shadow-sm">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 via-indigo-500/20 to-purple-500/20 border border-primary/30 flex items-center justify-center font-black text-primary text-base shrink-0 shadow-sm">
-                        VS
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-extrabold text-fg text-sm truncate">Verified Campus Mentor</h4>
-                          <span className="text-[10px] font-black text-success bg-success/10 border border-success/20 px-2 py-0.5 rounded">★ 4.9</span>
-                        </div>
-                        <p className="text-[11px] text-muted font-semibold truncate mt-0.5">Computer Science & Placement Insider</p>
-                      </div>
-                    </div>
-
-                    {/* Interactive Audio Wave Analyzer */}
-                    <div className="p-4 rounded-2xl bg-surface border border-border/50 space-y-2">
-                      <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-muted">
-                        <span>Audio Stream</span>
-                        <span className="text-success flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" /> Live
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-center gap-1.5 py-2">
-                        <span className="w-1.5 bg-primary rounded-full animate-pulse h-4" />
-                        <span className="w-1.5 bg-accent rounded-full animate-pulse h-8" style={{ animationDelay: "0.15s" }} />
-                        <span className="w-1.5 bg-primary rounded-full animate-pulse h-12" style={{ animationDelay: "0.3s" }} />
-                        <span className="w-1.5 bg-purple-500 rounded-full animate-pulse h-6" style={{ animationDelay: "0.45s" }} />
-                        <span className="w-1.5 bg-accent rounded-full animate-pulse h-10" style={{ animationDelay: "0.2s" }} />
-                        <span className="w-1.5 bg-primary rounded-full animate-pulse h-5" style={{ animationDelay: "0.35s" }} />
-                      </div>
-                    </div>
-
-                    {/* Quick Call Action */}
-                    <Link to="/explore" className="block w-full">
-                      <button className="w-full py-3.5 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black text-xs uppercase tracking-widest shadow-lift hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
-                        Book 1:1 Call — ₹69
-                        <LineIcon name="arrow" className="w-4 h-4" />
-                      </button>
-                    </Link>
-
-                  </div>
+                  <HolographicGlobeWidget />
                 </div>
 
               </div>
+            </div>
+          </SiteContainer>
+        </section>
 
+        {/* ═══════════════════════════════════════════════════════
+            OVERLAPPING SCROLL SHEET — Covers Hero as user scrolls down
+            ═══════════════════════════════════════════════════════ */}
+        <div className="relative z-10 bg-bg rounded-t-[44px] shadow-[0_-25px_60px_rgba(0,0,0,0.18)] dark:shadow-[0_-25px_60px_rgba(0,0,0,0.6)] border-t border-border/60">
+          
+          {/* Content inside the overlapping sheet */}
+          <SiteContainer className="pt-12 pb-16">
+            <div className="max-w-7xl mx-auto space-y-16">
+              
               {/* Platform Metrics Bar */}
-              <div className="scroll-reveal reveal-up grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
+              <div className="scroll-reveal reveal-up grid grid-cols-1 md:grid-cols-3 gap-6">
                 {stats.map((s) => (
                   <div
                     key={s.label}
@@ -999,7 +1000,6 @@ function Home() {
 
             </div>
           </SiteContainer>
-        </section>
 
         {/* Wave Divider leading to Colleges Marquee */}
         <WaveDivider color="rgb(var(--surface-2))" />
@@ -1617,6 +1617,7 @@ function Home() {
             </div>
           </SiteContainer>
         </section>
+      </div>
 
         {/* ═══════════════════════════════════════════════════════
             STICKY QUICK PASS DOCK (Appears on Scroll — Desktop Only)
