@@ -435,31 +435,7 @@ function Home() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const heroRef = useRef(null);
 
-  // Simulator state
-  const [tutorialRole, setTutorialRole] = useState("student");
-  const [tutorialStep, setTutorialStep] = useState(1);
-  const [tutorialAutoplay, setTutorialAutoplay] = useState(true);
 
-  // Simulator autoplay: advance step every 3.8s
-  useEffect(() => {
-    if (!tutorialAutoplay) return;
-    const timer = setTimeout(() => {
-      if (tutorialStep >= 4) {
-        // After student path completes, switch to senior path
-        if (tutorialRole === "student") {
-          setTutorialRole("senior");
-          setTutorialStep(1);
-        } else {
-          // After senior path completes, loop back to student step 1
-          setTutorialRole("student");
-          setTutorialStep(1);
-        }
-      } else {
-        setTutorialStep((prev) => prev + 1);
-      }
-    }, 3800);
-    return () => clearTimeout(timer);
-  }, [tutorialStep, tutorialAutoplay, tutorialRole]);
 
 
 
@@ -773,854 +749,224 @@ function Home() {
         </div>
 
         {/* ═══════════════════════════════════════════════════════
-            HERO SECTION — Animated Grid + Text Reveal
+            HERO SECTION — Premium Senior-Dev Redesign
             ═══════════════════════════════════════════════════════ */}
-        <section ref={heroRef} className="relative min-h-[90vh] flex items-center justify-center pt-8 sm:pt-28 pb-12 sm:pb-20 overflow-hidden">
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+        <section ref={heroRef} className="relative min-h-[85vh] flex items-center justify-center pt-12 sm:pt-24 pb-16 overflow-hidden">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
-          {/* Mouse-parallax premium glow blobs */}
+          {/* Mouse-parallax background glow blobs */}
           <div 
-            className="absolute top-1/4 left-1/4 h-[450px] w-[450px] rounded-full bg-primary/10 dark:bg-primary/5 blur-[120px] pointer-events-none transition-transform duration-300 ease-out" 
+            className="absolute top-1/4 left-1/4 h-[420px] w-[420px] rounded-full bg-primary/10 dark:bg-primary/5 blur-[120px] pointer-events-none transition-transform duration-300 ease-out" 
             style={{
-              transform: `translate(${mousePos.x * 45}px, ${mousePos.y * 45}px)`
+              transform: `translate(${mousePos.x * 30}px, ${mousePos.y * 30}px)`
             }}
           />
           <div 
-            className="absolute bottom-1/4 right-1/4 h-[400px] w-[400px] rounded-full bg-violet-500/8 dark:bg-accent/5 blur-[100px] pointer-events-none transition-transform duration-300 ease-out" 
+            className="absolute bottom-1/4 right-1/4 h-[380px] w-[380px] rounded-full bg-accent/8 dark:bg-accent/5 blur-[100px] pointer-events-none transition-transform duration-300 ease-out" 
             style={{
-              transform: `translate(${mousePos.x * -45}px, ${mousePos.y * -45}px)`
+              transform: `translate(${mousePos.x * -30}px, ${mousePos.y * -30}px)`
             }}
           />
-          <div className="absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-accent/8 dark:bg-accent/3 blur-[120px] pointer-events-none" />
+          <div className="absolute inset-0 bg-grid-pattern opacity-30 pointer-events-none" />
 
-          <SiteContainer className="relative">
-            <div ref={heroRevealRef} className="max-w-7xl mx-auto space-y-6 sm:space-y-16">
+          <SiteContainer className="relative z-10">
+            <div ref={heroRevealRef} className="max-w-7xl mx-auto space-y-16">
               
-              {/* Top Row: Split grid for headline & mockup preview */}
+              {/* Hero Grid */}
               <div className="grid lg:grid-cols-12 gap-12 items-center">
                 
-                {/* Left Column: Headline and Actions */}
-                <div className="lg:col-span-7 text-center lg:text-left flex flex-col items-center lg:items-start max-w-3xl mx-auto lg:mx-0">
-                  {/* Trust Badge — shimmer sweep + verified checkmark */}
-                  <div className="scroll-reveal reveal-up inline-flex items-center gap-2.5 rounded-full border border-primary/25 bg-surface px-5 py-2 text-[11px] font-black text-primary uppercase tracking-[0.18em] mb-6 shadow-[0_10px_35px_rgba(37,99,235,0.14)] overflow-hidden relative">
-                    {/* Shimmer sweep layer */}
-                    <span className="shimmer-badge absolute inset-0 pointer-events-none" aria-hidden="true" />
-                    <span className="relative flex items-center gap-1.5 z-10">
-                      <span className="flex h-2 w-2 relative">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-60" />
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-success" />
-                      </span>
-                      <svg className="h-3 w-3 text-primary/70" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                      Direct 1:1 Senior Advice
+                {/* Left Column: Copy & Actions */}
+                <div className="lg:col-span-7 text-center lg:text-left flex flex-col items-center lg:items-start">
+                  
+                  {/* Trust Pill */}
+                  <div className="scroll-reveal reveal-up inline-flex items-center gap-2.5 rounded-full border border-primary/20 bg-surface/90 backdrop-blur-md px-4 py-2 text-xs font-black text-primary uppercase tracking-widest mb-6 shadow-soft">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
                     </span>
+                    100% Unbiased Student Guidance
                   </div>
                   
-                  {/* Hero Title — Static "Stop" + animated word */}
-                  <h1 className="scroll-reveal reveal-up stagger-1 heading-display text-4xl sm:text-5xl md:text-7xl lg:text-[76px] xl:text-[84px] font-black text-fg leading-[0.95] tracking-[-0.045em]">
-                    <DynamicSlogan />
-                    <br />
+                  {/* Headline */}
+                  <h1 className="scroll-reveal reveal-up stagger-1 heading-display text-4xl sm:text-6xl md:text-7xl font-black text-fg leading-[1.02] tracking-tight">
+                    Stop Guessing. <br />
                     <span className="gradient-text-animated inline-block mt-1">
-                      <WordReveal text="Ask someone inside." baseDelay={0.4} />
+                      <WordReveal text="Ask someone inside." baseDelay={0.3} />
                     </span>
                   </h1>
                   
-                  {/* Subtext */}
-                  <p className="scroll-reveal reveal-up stagger-2 mt-6 text-lg md:text-xl text-muted leading-snug font-semibold tracking-tight">
-                    1:1 calls with verified college seniors.
-                    <span className="text-fg font-black"> Starting at ₹69.</span>
+                  {/* Subtitle */}
+                  <p className="scroll-reveal reveal-up stagger-2 mt-6 text-base sm:text-xl text-muted font-medium leading-relaxed max-w-xl">
+                    1:1 private calls with verified college students for real, unsponsored campus truth. Flat <span className="text-fg font-black">₹69 per session</span>.
                   </p>
 
-                  {/* CTA Buttons — Single row on mobile */}
-                  <div className="scroll-reveal reveal-up stagger-3 mt-8 flex flex-row items-center justify-center lg:justify-start gap-2.5 sm:gap-4 w-full">
-                    <Link to="/explore" className="flex-1 sm:flex-initial min-w-0">
-                      <Button size="lg" className="aurora-shine relative w-full overflow-hidden rounded-full px-3.5 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-base font-extrabold group hover:-translate-y-1 transition-all duration-300">
-                        <span className="relative z-10 flex items-center gap-1.5 justify-center truncate">
-                          Explore Seniors
-                          <LineIcon name="arrow" className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1 shrink-0" />
-                        </span>
-                      </Button>
+                  {/* CTA Buttons */}
+                  <div className="scroll-reveal reveal-up stagger-3 mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-4 w-full">
+                    <Link to="/explore" className="w-full sm:w-auto">
+                      <button className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-primary text-white font-black text-sm shadow-[0_10px_35px_rgba(37,99,235,0.35)] hover:shadow-[0_14px_45px_rgba(37,99,235,0.5)] hover:-translate-y-1 transition-all duration-300">
+                        Find My Mentor
+                        <LineIcon name="arrow" className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      </button>
                     </Link>
-                    <Link to="/become-mentor" className="flex-1 sm:flex-initial min-w-0">
-                      <Button variant="secondary" size="lg" className="w-full rounded-full px-3.5 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-base font-extrabold hover:-translate-y-1 transition-transform border-2 truncate">
-                        Become Senior
-                      </Button>
+                    <Link to="/become-mentor" className="w-full sm:w-auto">
+                      <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl border border-border/80 bg-surface font-bold text-sm text-fg hover:border-primary/40 transition-all">
+                        Become a Senior
+                      </button>
                     </Link>
                   </div>
 
-                  {/* Social Proof Avatar Row — Real Dynamic Senior Data */}
-                  <div className="scroll-reveal reveal-up stagger-4 mt-6 flex items-center gap-3">
-                    <div className="avatar-stack">
-                      {heroSeniors.length > 0 ? (
-                        heroSeniors.slice(0, 4).map((s, idx) => {
-                          const initials = s.name
-                            ? s.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
-                            : "S";
-                          return (
-                            <div key={s._id || idx} className="avatar-item" title={s.name}>
-                              {initials}
-                            </div>
-                          );
-                        })
-                      ) : (
-                        <>
-                          <div className="avatar-item">AA</div>
-                          <div className="avatar-item">SC</div>
-                          <div className="avatar-item">SA</div>
-                        </>
-                      )}
-                      <div className="avatar-item">+</div>
+                  {/* Social Proof Line */}
+                  <div className="scroll-reveal reveal-up stagger-4 mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs font-bold text-muted">
+                    <span className="flex items-center gap-1.5 text-fg">
+                      <span className="text-amber-500 font-bold">★</span> {avgSeniorRating} Avg Rating
+                    </span>
+                    <span className="text-border">•</span>
+                    <span className="text-fg">{globalStats.seniorsCount}+ Verified Mentors</span>
+                    <span className="text-border">•</span>
+                    <span className="text-success font-black">Instant Refund Guarantee</span>
+                  </div>
+                </div>
+
+                {/* Right Column: High-End Live Session Preview Card */}
+                <div className="lg:col-span-5 relative flex items-center justify-center">
+                  
+                  {/* Outer Glow */}
+                  <div className="absolute inset-4 rounded-[36px] bg-gradient-to-tr from-primary/15 via-accent/10 to-transparent blur-2xl pointer-events-none" />
+
+                  {/* 3D Glassmorphic Card */}
+                  <div className="relative w-full max-w-[420px] rounded-[32px] border border-border/80 bg-surface/90 backdrop-blur-xl p-6 shadow-hero space-y-5">
+                    
+                    {/* Header bar */}
+                    <div className="flex items-center justify-between pb-3 border-b border-border/40">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-success animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-fg">WebRTC Session Room</span>
+                      </div>
+                      <span className="text-[10px] font-black text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
+                        18:42 Live Countdown
+                      </span>
+                    </div>
+
+                    {/* Mentor preview */}
+                    <div className="p-4 rounded-2xl bg-surface2/70 border border-border/50 flex items-center gap-3.5">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30 flex items-center justify-center font-black text-primary text-base shrink-0 shadow-sm">
+                        VS
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-bold text-fg text-sm truncate">Verified Campus Senior</h4>
+                          <span className="text-[10px] font-black text-success bg-success/10 border border-success/20 px-2 py-0.5 rounded">★ 4.9</span>
+                        </div>
+                        <p className="text-[11px] text-muted font-semibold truncate mt-0.5">CSE & Placement Guidance</p>
+                      </div>
+                    </div>
+
+                    {/* Topic tag */}
+                    <div className="space-y-2">
+                      <div className="text-[10px] font-black uppercase tracking-widest text-muted">Active Session Topic</div>
+                      <div className="px-3.5 py-2 rounded-xl bg-primary/8 border border-primary/20 text-xs font-bold text-primary flex items-center gap-2">
+                        <LineIcon name="spark" className="w-3.5 h-3.5 text-primary" />
+                        "Honest CSE vs AI Branch Comparison & Placements"
+                      </div>
+                    </div>
+
+                    {/* Audio wave indicator */}
+                    <div className="p-3 rounded-xl bg-surface border border-border/40 flex items-center justify-between text-xs">
+                      <span className="text-[11px] font-bold text-muted flex items-center gap-2">
+                        <LineIcon name="call" className="w-3.5 h-3.5 text-success" />
+                        Encrypted 1:1 In-App Audio
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="w-1 h-3 bg-primary rounded-full animate-pulse" />
+                        <span className="w-1 h-5 bg-accent rounded-full animate-pulse" style={{ animationDelay: '0.15s' }} />
+                        <span className="w-1 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.3s' }} />
+                        <span className="w-1 h-4 bg-accent rounded-full animate-pulse" style={{ animationDelay: '0.45s' }} />
+                      </div>
+                    </div>
+
+                    {/* Pricing callout inside widget */}
+                    <div className="pt-2 flex items-center justify-between text-xs">
+                      <span className="font-bold text-muted">1 Credit Pass = ₹69</span>
+                      <Link to="/explore" className="font-black text-primary hover:text-accent transition-colors flex items-center gap-1 text-xs">
+                        Book Slot <LineIcon name="arrow" className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Live Platform Stats Row */}
+              <div className="scroll-reveal reveal-up grid grid-cols-1 md:grid-cols-3 gap-5 pt-8">
+                {stats.map((s, idx) => (
+                  <div
+                    key={s.label}
+                    className="group rounded-3xl border border-border/70 bg-surface p-6 shadow-card hover:border-primary/30 hover:shadow-lift transition-all duration-300 flex items-center gap-4"
+                  >
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <LineIcon name={s.icon} className="w-6 h-6" />
                     </div>
                     <div>
-                      <div className="flex gap-0.5 text-amber-500 mb-0.5">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                          <svg key={i} width="10" height="10" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                          </svg>
-                        ))}
+                      <div className="text-3xl font-black text-fg tracking-tight">
+                        <AnimatedCounter target={s.numericValue} suffix={s.suffix} displayAs={s.displayAs} />
                       </div>
-                      <p className="text-[10px] font-bold text-muted">
-                        {avgSeniorRating} avg senior rating · Verified
-                      </p>
+                      <div className="text-xs font-bold uppercase tracking-wider text-muted mt-0.5">{s.label}</div>
                     </div>
                   </div>
+                ))}
+              </div>
+
+              {/* Bento Grid — Why Students Choose Clarior */}
+              <div className="scroll-reveal reveal-up space-y-6 pt-6">
+                <div className="text-center max-w-lg mx-auto space-y-2">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-xs font-black uppercase tracking-widest text-accent">
+                    Platform Guarantees
+                  </div>
+                  <h2 className="heading-display text-3xl font-black text-fg">Built for Real Clarity</h2>
                 </div>
 
-                {/* Right Column: Redesigned Premium SaaS Interactive Simulator */}
-                <div className="lg:col-span-5 relative flex flex-col items-center justify-center min-h-[600px] w-full mt-12 lg:mt-0 select-none">
-
-                  {/* Floating Micro Badge 1 — Top Right */}
-                  <div className="custom-float-pill-1 absolute -top-5 -right-3 z-30 hidden sm:flex items-center gap-2 rounded-2xl border border-border bg-surface px-3.5 py-2 text-[10px] font-black text-fg shadow-md gpu-layer pointer-events-none">
-                    <span className="flex h-2 w-2 relative">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                    </span>
-                    <span>Instant 1:1 Calls · ₹69</span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Pillar 1 */}
+                  <div className="rounded-3xl border border-border/70 bg-surface p-7 space-y-4 shadow-card hover:border-primary/30 transition-all duration-300">
+                    <div className="w-11 h-11 rounded-2xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center">
+                      <LineIcon name="shield" className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-black text-fg text-lg">100% Unbiased Advice</h3>
+                    <p className="text-xs text-muted font-semibold leading-relaxed">
+                      Seniors earn per session, never per admission. Zero commission means zero incentive to promote any specific college or branch.
+                    </p>
                   </div>
 
-                  {/* Floating Micro Badge 2 — Bottom Left */}
-                  <div className="custom-float-pill-2 absolute -bottom-4 -left-3 z-30 hidden sm:flex items-center gap-2 rounded-2xl border border-border bg-surface px-3.5 py-2 text-[10px] font-black text-fg shadow-md gpu-layer pointer-events-none">
-                    <svg className="w-3.5 h-3.5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                    <span>100% Private & Verified</span>
+                  {/* Pillar 2 */}
+                  <div className="rounded-3xl border border-border/70 bg-surface p-7 space-y-4 shadow-card hover:border-accent/30 transition-all duration-300">
+                    <div className="w-11 h-11 rounded-2xl bg-accent/10 text-accent border border-accent/20 flex items-center justify-center">
+                      <LineIcon name="call" className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-black text-fg text-lg">Encrypted 1:1 In-App Calls</h3>
+                    <p className="text-xs text-muted font-semibold leading-relaxed">
+                      Sessions run inside our secure WebRTC room. Your phone number, email, and personal contact info are never shared.
+                    </p>
                   </div>
 
-                  {/* Adaptive Background Ambient Glow */}
-                  <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-primary/10 dark:bg-primary/5 blur-[100px] pointer-events-none" />
-                  <div className="absolute bottom-1/4 right-1/4 w-56 h-56 rounded-full bg-violet-500/10 dark:bg-violet-500/5 blur-[90px] pointer-events-none" />
-
-                  {/* Main Simulator Card Container */}
-                  <div className="custom-simulator-float relative w-full max-w-[430px] rounded-[32px] border border-border bg-surface p-6 shadow-lift overflow-hidden transition-all duration-300">
-                    
-                    {/* Top Decorative Accent Line */}
-                    <div className="h-1.5 w-full bg-gradient-to-r from-primary via-accent to-emerald-400 absolute top-0 left-0 right-0" />
-
-                    {/* macOS App Header Bar */}
-                    <div className="flex items-center justify-between pb-4 mb-4 border-b border-border/40 pt-1">
-                      <div className="flex items-center gap-1.5">
-                        <span className="h-2.5 w-2.5 rounded-full bg-rose-500/80 inline-block" />
-                        <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80 inline-block" />
-                        <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80 inline-block" />
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted flex items-center gap-1.5">
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                        Workflow Simulator
-                      </span>
-                      <span className="text-[9px] font-black text-success bg-success/10 border border-success/20 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                        Live Demo
-                      </span>
+                  {/* Pillar 3 */}
+                  <div className="rounded-3xl border border-border/70 bg-surface p-7 space-y-4 shadow-card hover:border-success/30 transition-all duration-300">
+                    <div className="w-11 h-11 rounded-2xl bg-success/10 text-success border border-success/20 flex items-center justify-center">
+                      <LineIcon name="gem" className="w-5 h-5" />
                     </div>
-
-                    {/* Step 4 Party Popper Confetti overlay */}
-                    {tutorialStep === 4 && (() => {
-                      const colors = ["#2563eb","#7c3aed","#10b981","#f59e0b","#ec4899","#ef4444","#06b6d4","#f97316"];
-                      const particles = Array.from({ length: 36 }, (_, i) => {
-                        const angle = (i / 36) * 360;
-                        const dist = 125 + (i % 5) * 28;
-                        const rad = (angle * Math.PI) / 180;
-                        const cx = Math.round(Math.cos(rad) * dist);
-                        const cy = Math.round(Math.sin(rad) * dist);
-                        const size = 5 + (i % 4) * 3;
-                        const isRect = i % 3 === 0;
-                        const color = colors[i % colors.length];
-                        const dur = (0.7 + (i % 6) * 0.12).toFixed(2);
-                        const delay = (i * 0.032).toFixed(3);
-                        const rot = `${(i % 2 === 0 ? 1 : -1) * (180 + i * 15)}deg`;
-                        return { cx, cy, size, isRect, color, dur, delay, rot };
-                      });
-                      return (
-                        <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
-                          {particles.map((p, idx) => (
-                            <span
-                              key={idx}
-                              className="custom-confetti-burst"
-                              style={{
-                                width: p.isRect ? `${p.size * 2}px` : `${p.size}px`,
-                                height: `${p.size}px`,
-                                borderRadius: p.isRect ? '2px' : '50%',
-                                backgroundColor: p.color,
-                                '--cx': `${p.cx}px`,
-                                '--cy': `${p.cy}px`,
-                                '--cr': p.rot,
-                                '--cd': `${p.dur}s`,
-                                '--delay': `${p.delay}s`,
-                                marginLeft: `-${p.size / 2}px`,
-                                marginTop: `-${p.size / 2}px`,
-                              }}
-                            />
-                          ))}
-                        </div>
-                      );
-                    })()}
-
-                    {/* Top Role Selector Toggle (Student vs Senior) */}
-                    <div className="flex p-1 rounded-2xl bg-surface2 border border-border mb-6 relative">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setTutorialRole("student");
-                          setTutorialStep(1);
-                          setTutorialAutoplay(true);
-                        }}
-                        className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 ${
-                          tutorialRole === "student"
-                            ? "bg-surface text-primary border border-border shadow-sm font-black scale-[1.01]"
-                            : "text-muted hover:text-fg font-bold"
-                        }`}
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" /></svg>
-                        Student Path
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setTutorialRole("senior");
-                          setTutorialStep(1);
-                          setTutorialAutoplay(true);
-                        }}
-                        className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 ${
-                          tutorialRole === "senior"
-                            ? "bg-surface text-primary border border-border shadow-sm font-black scale-[1.01]"
-                            : "text-muted hover:text-fg font-bold"
-                        }`}
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                        Senior Path
-                      </button>
-                    </div>
-
-                    {/* Step Navigation Progress indicators */}
-                    <div className="grid grid-cols-4 gap-2 mb-6">
-                      {[
-                        { step: 1, label: tutorialRole === "student" ? "Credits" : "Set Slots" },
-                        { step: 2, label: tutorialRole === "student" ? "Explore" : "Get Booked" },
-                        { step: 3, label: tutorialRole === "student" ? "1:1 Call" : "Share Info" },
-                        { step: 4, label: tutorialRole === "student" ? "Clarity" : "Success" }
-                      ].map((s) => (
-                        <button
-                          key={s.step}
-                          type="button"
-                          onClick={() => {
-                            setTutorialStep(s.step);
-                            setTutorialAutoplay(false); // Pause autoplay
-                          }}
-                          className="flex flex-col items-center gap-1.5 focus:outline-none group cursor-pointer"
-                        >
-                          <div className={`w-full h-1.5 rounded-full transition-all duration-300 relative overflow-hidden ${
-                            tutorialStep >= s.step 
-                              ? "bg-primary shadow-[0_0_8px_rgba(37,99,235,0.3)]" 
-                              : "bg-surface2 border border-border/50"
-                          }`}>
-                            {tutorialStep === s.step && tutorialAutoplay && (
-                              <span 
-                                className="absolute top-0 left-0 h-full bg-violet-500 rounded-full"
-                                style={{ animation: 'barProgress 3.8s linear forwards' }}
-                              />
-                            )}
-                          </div>
-                          <span className={`text-[10px] uppercase tracking-wider transition-colors ${
-                            tutorialStep === s.step 
-                              ? "text-primary font-black scale-105" 
-                              : "text-muted hover:text-fg font-bold"
-                          }`}>
-                            {s.label}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Role Content Switcher Panel */}
-                    <div className="min-h-[310px] flex flex-col justify-between text-left">
-
-                      {/* ----------------- STUDENT PATH ----------------- */}
-                      {tutorialRole === "student" && (
-                        <>
-                          {/* Step 1: Wallet Credits */}
-                          {tutorialStep === 1 && (
-                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
-                              <div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-1">
-                                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
-                                  Student / Step 01
-                                </span>
-                                <h3 className="text-lg font-black text-fg mt-1">Get Session Credits</h3>
-                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">Load credits to your wallet. You only use credits for calls you book, with simple refundable options.</p>
-                              </div>
-
-                              <div className="my-5 p-4 rounded-2xl border border-border bg-surface2 flex items-center justify-between shadow-sm">
-                                <div className="flex items-center gap-3">
-                                  <div className="custom-coin-spin h-11 w-11 rounded-2xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shadow-sm">
-                                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 033 3z" /></svg>
-                                  </div>
-                                  <div>
-                                    <div className="text-[10px] font-black text-muted uppercase tracking-wider">Wallet Balance</div>
-                                    <div className="text-base font-black text-fg flex items-center gap-1.5">
-                                      10 Credits
-                                      <span className="text-[9px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">1 Call = 1 Credit</span>
-                                    </div>
-                                  </div>
-                                </div>
-                                <span className="text-[10px] font-black text-success bg-success/10 border border-success/30 px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 shadow-sm">
-                                  <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
-                                   Added
-                                </span>
-                              </div>
-
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setTutorialStep(2);
-                                  setTutorialAutoplay(false);
-                                }}
-                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
-                              >
-                                Find Seniors next
-                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                              </button>
-                            </div>
-                          )}
-
-                          {/* Step 2: Choose Senior */}
-                          {tutorialStep === 2 && (
-                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
-                              <div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-1">
-                                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
-                                  Student / Step 02
-                                </span>
-                                <h3 className="text-lg font-black text-fg mt-1">Choose Verified Senior</h3>
-                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">Filter mentors from engineering, management, and arts colleges across India based on your target branch or queries.</p>
-                              </div>
-
-                              {/* Senior profile mockup */}
-                              <div className="my-4 p-4 rounded-2xl border border-border bg-surface2 flex gap-3.5 shadow-sm">
-                                <div className="relative shrink-0">
-                                  <div className="h-11 w-11 rounded-2xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center text-xs font-black shadow-sm">
-                                    VS
-                                  </div>
-                                  <span className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-success border-2 border-surface shadow-sm" />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs font-black text-fg flex items-center gap-1">
-                                      Verified Senior
-                                      <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                                    </span>
-                                    <span className="text-[10px] font-black text-warning bg-warning/10 px-2 py-0.5 rounded-full border border-warning/20"> 4.9 (42)</span>
-                                  </div>
-
-                                  <div className="flex gap-1.5 mt-2 flex-wrap">
-                                    <span className="text-[9px] font-black uppercase bg-primary/10 text-primary border border-primary/20 px-2.5 py-0.5 rounded-md">Placement scene</span>
-                                    <span className="text-[9px] font-black uppercase bg-success/10 text-success border border-success/20 px-2.5 py-0.5 rounded-md">Branch change</span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setTutorialStep(3);
-                                  setTutorialAutoplay(false);
-                                }}
-                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
-                              >
-                                Join Video Call
-                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                              </button>
-                            </div>
-                          )}
-
-                          {/* Step 3: Anonymous In-App Call */}
-                          {tutorialStep === 3 && (
-                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
-                              <div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-1">
-                                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
-                                  Student / Step 03
-                                </span>
-                                <h3 className="text-lg font-black text-fg mt-1">1:1 Anonymous Video Call</h3>
-                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">Ask questions face-to-face in our secure video call framework. No contact numbers or personal IDs are exposed.</p>
-                              </div>
-
-                              {/* Interactive Call Panel Mock */}
-                              <div className="my-4 p-3.5 rounded-2xl border border-border bg-surface2 flex flex-col items-center justify-center h-[115px] relative overflow-hidden shadow-sm">
-                                <div className="flex items-center gap-2 z-10">
-                                  <span className="custom-audio-wave w-1 bg-primary rounded-full" style={{ animationDelay: '0.1s' }} />
-                                  <span className="custom-audio-wave w-1 bg-accent rounded-full h-4" style={{ animationDelay: '0.3s' }} />
-                                  <span className="custom-audio-wave w-1 bg-primary rounded-full h-7" style={{ animationDelay: '0.5s' }} />
-                                  <span className="custom-audio-wave w-1 bg-accent rounded-full h-4" style={{ animationDelay: '0.2s' }} />
-                                  <span className="custom-audio-wave w-1 bg-primary rounded-full" style={{ animationDelay: '0.4s' }} />
-                                </div>
-                                <div className="absolute bottom-2.5 left-3.5 text-[9px] font-black text-muted uppercase tracking-wider flex items-center gap-1.5">
-                                  <span className="h-2 w-2 rounded-full bg-success animate-pulse shadow-sm" />
-                                  Encrypted HD Call Connected
-                                </div>
-                                <div className="absolute bottom-2.5 right-3.5 text-[9px] font-black text-fg bg-surface px-2.5 py-0.5 rounded-md border border-border shadow-xs">
-                                  03:45 Min
-                                </div>
-                              </div>
-
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setTutorialStep(4);
-                                  setTutorialAutoplay(false);
-                                }}
-                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
-                              >
-                                Finish Call
-                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                              </button>
-                            </div>
-                          )}
-
-                          {/* Step 4: Success Party */}
-                          {tutorialStep === 4 && (
-                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
-                              <div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-success flex items-center gap-1">
-                                  <span className="h-1.5 w-1.5 rounded-full bg-success animate-ping" />
-                                  Student / Step 04
-                                </span>
-                                <h3 className="text-lg font-black text-fg mt-1">Clarity Unlocked!</h3>
-                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">You now have authentic insider insights, placement facts, and the real perspective to choose your target college path.</p>
-                              </div>
-
-                              <div className="my-3 flex flex-col items-center justify-center gap-2">
-                                <div className="custom-trophy-bounce h-16 w-16 rounded-full bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500 flex items-center justify-center shadow-[0_0_30px_rgba(251,191,36,0.4)] relative">
-                                  <span className="absolute inset-0 rounded-full bg-amber-400/20 animate-ping" />
-                                  <span className="absolute inset-[-6px] rounded-full border-2 border-amber-400/30 animate-[spin_4s_linear_infinite]" />
-                                  <svg className="h-8 w-8 text-white drop-shadow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15c-3.314 0-6-2.686-6-6V4h12v5c0 3.314-2.686 6-6 6zm0 0v4m-3 1h6M9 4H5v3c0 1.657 1.343 3 3 3m10-6h-4v3c0 1.657-1.343 3-3 3" />
-                                  </svg>
-                                </div>
-                                <span className="text-[10px] font-black text-warning bg-warning/10 px-3 py-1 rounded-full border border-warning/20 uppercase tracking-widest">
-                                  Confidence Level: Unlocked
-                                </span>
-                              </div>
-
-                              <div className="flex gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setTutorialRole("senior");
-                                    setTutorialStep(1);
-                                    setTutorialAutoplay(true);
-                                  }}
-                                  className="px-4 py-3.5 rounded-2xl border border-border bg-surface text-fg hover:bg-surface2 font-black text-xs uppercase tracking-wider transition-all cursor-pointer shadow-sm"
-                                >
-                                  Senior Path
-                                </button>
-                                <Link to="/explore" className="flex-1">
-                                  <button
-                                    type="button"
-                                    className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
-                                  >
-                                    Find Your Senior
-                                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                                  </button>
-                                </Link>
-                              </div>
-                            </div>
-                          )}
-                        </>
-                      )}
-
-                      {/* ----------------- SENIOR PATH ----------------- */}
-                      {tutorialRole === "senior" && (
-                        <>
-                          {/* Step 1: Set Available Slots */}
-                          {tutorialStep === 1 && (
-                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
-                              <div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-1">
-                                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
-                                  Senior / Step 01
-                                </span>
-                                <h3 className="text-lg font-black text-fg mt-1">Schedule Available Slots</h3>
-                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">Create available time slots on your personalized dashboard that match your study and exam schedule.</p>
-                              </div>
-
-                              <div className="my-5 p-4 rounded-2xl border border-border bg-surface2 flex flex-col gap-2.5 shadow-sm">
-                                <div className="text-[10px] font-black text-muted uppercase tracking-wider flex items-center gap-1.5">
-                                  <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                  Scheduled slots (IST)
-                                </div>
-                                <div className="flex gap-2">
-                                  <span className="px-3 py-1.5 rounded-xl border border-primary/20 bg-primary/10 text-primary text-[10px] font-black shadow-xs flex items-center gap-1">
-                                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                                    6:30 PM (Today)
-                                  </span>
-                                  <span className="px-3 py-1.5 rounded-xl border border-border bg-surface text-muted text-[10px] font-black">8:00 PM (Tomorrow)</span>
-                                </div>
-                              </div>
-
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setTutorialStep(2);
-                                  setTutorialAutoplay(false);
-                                }}
-                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
-                              >
-                                View Booking Flow
-                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                              </button>
-                            </div>
-                          )}
-
-                          {/* Step 2: Get Booked */}
-                          {tutorialStep === 2 && (
-                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
-                              <div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-1">
-                                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
-                                  Senior / Step 02
-                                </span>
-                                <h3 className="text-lg font-black text-fg mt-1">Get Student Bookings</h3>
-                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">Students browse your branch, college name, and expertise domains to book a live, anonymous session.</p>
-                              </div>
-
-                              {/* Booking Mock Card */}
-                              <div className="my-4 p-4 rounded-2xl border border-border bg-surface2 flex gap-3 items-center justify-between shadow-sm">
-                                <div className="flex items-center gap-2.5">
-                                  <div className="h-8 w-8 rounded-full bg-success/10 text-success border border-success/20 flex items-center justify-center text-xs font-black"></div>
-                                  <div>
-                                    <div className="text-xs font-black text-fg">Anonymous Student Booking</div>
-                                    <div className="text-[10px] text-muted font-bold mt-0.5">Topic: CSE Placement Reality</div>
-                                  </div>
-                                </div>
-                                <span className="text-[9px] font-black uppercase bg-success/10 text-success border border-success/20 px-2.5 py-1 rounded-md shadow-xs">Confirmed</span>
-                              </div>
-
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setTutorialStep(3);
-                                  setTutorialAutoplay(false);
-                                }}
-                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
-                              >
-                                Join Video Call
-                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                              </button>
-                            </div>
-                          )}
-
-                          {/* Step 3: Share Guidance */}
-                          {tutorialStep === 3 && (
-                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
-                              <div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-1">
-                                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
-                                  Senior / Step 03
-                                </span>
-                                <h3 className="text-lg font-black text-fg mt-1">Share Honest Guidance</h3>
-                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">Join the secure call right inside your browser window. Guide juniors who need advice regarding campus life or branches.</p>
-                              </div>
-
-                              {/* Interactive Call Panel Mock */}
-                              <div className="my-4 p-3.5 rounded-2xl border border-border bg-surface2 flex flex-col items-center justify-center h-[115px] relative overflow-hidden shadow-sm">
-                                <div className="flex items-center gap-2 z-10">
-                                  <span className="custom-audio-wave w-1 bg-success rounded-full" style={{ animationDelay: '0.1s' }} />
-                                  <span className="custom-audio-wave w-1 bg-accent rounded-full h-4" style={{ animationDelay: '0.3s' }} />
-                                  <span className="custom-audio-wave w-1 bg-success rounded-full h-7" style={{ animationDelay: '0.5s' }} />
-                                  <span className="custom-audio-wave w-1 bg-accent rounded-full h-4" style={{ animationDelay: '0.2s' }} />
-                                  <span className="custom-audio-wave w-1 bg-success rounded-full" style={{ animationDelay: '0.4s' }} />
-                                </div>
-                                <div className="absolute bottom-2.5 left-3.5 text-[9px] font-black text-muted uppercase tracking-wider flex items-center gap-1.5">
-                                  <span className="h-2 w-2 rounded-full bg-success animate-pulse shadow-sm" />
-                                  Sharing Campus Insights
-                                </div>
-                                <div className="absolute bottom-2.5 right-3.5 text-[9px] font-black text-fg bg-surface px-2.5 py-0.5 rounded-md border border-border shadow-xs">
-                                  06:18 Min
-                                </div>
-                              </div>
-
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setTutorialStep(4);
-                                  setTutorialAutoplay(false);
-                                }}
-                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
-                              >
-                                View Milestones
-                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                              </button>
-                            </div>
-                          )}
-
-                          {/* Step 4: Success & Senior Earnings */}
-                          {tutorialStep === 4 && (
-                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
-                              <div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-success flex items-center gap-1">
-                                  <span className="h-1.5 w-1.5 rounded-full bg-success animate-ping" />
-                                  Senior / Step 04
-                                </span>
-                                <h3 className="text-lg font-black text-fg mt-1">Impact & Senior Earnings</h3>
-                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">Earn payouts for completed sessions, build your reputation, gain recommendations, and guide the next generation.</p>
-                              </div>
-
-                              <div className="my-4 flex justify-around">
-                                <div className="text-center flex flex-col items-center gap-1.5">
-                                  <svg className="w-5 h-5 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
-                                  <div className="text-[10px] font-black text-muted uppercase">Top Rated</div>
-                                </div>
-                                <div className="text-center flex flex-col items-center gap-1.5">
-                                  <svg className="w-5 h-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                  <div className="text-[10px] font-black text-success uppercase">Senior Earnings</div>
-                                </div>
-                                <div className="text-center flex flex-col items-center gap-1.5">
-                                  <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 025.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                                  <div className="text-[10px] font-black text-muted uppercase">Network</div>
-                                </div>
-                              </div>
-
-                              <div className="flex gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setTutorialStep(1);
-                                    setTutorialAutoplay(true);
-                                  }}
-                                  className="px-4 py-3.5 rounded-2xl border border-border bg-surface text-fg hover:bg-surface2 font-black text-xs uppercase tracking-wider transition-all cursor-pointer shadow-sm"
-                                >
-                                  Loop Again
-                                </button>
-                                <Link to="/become-mentor" className="flex-1">
-                                  <button
-                                    type="button"
-                                    className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
-                                  >
-                                    Apply As Senior
-                                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                                  </button>
-                                </Link>
-                              </div>
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
+                    <h3 className="font-black text-fg text-lg">Flat ₹69 Credit Pass</h3>
+                    <p className="text-xs text-muted font-semibold leading-relaxed">
+                      No subscription traps or ₹50k consulting packages. Pay per call, with an automatic refund if your mentor no-shows.
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Bottom Row: Stats & Motivation Tips */}
-              <div className="space-y-6 sm:space-y-12 pt-4 sm:pt-12 w-full flex flex-col items-center justify-center">
-                {/* Animated Stats with Counter */}
-                {/* Animated Stats with Counter — Single row on mobile */}
-                <div className="scroll-reveal reveal-up stagger-4 grid grid-cols-3 gap-2 sm:gap-6 w-full max-w-5xl px-2 sm:px-4 mx-auto">
-                  {[
-                    {
-                      ...stats[0],
-                      accent: "from-blue-500 to-indigo-600",
-                      glow: "rgba(37,99,235,0.18)",
-                      glowColor: "rgba(37,99,235,0.08)",
-                      borderHover: "hover:border-blue-400/50",
-                      iconBg: "bg-blue-500/10 border-blue-400/20 text-blue-600 dark:text-blue-400",
-                      iconHover: "group-hover:bg-blue-500 group-hover:text-white group-hover:border-blue-500",
-                      numColor: "group-hover:text-blue-600 dark:group-hover:text-blue-400",
-                      badge: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-400/20",
-                    },
-                    {
-                      ...stats[1],
-                      accent: "from-violet-500 to-purple-600",
-                      glow: "rgba(139,92,246,0.18)",
-                      glowColor: "rgba(139,92,246,0.08)",
-                      borderHover: "hover:border-violet-400/50",
-                      iconBg: "bg-violet-500/10 border-violet-400/20 text-violet-600 dark:text-violet-400",
-                      iconHover: "group-hover:bg-violet-500 group-hover:text-white group-hover:border-violet-500",
-                      numColor: "group-hover:text-violet-600 dark:group-hover:text-violet-400",
-                      badge: "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-400/20",
-                    },
-                    {
-                      ...stats[2],
-                      accent: "from-emerald-500 to-teal-600",
-                      glow: "rgba(16,185,129,0.18)",
-                      glowColor: "rgba(16,185,129,0.08)",
-                      borderHover: "hover:border-emerald-400/50",
-                      iconBg: "bg-emerald-500/10 border-emerald-400/20 text-emerald-600 dark:text-emerald-400",
-                      iconHover: "group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500",
-                      numColor: "group-hover:text-emerald-600 dark:group-hover:text-emerald-400",
-                      badge: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-400/20",
-                    },
-                  ].map((s) => (
-                    <div
-                      key={s.label}
-                      className={`group relative overflow-hidden rounded-[20px] sm:rounded-[24px] border border-border/70 bg-surface p-2.5 sm:p-6 shadow-card ${s.borderHover} hover:shadow-lift transition-all duration-300 ease-out hover:-translate-y-1 scroll-reveal reveal-scale stagger-5`}
-                    >
-                      {/* Top gradient accent bar */}
-                      <div className={`absolute top-0 inset-x-0 h-[2px] sm:h-[3px] bg-gradient-to-r ${s.accent} opacity-70 group-hover:opacity-100 transition-opacity duration-300`} />
-
-                      <div className="relative z-10 flex flex-col items-center sm:items-start text-center sm:text-left">
-                        {/* Icon badge + Label row */}
-                        <div className="hidden sm:flex items-center justify-between mb-5 w-full">
-                          <div className={`flex h-11 w-11 items-center justify-center rounded-xl border ${s.iconBg} ${s.iconHover} transition-all duration-300 shadow-xs group-hover:scale-105 group-hover:shadow-md`}>
-                            <LineIcon name={s.icon} className="h-5 w-5" />
-                          </div>
-                          <span className={`text-[10px] font-black uppercase tracking-[0.18em] px-2.5 py-1 rounded-full border ${s.badge}`}>
-                            Live
-                          </span>
-                        </div>
-
-                        {/* Big number */}
-                        <div
-                          className={`text-xl sm:text-5xl font-black tracking-tight text-fg ${s.numColor} transition-colors duration-300`}
-                          style={{ fontFamily: "'Outfit', sans-serif" }}
-                        >
-                          <AnimatedCounter target={s.numericValue} suffix={s.suffix} displayAs={s.displayAs} />
-                        </div>
-
-                        {/* Label */}
-                        <div className="mt-1 sm:mt-3 flex items-center gap-2 w-full justify-center sm:justify-start">
-                          <div className={`hidden sm:block h-px flex-1 bg-gradient-to-r ${s.accent} opacity-20 group-hover:opacity-50 transition-opacity duration-300`} />
-                          <span className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider sm:tracking-widest text-muted group-hover:text-fg transition-colors duration-300 shrink-0 truncate">
-                            {s.label}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Motivation Tips Card */}
-                <div className="scroll-reveal reveal-up stagger-6 w-full max-w-4xl px-4 mx-auto">
-                  <div className="rounded-[48px] border border-border/60 bg-surface p-7 md:p-10 shadow-[0_25px_70px_rgba(37,99,235,0.06)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.3)] transition-all duration-500 relative overflow-hidden">
-                    {/* Glowing background meshes */}
-                    <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 blur-3xl pointer-events-none rounded-full" />
-                    <div className="absolute bottom-0 left-0 w-80 h-80 bg-accent/5 blur-3xl pointer-events-none rounded-full" />
-                    
-                    <div className="relative z-10 flex flex-col gap-5 md:flex-row md:items-center md:justify-between px-3 pb-3">
-                      <div>
-                        <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-primary/8 via-accent/8 to-primary/4 border border-primary/15 dark:border-primary/25 text-[10px] font-black uppercase tracking-[0.22em] text-primary shadow-sm select-none mb-2">
-                          <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                          </span>
-                          Why students book
-                        </div>
-                        <div className="mt-1.5 text-base font-semibold text-fg tracking-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>Short, honest guidance that feels worth way more than ₹69.</div>
-                      </div>
-                      
-                      {/* Premium Indicator dots */}
-                      <div className="flex items-center gap-2.5 shrink-0 bg-surface/80 border border-border/40 rounded-full px-4 py-2 shadow-inner">
-                        {motivationTips.map((_, index) => (
-                          <button
-                            key={index}
-                            type="button"
-                            aria-label={`Show tip ${index + 1}`}
-                            onClick={() => setActiveTip(index)}
-                            className={`h-2.5 rounded-full transition-all duration-700 cursor-pointer ${activeTip === index ? "w-8 bg-gradient-to-r from-primary to-accent shadow-md" : "w-2.5 bg-muted/20 hover:bg-muted/50"}`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Highly Engaging Split-Bento Showcase Grid */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch mt-6 relative z-10">
-                      
-                      {/* Left Side: Editorial Testimonial Slider */}
-                      <div className="lg:col-span-7 relative rounded-3xl bg-surface border border-primary/20 p-6 md:p-8 min-h-[220px] flex flex-col justify-between overflow-hidden shadow-sm hover:border-primary/30 transition-all duration-300">
-                        {/* Continuous Progress Story-Loader Line */}
-                        <div className="absolute top-0 left-0 h-1 bg-gradient-to-r from-primary to-accent transition-all duration-700" style={{ width: `${((activeTip + 1) / motivationTips.length) * 100}%` }} />
-                        
-                        {/* Large decorative quotation mark background overlay */}
-                        <div className="absolute -top-12 -left-6 text-[180px] font-black text-primary/5 select-none pointer-events-none leading-none font-serif">“</div>
-                        
-                        <div key={activeTip} className="relative z-10 animate-quote-slide space-y-5 h-full flex flex-col justify-between">
-                          <div>
-                            <div className="text-lg md:text-xl font-extrabold text-fg tracking-tight leading-snug" style={{ fontFamily: "'Outfit', sans-serif" }}>
-                              {motivationTips[activeTip].title}
-                            </div>
-                            <div className="mt-3 text-xs md:text-sm text-muted font-bold leading-relaxed">
-                              {motivationTips[activeTip].text}
-                            </div>
-                          </div>
-
-                          <div className="mt-6 pt-4 border-t border-primary/10 flex flex-wrap items-center gap-3">
-                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${motivationTips[activeTip].tagColor} shadow-sm`}>
-                              <span className="h-1 w-1 rounded-full bg-current" />
-                              {motivationTips[activeTip].badge}
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface text-muted border border-border/60 text-[10px] font-black uppercase tracking-wider shadow-sm">
-                              <span></span>
-                              ₹69 Fixed Price
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right Side: Interactive Comparison Matrix */}
-                      <div className="lg:col-span-5 relative rounded-3xl bg-surface border border-border/70 p-6 flex flex-col justify-between shadow-sm hover:border-primary/30 transition-all duration-300">
-                        <div className="space-y-4">
-                          <div className="text-[10px] font-black uppercase tracking-[0.25em] text-accent">Value Blueprint</div>
-                          
-                          <div className="space-y-2.5">
-                            <div className="flex items-center justify-between rounded-2xl bg-surface2 p-3 border border-border/60 hover:scale-[1.02] transition-transform duration-355">
-                              <span className="text-xs font-bold text-muted">Traditional Consulting</span>
-                              <span className="text-[10px] font-black text-danger bg-danger/10 border border-danger/20 rounded-lg px-2.5 py-1 uppercase tracking-wider">Lakhs of ₹</span>
-                            </div>
-                            <div className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-3 border border-primary/20 hover:scale-[1.02] transition-transform duration-355 shadow-sm">
-                              <span className="text-xs font-extrabold text-fg">Clarior Session</span>
-                              <span className="text-[10px] font-black text-success bg-success/10 border border-success/20 rounded-lg px-2.5 py-1 uppercase tracking-wider">₹69 Fixed</span>
-                            </div>
-                          </div>
-
-                          <div className="space-y-2 pt-1.5 border-t border-border/40">
-                            <div className="flex items-center gap-2 text-xs text-muted font-semibold">
-                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-danger/10 shrink-0">
-                                <svg className="h-2.5 w-2.5 text-danger" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                              </span>
-                              Unverified, biased advice online
-                            </div>
-                            <div className="flex items-center gap-2 text-xs text-fg font-extrabold">
-                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-success/10 shrink-0">
-                                <svg className="h-2.5 w-2.5 text-success" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7"/></svg>
-                              </span>
-                              1-on-1 verified college seniors
-                            </div>
-                          </div>
-                        </div>
-
-                        <Link to="/explore" className="w-full mt-4">
-                          <Button
-                            size="sm"
-                            className="w-full rounded-2xl cursor-pointer font-black text-xs uppercase tracking-wider shadow-hero py-3"
-                            iconRight={<svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>}
-                          >
-                            Get Clarity Now
-                          </Button>
-                        </Link>
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </SiteContainer>
         </section>
+
+        {/* Wave Divider leading to Colleges Marquee */}
+        <WaveDivider color="rgb(var(--surface-2))" />
 
         {/* Wave Divider */}
         <WaveDivider color="rgb(var(--surface-2))" />
