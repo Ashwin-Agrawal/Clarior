@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -9,6 +9,94 @@ import CollegeCard from "../components/CollegeCard";
 import SiteContainer from "../components/layout/SiteContainer";
 import useSEO from "../hooks/useSEO";
 import { ValueSlider, SpeedBookingBoard, FAQAccordion } from "../components/home/InteractiveWidgets";
+
+function CollegeMarqueeCard({ college }) {
+  const navigate = useNavigate();
+  const { _id, name, type, image, city, state, seniorCount = 0, slug } = college || {};
+  const targetId = _id || slug || encodeURIComponent(name || "");
+
+  const getTypeBadgeStyles = (t) => {
+    switch (t?.toLowerCase()) {
+      case "government":
+        return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400";
+      case "private":
+        return "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400";
+      case "new-gen":
+      case "new gen":
+        return "bg-cyan-500/10 text-cyan-600 border-cyan-500/20 dark:text-cyan-400";
+      default:
+        return "bg-surface2 text-muted border-border/50";
+    }
+  };
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => navigate(`/college/${targetId}`)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          navigate(`/college/${targetId}`);
+        }
+      }}
+      className="group shrink-0 w-72 md:w-80 p-3.5 rounded-2xl border border-border/70 bg-surface/90 hover:bg-surface hover:border-primary/40 backdrop-blur-md transition-all duration-300 cursor-pointer shadow-card hover:shadow-lift hover:-translate-y-1 flex items-center gap-3.5 select-none"
+    >
+      <div className="w-12 h-12 rounded-xl overflow-hidden bg-surface2 border border-border/50 shrink-0 relative flex items-center justify-center">
+        {image ? (
+          <img
+            src={image}
+            alt={name || "College"}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.style.display = "none";
+              if (e.target.nextSibling) e.target.nextSibling.style.display = "flex";
+            }}
+          />
+        ) : null}
+        <span
+          className="font-black text-primary text-sm flex items-center justify-center"
+          style={{ display: image ? "none" : "flex" }}
+        >
+          {name ? name.substring(0, 2).toUpperCase() : "CL"}
+        </span>
+      </div>
+
+      <div className="min-w-0 flex-1 space-y-1">
+        <h3 className="font-bold text-fg text-xs sm:text-sm truncate group-hover:text-primary transition-colors">
+          {name}
+        </h3>
+
+        <div className="flex items-center gap-2 text-[11px] text-muted font-medium">
+          {(city || state) && (
+            <span className="truncate flex items-center gap-1">
+              <svg className="w-3 h-3 shrink-0 text-muted" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+              </svg>
+              {[city, state].filter(Boolean).join(", ")}
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 pt-0.5">
+          {type && (
+            <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase border ${getTypeBadgeStyles(type)}`}>
+              {type}
+            </span>
+          )}
+          {seniorCount > 0 && (
+            <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">
+              {seniorCount} Senior{seniorCount > 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 
 const motivationTips = [
@@ -407,7 +495,15 @@ function Home() {
 
   const repeatedList = useMemo(() => {
     if (slicedColleges.length === 0) return [];
-    return [...slicedColleges, ...slicedColleges];
+    const base = slicedColleges.length < 6 ? [...slicedColleges, ...slicedColleges, ...slicedColleges] : slicedColleges;
+    return [...base, ...base];
+  }, [slicedColleges]);
+
+  const repeatedListReverse = useMemo(() => {
+    if (slicedColleges.length === 0) return [];
+    const reversed = [...slicedColleges].reverse();
+    const base = reversed.length < 6 ? [...reversed, ...reversed, ...reversed] : reversed;
+    return [...base, ...base];
   }, [slicedColleges]);
 
   // ── Mouse Parallax for Hero ─────────────────────────────────
@@ -1530,66 +1626,64 @@ function Home() {
         <WaveDivider color="rgb(var(--surface-2))" />
 
         {/* ═══════════════════════════════════════════════════════
-            COLLEGES CAROUSEL — Scroll Reveal
+            COLLEGES MARQUEE STRIP — Continuous Scroll
             ═══════════════════════════════════════════════════════ */}
-        <section className="pt-8 pb-16 relative overflow-hidden">
+        <section className="pt-10 pb-16 relative overflow-hidden bg-surface/30 border-y border-border/40">
           <SiteContainer>
-            <div ref={collegesRevealRef} className="relative overflow-hidden rounded-[40px] border border-border/60 bg-surface p-6 shadow-card md:p-10">
-              <div className="absolute -inset-10 bg-gradient-to-tr from-primary/5 to-accent/5 rounded-[64px] blur-3xl pointer-events-none opacity-60 section-glow" />
-              
-              <h2 className="scroll-reveal reveal-up relative z-10 flex justify-center mb-8">
-                <span className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-2xl bg-gradient-to-r from-primary/8 via-accent/8 to-primary/8 border border-primary/20 dark:border-primary/30 text-xs sm:text-sm font-black uppercase tracking-[0.3em] text-primary shadow-sm hover:scale-[1.02] transition-transform select-none">
-                  <svg className="h-4.5 w-4.5 text-primary shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-3.163 0-6.194.298-9.132.872V21M3 21h18" />
-                  </svg>
-                  Featuring Colleges
-                </span>
-              </h2>
-              
-              {/* Carousel Container */}
-              <div 
-                className="scroll-reveal reveal-scale stagger-2 relative z-10 w-full group/slider select-none"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleMouseUp}
-              >
-
-                <div 
-                  ref={sliderRef}
-                  className="w-full overflow-x-auto scrollbar-hide py-6 px-4 flex gap-6 snap-x snap-mandatory md:snap-none cursor-grab active:cursor-grabbing"
-                  style={{ scrollBehavior: "auto" }}
-                >
-                  {collegesLoading ? (
-                    <div className="flex gap-6 w-full">
-                      {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="w-[calc(100vw-80px)] md:w-[320px] h-[340px] rounded-[28px] bg-surface2 animate-pulse flex-shrink-0" />
-                      ))}
-                    </div>
-                  ) : repeatedList.length > 0 ? (
-                    repeatedList.map((college, idx) => (
-                      <div 
-                        key={`${college._id}-${idx}`} 
-                        className="w-[calc(100vw-80px)] md:w-[320px] flex-shrink-0 snap-center transition-transform duration-300 hover:scale-[1.02] hover:-translate-y-0.5"
-                      >
-                        <CollegeCard college={college} index={idx} />
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center w-full py-8 text-muted font-semibold">No colleges available</div>
-                  )}
+            <div ref={collegesRevealRef} className="space-y-8">
+              {/* Header */}
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                <div className="scroll-reveal reveal-up">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/25 text-xs font-black uppercase tracking-widest text-primary mb-3">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-3.163 0-6.194.298-9.132.872V21M3 21h18" />
+                    </svg>
+                    Participating Campuses
+                  </div>
+                  <h2 className="heading-display text-3xl sm:text-4xl text-fg">
+                    Explore Colleges & Institutions
+                  </h2>
+                  <p className="text-xs sm:text-sm text-muted font-medium mt-1">
+                    Connect with verified seniors across top engineering & academic tracks nationwide.
+                  </p>
+                </div>
+                <div className="scroll-reveal reveal-up shrink-0">
+                  <Link
+                    to="/explore"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border border-border bg-surface text-xs font-black uppercase tracking-wider text-fg hover:text-primary hover:border-primary/40 transition-all shadow-sm"
+                  >
+                    View All Colleges ({globalStats.collegesCount || collegesList.length || 6}+)
+                    <LineIcon name="arrow" className="h-4 w-4" />
+                  </Link>
                 </div>
               </div>
 
-              <div className="scroll-reveal reveal-up stagger-3 mt-8 text-center relative z-10">
-                <Link to="/explore" className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-primary hover:text-accent transition-colors duration-300">
-                  View all colleges
-                  <LineIcon name="arrow" className="h-4 w-4" />
-                </Link>
+              {/* Marquee Strip Container */}
+              <div className="scroll-reveal reveal-scale relative w-full overflow-hidden mask-marquee py-2 space-y-4">
+                {collegesLoading ? (
+                  <div className="flex gap-4 overflow-hidden py-2">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <div key={i} className="w-72 h-20 rounded-2xl bg-surface2 animate-pulse shrink-0" />
+                    ))}
+                  </div>
+                ) : collegesList.length > 0 ? (
+                  <>
+                    <div className="animate-marquee flex gap-4">
+                      {repeatedList.map((college, idx) => (
+                        <CollegeMarqueeCard key={`col-top-${college._id || idx}-${idx}`} college={college} />
+                      ))}
+                    </div>
+                    {collegesList.length >= 3 && (
+                      <div className="animate-marquee-reverse flex gap-4">
+                        {repeatedListReverse.map((college, idx) => (
+                          <CollegeMarqueeCard key={`col-bot-${college._id || idx}-${idx}`} college={college} />
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="text-center py-8 text-muted font-semibold text-sm">No colleges available</div>
+                )}
               </div>
             </div>
           </SiteContainer>
