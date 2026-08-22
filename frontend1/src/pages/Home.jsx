@@ -749,25 +749,25 @@ function Home() {
         </div>
 
         {/* ═══════════════════════════════════════════════════════
-            HERO SECTION — Premium Senior-Dev Redesign
+            HERO SECTION — High-Tech Interactive 3D Redesign
             ═══════════════════════════════════════════════════════ */}
-        <section ref={heroRef} className="relative min-h-[85vh] flex items-center justify-center pt-12 sm:pt-24 pb-16 overflow-hidden">
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+        <section ref={heroRef} className="relative min-h-[90vh] flex items-center justify-center pt-10 sm:pt-20 pb-16 overflow-hidden">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
-          {/* Mouse-parallax background glow blobs */}
+          {/* Dynamic background ambient glows */}
           <div 
-            className="absolute top-1/4 left-1/4 h-[420px] w-[420px] rounded-full bg-primary/10 dark:bg-primary/5 blur-[120px] pointer-events-none transition-transform duration-300 ease-out" 
+            className="absolute top-1/4 left-1/4 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-primary/15 via-accent/10 to-transparent blur-[140px] pointer-events-none transition-transform duration-500 ease-out" 
             style={{
-              transform: `translate(${mousePos.x * 30}px, ${mousePos.y * 30}px)`
+              transform: `translate(${mousePos.x * 40}px, ${mousePos.y * 40}px)`
             }}
           />
           <div 
-            className="absolute bottom-1/4 right-1/4 h-[380px] w-[380px] rounded-full bg-accent/8 dark:bg-accent/5 blur-[100px] pointer-events-none transition-transform duration-300 ease-out" 
+            className="absolute bottom-1/4 right-1/4 h-[450px] w-[450px] rounded-full bg-gradient-to-tr from-purple-500/12 via-accent/8 to-transparent blur-[120px] pointer-events-none transition-transform duration-500 ease-out" 
             style={{
-              transform: `translate(${mousePos.x * -30}px, ${mousePos.y * -30}px)`
+              transform: `translate(${mousePos.x * -40}px, ${mousePos.y * -40}px)`
             }}
           />
-          <div className="absolute inset-0 bg-grid-pattern opacity-30 pointer-events-none" />
+          <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
 
           <SiteContainer className="relative z-10">
             <div ref={heroRevealRef} className="max-w-7xl mx-auto space-y-16">
@@ -775,135 +775,171 @@ function Home() {
               {/* Hero Grid */}
               <div className="grid lg:grid-cols-12 gap-12 items-center">
                 
-                {/* Left Column: Copy & Actions */}
+                {/* Left Column: Headline & Actions */}
                 <div className="lg:col-span-7 text-center lg:text-left flex flex-col items-center lg:items-start">
                   
-                  {/* Trust Pill */}
-                  <div className="scroll-reveal reveal-up inline-flex items-center gap-2.5 rounded-full border border-primary/20 bg-surface/90 backdrop-blur-md px-4 py-2 text-xs font-black text-primary uppercase tracking-widest mb-6 shadow-soft">
-                    <span className="relative flex h-2 w-2">
+                  {/* Glowing Holographic Badge */}
+                  <div className="scroll-reveal reveal-up inline-flex items-center gap-2.5 rounded-full border border-primary/30 bg-surface/90 backdrop-blur-xl px-4 py-2 text-xs font-black text-primary uppercase tracking-widest mb-6 shadow-[0_0_20px_rgba(37,99,235,0.2)]">
+                    <span className="relative flex h-2.5 w-2.5">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
                     </span>
-                    100% Unbiased Student Guidance
+                    Direct 1:1 Senior Advice • ₹69 Pass
                   </div>
                   
-                  {/* Headline */}
-                  <h1 className="scroll-reveal reveal-up stagger-1 heading-display text-4xl sm:text-6xl md:text-7xl font-black text-fg leading-[1.02] tracking-tight">
-                    Stop Guessing. <br />
-                    <span className="gradient-text-animated inline-block mt-1">
-                      <WordReveal text="Ask someone inside." baseDelay={0.3} />
+                  {/* Main Title */}
+                  <h1 className="scroll-reveal reveal-up stagger-1 heading-display text-4xl sm:text-6xl md:text-7xl lg:text-[76px] font-black text-fg leading-[0.96] tracking-tight">
+                    Stop Overthinking. <br />
+                    <span className="gradient-text-animated inline-block mt-2">
+                      <WordReveal text="Talk to someone inside." baseDelay={0.2} />
                     </span>
                   </h1>
                   
-                  {/* Subtitle */}
+                  {/* Subtext */}
                   <p className="scroll-reveal reveal-up stagger-2 mt-6 text-base sm:text-xl text-muted font-medium leading-relaxed max-w-xl">
-                    1:1 private calls with verified college students for real, unsponsored campus truth. Flat <span className="text-fg font-black">₹69 per session</span>.
+                    Connect face-to-face with verified college seniors for 100% authentic, unsponsored advice on branches, campus life & real placements.
                   </p>
 
-                  {/* CTA Buttons */}
+                  {/* Call-to-Action Buttons */}
                   <div className="scroll-reveal reveal-up stagger-3 mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-4 w-full">
                     <Link to="/explore" className="w-full sm:w-auto">
-                      <button className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-primary text-white font-black text-sm shadow-[0_10px_35px_rgba(37,99,235,0.35)] hover:shadow-[0_14px_45px_rgba(37,99,235,0.5)] hover:-translate-y-1 transition-all duration-300">
-                        Find My Mentor
-                        <LineIcon name="arrow" className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      <button className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-primary via-blue-600 to-accent text-white font-black text-sm shadow-[0_10px_40px_rgba(37,99,235,0.4)] hover:shadow-[0_15px_50px_rgba(37,99,235,0.6)] hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                        <span className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+                        <span className="relative z-10 flex items-center gap-2">
+                          Find My Mentor — ₹69
+                          <LineIcon name="arrow" className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </span>
                       </button>
                     </Link>
                     <Link to="/become-mentor" className="w-full sm:w-auto">
-                      <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl border border-border/80 bg-surface font-bold text-sm text-fg hover:border-primary/40 transition-all">
-                        Become a Senior
+                      <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl border border-border/80 bg-surface/80 backdrop-blur-md font-bold text-sm text-fg hover:border-primary/40 hover:bg-primary/5 transition-all">
+                        Become a Senior & Earn
                       </button>
                     </Link>
                   </div>
 
-                  {/* Social Proof Line */}
-                  <div className="scroll-reveal reveal-up stagger-4 mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs font-bold text-muted">
-                    <span className="flex items-center gap-1.5 text-fg">
-                      <span className="text-amber-500 font-bold">★</span> {avgSeniorRating} Avg Rating
-                    </span>
-                    <span className="text-border">•</span>
-                    <span className="text-fg">{globalStats.seniorsCount}+ Verified Mentors</span>
-                    <span className="text-border">•</span>
-                    <span className="text-success font-black">Instant Refund Guarantee</span>
+                  {/* Dynamic Senior Avatar Stack */}
+                  <div className="scroll-reveal reveal-up stagger-4 mt-8 flex items-center gap-3 bg-surface/60 border border-border/50 rounded-2xl p-2.5 px-4 backdrop-blur-md">
+                    <div className="avatar-stack">
+                      {heroSeniors.length > 0 ? (
+                        heroSeniors.slice(0, 4).map((s, idx) => {
+                          const initials = s.name
+                            ? s.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
+                            : "S";
+                          return (
+                            <div key={s._id || idx} className="avatar-item" title={s.name}>
+                              {initials}
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <>
+                          <div className="avatar-item">AA</div>
+                          <div className="avatar-item">SC</div>
+                          <div className="avatar-item">SA</div>
+                        </>
+                      )}
+                      <div className="avatar-item font-black">+</div>
+                    </div>
+                    <div className="text-left">
+                      <div className="flex gap-0.5 text-amber-500 mb-0.5">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                          <svg key={i} width="11" height="11" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                          </svg>
+                        ))}
+                      </div>
+                      <p className="text-[11px] font-extrabold text-fg">
+                        {avgSeniorRating} Rating • {globalStats.seniorsCount}+ Active Campus Mentors
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                {/* Right Column: High-End Live Session Preview Card */}
+                {/* Right Column: 3D Interactive WebRTC HUD Widget */}
                 <div className="lg:col-span-5 relative flex items-center justify-center">
                   
-                  {/* Outer Glow */}
-                  <div className="absolute inset-4 rounded-[36px] bg-gradient-to-tr from-primary/15 via-accent/10 to-transparent blur-2xl pointer-events-none" />
+                  {/* Floating 3D Micro Status Badges */}
+                  <div className="absolute -top-4 -right-2 z-20 animate-float hidden sm:flex items-center gap-2 rounded-2xl border border-primary/30 bg-surface/90 backdrop-blur-xl px-3.5 py-2 text-[10px] font-black text-primary shadow-lift">
+                    <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                    WebRTC 1:1 HD Video
+                  </div>
+                  
+                  <div className="absolute -bottom-4 -left-2 z-20 animate-float hidden sm:flex items-center gap-2 rounded-2xl border border-accent/30 bg-surface/90 backdrop-blur-xl px-3.5 py-2 text-[10px] font-black text-accent shadow-lift" style={{ animationDelay: '-3s' }}>
+                    <LineIcon name="shield" className="w-3.5 h-3.5 text-accent" />
+                    Encrypted & Private
+                  </div>
 
-                  {/* 3D Glassmorphic Card */}
-                  <div className="relative w-full max-w-[420px] rounded-[32px] border border-border/80 bg-surface/90 backdrop-blur-xl p-6 shadow-hero space-y-5">
+                  {/* Main HUD Card */}
+                  <div className="relative w-full max-w-[430px] rounded-[36px] border border-border/80 bg-gradient-to-b from-surface via-surface to-surface2 p-6 shadow-hero space-y-5 overflow-hidden animated-border">
                     
-                    {/* Header bar */}
+                    {/* Top Status Header */}
                     <div className="flex items-center justify-between pb-3 border-b border-border/40">
                       <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full bg-success animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-fg">WebRTC Session Room</span>
+                        <span className="flex h-2.5 w-2.5 relative">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75" />
+                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success" />
+                        </span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-fg">Live Call Simulator</span>
                       </div>
-                      <span className="text-[10px] font-black text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
-                        18:42 Live Countdown
+                      <span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                        20:00 Timer Active
                       </span>
                     </div>
 
-                    {/* Mentor preview */}
-                    <div className="p-4 rounded-2xl bg-surface2/70 border border-border/50 flex items-center gap-3.5">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30 flex items-center justify-center font-black text-primary text-base shrink-0 shadow-sm">
+                    {/* Senior Profile Chip */}
+                    <div className="p-4 rounded-2xl bg-surface2/80 border border-border/60 flex items-center gap-3.5 shadow-sm">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 via-indigo-500/20 to-purple-500/20 border border-primary/30 flex items-center justify-center font-black text-primary text-base shrink-0 shadow-sm">
                         VS
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-fg text-sm truncate">Verified Campus Senior</h4>
+                          <h4 className="font-extrabold text-fg text-sm truncate">Verified Campus Mentor</h4>
                           <span className="text-[10px] font-black text-success bg-success/10 border border-success/20 px-2 py-0.5 rounded">★ 4.9</span>
                         </div>
-                        <p className="text-[11px] text-muted font-semibold truncate mt-0.5">CSE & Placement Guidance</p>
+                        <p className="text-[11px] text-muted font-semibold truncate mt-0.5">Computer Science & Placement Insider</p>
                       </div>
                     </div>
 
-                    {/* Topic tag */}
-                    <div className="space-y-2">
-                      <div className="text-[10px] font-black uppercase tracking-widest text-muted">Active Session Topic</div>
-                      <div className="px-3.5 py-2 rounded-xl bg-primary/8 border border-primary/20 text-xs font-bold text-primary flex items-center gap-2">
-                        <LineIcon name="spark" className="w-3.5 h-3.5 text-primary" />
-                        "Honest CSE vs AI Branch Comparison & Placements"
+                    {/* Interactive Audio Wave Analyzer */}
+                    <div className="p-4 rounded-2xl bg-surface border border-border/50 space-y-2">
+                      <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-muted">
+                        <span>Audio Stream</span>
+                        <span className="text-success flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" /> Live
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-center gap-1.5 py-2">
+                        <span className="w-1.5 bg-primary rounded-full animate-pulse h-4" />
+                        <span className="w-1.5 bg-accent rounded-full animate-pulse h-8" style={{ animationDelay: "0.15s" }} />
+                        <span className="w-1.5 bg-primary rounded-full animate-pulse h-12" style={{ animationDelay: "0.3s" }} />
+                        <span className="w-1.5 bg-purple-500 rounded-full animate-pulse h-6" style={{ animationDelay: "0.45s" }} />
+                        <span className="w-1.5 bg-accent rounded-full animate-pulse h-10" style={{ animationDelay: "0.2s" }} />
+                        <span className="w-1.5 bg-primary rounded-full animate-pulse h-5" style={{ animationDelay: "0.35s" }} />
                       </div>
                     </div>
 
-                    {/* Audio wave indicator */}
-                    <div className="p-3 rounded-xl bg-surface border border-border/40 flex items-center justify-between text-xs">
-                      <span className="text-[11px] font-bold text-muted flex items-center gap-2">
-                        <LineIcon name="call" className="w-3.5 h-3.5 text-success" />
-                        Encrypted 1:1 In-App Audio
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <span className="w-1 h-3 bg-primary rounded-full animate-pulse" />
-                        <span className="w-1 h-5 bg-accent rounded-full animate-pulse" style={{ animationDelay: '0.15s' }} />
-                        <span className="w-1 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.3s' }} />
-                        <span className="w-1 h-4 bg-accent rounded-full animate-pulse" style={{ animationDelay: '0.45s' }} />
-                      </div>
-                    </div>
+                    {/* Quick Call Action */}
+                    <Link to="/explore" className="block w-full">
+                      <button className="w-full py-3.5 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black text-xs uppercase tracking-widest shadow-lift hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
+                        Book 1:1 Call — ₹69
+                        <LineIcon name="arrow" className="w-4 h-4" />
+                      </button>
+                    </Link>
 
-                    {/* Pricing callout inside widget */}
-                    <div className="pt-2 flex items-center justify-between text-xs">
-                      <span className="font-bold text-muted">1 Credit Pass = ₹69</span>
-                      <Link to="/explore" className="font-black text-primary hover:text-accent transition-colors flex items-center gap-1 text-xs">
-                        Book Slot <LineIcon name="arrow" className="w-3.5 h-3.5" />
-                      </Link>
-                    </div>
                   </div>
                 </div>
 
               </div>
 
-              {/* Live Platform Stats Row */}
-              <div className="scroll-reveal reveal-up grid grid-cols-1 md:grid-cols-3 gap-5 pt-8">
-                {stats.map((s, idx) => (
+              {/* Platform Metrics Bar */}
+              <div className="scroll-reveal reveal-up grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
+                {stats.map((s) => (
                   <div
                     key={s.label}
-                    className="group rounded-3xl border border-border/70 bg-surface p-6 shadow-card hover:border-primary/30 hover:shadow-lift transition-all duration-300 flex items-center gap-4"
+                    className="group rounded-3xl border border-border/70 bg-surface/90 backdrop-blur-md p-6 shadow-card hover:border-primary/40 hover:shadow-lift transition-all duration-300 flex items-center gap-4 relative overflow-hidden"
                   >
-                    <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/15 to-accent/15 border border-primary/25 text-primary flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                       <LineIcon name={s.icon} className="w-6 h-6" />
                     </div>
                     <div>
@@ -919,43 +955,43 @@ function Home() {
               {/* Bento Grid — Why Students Choose Clarior */}
               <div className="scroll-reveal reveal-up space-y-6 pt-6">
                 <div className="text-center max-w-lg mx-auto space-y-2">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-xs font-black uppercase tracking-widest text-accent">
-                    Platform Guarantees
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-black uppercase tracking-widest text-primary">
+                    Guaranteed Transparency
                   </div>
-                  <h2 className="heading-display text-3xl font-black text-fg">Built for Real Clarity</h2>
+                  <h2 className="heading-display text-3xl md:text-4xl font-black text-fg">Built Different By Design</h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Pillar 1 */}
-                  <div className="rounded-3xl border border-border/70 bg-surface p-7 space-y-4 shadow-card hover:border-primary/30 transition-all duration-300">
-                    <div className="w-11 h-11 rounded-2xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center">
-                      <LineIcon name="shield" className="w-5 h-5" />
+                  <div className="group rounded-3xl border border-border/70 bg-surface p-7 space-y-4 shadow-card hover:border-primary/40 hover:shadow-lift transition-all duration-300 relative overflow-hidden">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary border border-primary/25 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <LineIcon name="shield" className="w-6 h-6" />
                     </div>
                     <h3 className="font-black text-fg text-lg">100% Unbiased Advice</h3>
                     <p className="text-xs text-muted font-semibold leading-relaxed">
-                      Seniors earn per session, never per admission. Zero commission means zero incentive to promote any specific college or branch.
+                      Mentors earn flat per-session payouts, never per admission. Zero commission means zero reason to push any specific college or branch.
                     </p>
                   </div>
 
                   {/* Pillar 2 */}
-                  <div className="rounded-3xl border border-border/70 bg-surface p-7 space-y-4 shadow-card hover:border-accent/30 transition-all duration-300">
-                    <div className="w-11 h-11 rounded-2xl bg-accent/10 text-accent border border-accent/20 flex items-center justify-center">
-                      <LineIcon name="call" className="w-5 h-5" />
+                  <div className="group rounded-3xl border border-border/70 bg-surface p-7 space-y-4 shadow-card hover:border-accent/40 hover:shadow-lift transition-all duration-300 relative overflow-hidden">
+                    <div className="w-12 h-12 rounded-2xl bg-accent/10 text-accent border border-accent/25 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <LineIcon name="call" className="w-6 h-6" />
                     </div>
                     <h3 className="font-black text-fg text-lg">Encrypted 1:1 In-App Calls</h3>
                     <p className="text-xs text-muted font-semibold leading-relaxed">
-                      Sessions run inside our secure WebRTC room. Your phone number, email, and personal contact info are never shared.
+                      Sessions run inside our private WebRTC video room. Your phone number, email, and personal contact details are never shared.
                     </p>
                   </div>
 
                   {/* Pillar 3 */}
-                  <div className="rounded-3xl border border-border/70 bg-surface p-7 space-y-4 shadow-card hover:border-success/30 transition-all duration-300">
-                    <div className="w-11 h-11 rounded-2xl bg-success/10 text-success border border-success/20 flex items-center justify-center">
-                      <LineIcon name="gem" className="w-5 h-5" />
+                  <div className="group rounded-3xl border border-border/70 bg-surface p-7 space-y-4 shadow-card hover:border-success/40 hover:shadow-lift transition-all duration-300 relative overflow-hidden">
+                    <div className="w-12 h-12 rounded-2xl bg-success/10 text-success border border-success/25 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <LineIcon name="gem" className="w-6 h-6" />
                     </div>
                     <h3 className="font-black text-fg text-lg">Flat ₹69 Credit Pass</h3>
                     <p className="text-xs text-muted font-semibold leading-relaxed">
-                      No subscription traps or ₹50k consulting packages. Pay per call, with an automatic refund if your mentor no-shows.
+                      No ₹50k consulting packages or recurring subscriptions. Pay per 20-min session with an instant refund if your mentor no-shows.
                     </p>
                   </div>
                 </div>
