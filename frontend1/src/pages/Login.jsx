@@ -104,55 +104,90 @@ function Login() {
     return (
       <div className="min-h-screen flex">
         {/* ── Left Panel — Branding ─────────────────────────────── */}
-        <div className="hidden lg:flex lg:w-[48%] xl:w-[44%] flex-col justify-between relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-slate-900 p-12 text-white">
-          {/* Background grid */}
+        {/* ── Left Panel — Production Branding & Platform Architecture ─── */}
+        <div className="hidden lg:flex lg:w-[48%] xl:w-[46%] flex-col justify-between relative overflow-hidden bg-surface border-r border-border/80 p-10 xl:p-14 select-none">
+          {/* Subtle Ambient Glow Mesh */}
+          <div className="absolute -top-32 -left-32 w-80 h-80 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
+          <div className="absolute top-1/2 -right-24 w-80 h-80 rounded-full bg-accent/5 blur-3xl pointer-events-none" />
           <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
-  
-          {/* Logo */}
-          <Link to="/" className="relative flex items-center gap-3 transition hover:opacity-90">
-            <Logo size="footer" />
-            <span className="text-white font-brand font-extrabold text-2xl tracking-wide">
-              Clarior
-            </span>
-          </Link>
-  
-          {/* Center copy */}
-          <div className="relative space-y-6">
-            <h2 className="text-4xl font-extrabold text-white leading-tight tracking-tight">
-              Your best decision starts with the right conversation.
-            </h2>
-            <p className="text-blue-100 text-base leading-7">
-              Join thousands of students who got clarity directly from verified seniors.
-            </p>
-  
-            {/* Trust bullets */}
-            <ul className="space-y-3 mt-8">
-              {trustPoints.map((point) => (
-                <li key={point} className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-white text-xs font-bold flex-shrink-0">✓</span>
-                  <span className="text-blue-50 text-sm leading-6">{point}</span>
-                </li>
-              ))}
-            </ul>
-  
-            {/* Testimonial snippet */}
-            <div className="mt-8 rounded-2xl bg-white/10 border border-white/20 backdrop-blur p-5">
-              <div className="flex gap-0.5 mb-3">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} width="14" height="14" fill="#fbbf24" viewBox="0 0 24 24">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                ))}
+
+          {/* Top Brand Header */}
+          <div className="relative z-10 flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-3 transition-opacity hover:opacity-85 group">
+              <div className="p-2 rounded-2xl bg-surface2 border border-border/80 group-hover:border-primary/40 transition-colors shadow-xs">
+                <Logo size="navbar" />
               </div>
-              <p className="text-white/90 text-sm italic leading-6">
-                "After one session I knew exactly which college and branch was right for me. Clarior is unlike anything else."
-              </p>
-              <div className="mt-3 text-blue-200 text-xs font-semibold">— Arjun M., BITS Pilani '25</div>
+              <span className="font-extrabold text-2xl tracking-tight text-fg" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                Clarior
+              </span>
+            </Link>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface2 border border-border text-[11px] font-black uppercase tracking-wider text-muted">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+              1:1 Mentorship
             </div>
           </div>
-  
-          <div className="relative text-blue-200 text-xs">
-            © {currentYear} Clarior. Trusted by students worldwide.
+
+          {/* Center Copy & Authentic Product Features */}
+          <div className="relative z-10 my-auto py-8 space-y-6 max-w-lg">
+            <div className="space-y-3">
+              <div className="inline-block text-[11px] font-black uppercase tracking-[0.22em] text-primary">
+                Unbiased College Clarity
+              </div>
+              <h2 className="text-3xl xl:text-4xl font-black text-fg leading-[1.18] tracking-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                The direct path to your <span className="gradient-text">ideal college decision.</span>
+              </h2>
+              <p className="text-muted text-sm leading-relaxed font-medium">
+                Skip promotional brochures and unverified forum claims. Get honest guidance directly from college seniors currently enrolled on campus.
+              </p>
+            </div>
+
+            {/* Real Platform Feature Pillars (No Dummy Data) */}
+            <div className="space-y-3 pt-2">
+              <div className="rounded-2xl bg-surface2/60 border border-border/80 p-4 space-y-1 hover:border-primary/30 transition-all shadow-xs">
+                <div className="flex items-center gap-2 text-xs font-black text-fg">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  </span>
+                  Verified Senior Community
+                </div>
+                <p className="text-xs text-muted leading-relaxed pl-7">
+                  Every mentor on Clarior is verified with college enrollment credentials before offering guidance calls.
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-surface2/60 border border-border/80 p-4 space-y-1 hover:border-primary/30 transition-all shadow-xs">
+                <div className="flex items-center gap-2 text-xs font-black text-fg">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  </span>
+                  Timer-Tracked 20-Minute Calls
+                </div>
+                <p className="text-xs text-muted leading-relaxed pl-7">
+                  Private, in-app video sessions designed to answer high-stakes questions with zero sales pitches.
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-surface2/60 border border-border/80 p-4 space-y-1 hover:border-primary/30 transition-all shadow-xs">
+                <div className="flex items-center gap-2 text-xs font-black text-fg">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-success/10 text-success">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  </span>
+                  Flat ₹69 Pricing & Refund Protection
+                </div>
+                <p className="text-xs text-muted leading-relaxed pl-7">
+                  Honest, transparent pricing. In case of an unfulfilled session, credits are immediately returned.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Metadata */}
+          <div className="relative z-10 flex items-center justify-between text-muted text-xs pt-4 border-t border-border/70">
+            <span>© {currentYear} Clarior</span>
+            <span className="flex items-center gap-1.5 text-xs text-muted">
+              <svg className="w-3.5 h-3.5 text-success" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.5a9 9 0 11-6.364 15.364A9 9 0 0112 4.5z" /></svg>
+              Encrypted 1:1 In-App Rooms
+            </span>
           </div>
         </div>
   

@@ -115,15 +115,16 @@ function MentorCard({ mentor }) {
               <span>{sessions >= 30 ? "Star Mentor" : sessions >= 15 ? "Rising Star" : "Active Mentor"}</span>
             </span>
           )}
-          {mentor.activeSlotsCount === 0 ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-danger/10 border border-danger/20 text-danger text-xs font-semibold">
-              No Slots
+          {typeof mentor.activeSlotsCount === "number" && mentor.activeSlotsCount > 0 ? (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-xs">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Available · {mentor.activeSlotsCount} slot{mentor.activeSlotsCount !== 1 ? 's' : ''}</span>
             </span>
-          ) : typeof mentor.activeSlotsCount === "number" ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold">
-              {mentor.activeSlotsCount} slot{mentor.activeSlotsCount !== 1 ? 's' : ''}
+          ) : (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface2 border border-border text-muted text-xs font-medium">
+              Slots on Request
             </span>
-          ) : null}
+          )}
           {mentor.domain && mentor.domain !== "Other" && (
             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface2 border border-border text-fg">
               {mentor.domain}

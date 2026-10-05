@@ -130,32 +130,95 @@ function Register() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Branding panel */}
-      <div className="hidden lg:flex lg:w-[46%] flex-col justify-between relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-slate-900 p-12 text-white">
-        {/* Background grid */}
+      {/* ── Left Panel — Production Branding & Platform Architecture ─── */}
+      <div className="hidden lg:flex lg:w-[48%] xl:w-[46%] flex-col justify-between relative overflow-hidden bg-surface border-r border-border/80 p-10 xl:p-14 select-none">
+        {/* Subtle Ambient Glow Mesh */}
+        <div className="absolute -top-32 -left-32 w-80 h-80 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 -right-24 w-80 h-80 rounded-full bg-accent/5 blur-3xl pointer-events-none" />
         <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
         
-        <Link to="/" className="relative flex items-center gap-3 transition hover:opacity-90">
-          <Logo size="footer" />
-          <span className="text-white font-extrabold text-2xl">Clarior</span>
-        </Link>
-        <div className="relative space-y-6">
-          <h2 className="text-4xl font-extrabold text-white leading-tight tracking-tight">
-            Join thousands of students getting real clarity.
-          </h2>
-          <p className="text-blue-100 text-base leading-7">
-            One account. Access to verified seniors from top colleges — all for less than a coffee.
-          </p>
-          <div className="grid grid-cols-2 gap-4 mt-8">
-            {[["500+","Active seniors"],["₹69","Starting price"],["20min","Per session"],["4.9","Avg. rating"]].map(([v, l]) => (
-              <div key={l} className="rounded-2xl bg-white/10 border border-white/20 backdrop-blur-sm p-4 text-center">
-                <div className="text-2xl font-extrabold text-white">{v}</div>
-                <div className="text-blue-200 text-xs mt-1">{l}</div>
-              </div>
-            ))}
+        {/* Top Brand Header */}
+        <div className="relative z-10 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3 transition-opacity hover:opacity-85 group">
+            <div className="p-2 rounded-2xl bg-surface2 border border-border/80 group-hover:border-primary/40 transition-colors shadow-xs">
+              <Logo size="navbar" />
+            </div>
+            <span className="font-extrabold text-2xl tracking-tight text-fg" style={{ fontFamily: "'Outfit', sans-serif" }}>
+              Clarior
+            </span>
+          </Link>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface2 border border-border text-[11px] font-black uppercase tracking-wider text-muted">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            Student Access
           </div>
         </div>
-        <div className="relative text-blue-200 text-xs">© {currentYear} Clarior. Built for students, by students.</div>
+
+        {/* Center Copy & Real Platform Architecture */}
+        <div className="relative z-10 my-auto py-8 space-y-6 max-w-lg">
+          <div className="space-y-3">
+            <div className="inline-block text-[11px] font-black uppercase tracking-[0.22em] text-primary">
+              Student Registration
+            </div>
+            <h2 className="text-3xl xl:text-4xl font-black text-fg leading-[1.18] tracking-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
+              The peer mentorship network built for <span className="gradient-text">honest guidance.</span>
+            </h2>
+            <p className="text-muted text-sm leading-relaxed font-medium">
+              Create your account to book 1:1 sessions with verified seniors currently enrolled in top universities nationwide.
+            </p>
+          </div>
+
+          {/* Authentic Feature Architecture (Zero Dummy Data) */}
+          <div className="grid grid-cols-2 gap-3 pt-2">
+            <div className="rounded-2xl bg-surface2/60 border border-border/80 p-4 space-y-1.5 hover:border-primary/30 transition-all shadow-xs">
+              <div className="flex items-center gap-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
+                </span>
+                <span className="text-xs font-black text-fg">Verified Seniors</span>
+              </div>
+              <p className="text-[11px] text-muted leading-relaxed font-medium">Real university students verified via college credentials.</p>
+            </div>
+
+            <div className="rounded-2xl bg-surface2/60 border border-border/80 p-4 space-y-1.5 hover:border-primary/30 transition-all shadow-xs">
+              <div className="flex items-center gap-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </span>
+                <span className="text-xs font-black text-fg">20-Min Focus</span>
+              </div>
+              <p className="text-[11px] text-muted leading-relaxed font-medium">Timer-tracked private calls designed for fast clarity.</p>
+            </div>
+
+            <div className="rounded-2xl bg-surface2/60 border border-border/80 p-4 space-y-1.5 hover:border-primary/30 transition-all shadow-xs">
+              <div className="flex items-center gap-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-success/10 text-success">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </span>
+                <span className="text-xs font-black text-fg">₹69 Flat Pass</span>
+              </div>
+              <p className="text-[11px] text-muted leading-relaxed font-medium">Low barrier to entry. Zero subscriptions or lock-ins.</p>
+            </div>
+
+            <div className="rounded-2xl bg-surface2/60 border border-border/80 p-4 space-y-1.5 hover:border-primary/30 transition-all shadow-xs">
+              <div className="flex items-center gap-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                </span>
+                <span className="text-xs font-black text-fg">Escrow Safety</span>
+              </div>
+              <p className="text-[11px] text-muted leading-relaxed font-medium">Session credits refunded if a call is missed or cancelled.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Metadata */}
+        <div className="relative z-10 flex items-center justify-between text-muted text-xs pt-4 border-t border-border/70">
+          <span>© {currentYear} Clarior</span>
+          <span className="flex items-center gap-1.5 text-xs text-muted">
+            <svg className="w-3.5 h-3.5 text-success" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.5a9 9 0 11-6.364 15.364A9 9 0 0112 4.5z" /></svg>
+            Student First • Zero Spam
+          </span>
+        </div>
       </div>
 
       {/* Form panel */}

@@ -131,8 +131,9 @@ export default function MobileBottomNav() {
 
   return (
     <nav
+      style={{ bottom: "calc(1rem + env(safe-area-inset-bottom, 0px))" }}
       className={cx(
-        "fixed bottom-4 inset-x-3 z-[90] max-w-lg mx-auto md:hidden gpu-layer select-none",
+        "fixed inset-x-3 z-[90] max-w-lg mx-auto md:hidden gpu-layer select-none",
         "transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
         isVisible ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0 pointer-events-none"
       )}

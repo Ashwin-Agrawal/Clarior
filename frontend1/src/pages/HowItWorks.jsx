@@ -29,17 +29,17 @@ function Step({ number, title, desc, last = false }) {
   return (
     <div className="flex gap-4">
       <div className="flex flex-col items-center">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-accent text-sm font-extrabold text-primaryFg shadow-soft">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-sm font-black text-white shadow-xs">
           {number}
         </div>
-        {!last && <div className="mt-2 w-0.5 flex-1 min-h-8 bg-linear-to-b from-primary/40 to-transparent" />}
+        {!last && <div className="mt-2 w-0.5 flex-1 min-h-8 bg-gradient-to-b from-primary/30 to-border/40" />}
       </div>
       <div className="flex-1 pb-8">
-        <div className="rounded-2xl border border-border/70 bg-surface/95 p-5 shadow-soft transition-smooth hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-lift">
-          <div className="mb-2 flex items-center gap-2.5">
-            <h3 className="text-base font-bold text-fg">{title}</h3>
+        <div className="rounded-2xl border border-border/80 bg-surface/90 p-5 shadow-xs transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-card">
+          <div className="mb-1.5 flex items-center gap-2.5">
+            <h3 className="text-base font-black text-fg">{title}</h3>
           </div>
-          <p className="text-sm leading-6 text-muted">{desc}</p>
+          <p className="text-sm leading-relaxed text-muted font-medium">{desc}</p>
         </div>
       </div>
     </div>
@@ -218,22 +218,57 @@ function HowItWorks() {
     <>
       <Navbar />
 
-      {/* Hero */}
-      <div className="relative overflow-hidden bg-linear-to-br from-primary via-primary/95 to-accent py-16 sm:py-20">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(255,255,255,0.16),transparent_60%)]" />
-        <div className="absolute inset-0 bg-grid-pattern opacity-20" />
-        <div className="relative mx-auto max-w-5xl px-6 text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-primaryFg/90 backdrop-blur-sm">
-            How it works
+      {/* ── Top Hero Header — Clean Theme-Adaptive Design ──────── */}
+      <section className="relative overflow-hidden bg-bg pt-20 pb-16 sm:pt-28 sm:pb-20 border-b border-border/70">
+        {/* Layered Ambience Background */}
+        <div className="absolute inset-0 pointer-events-none opacity-40" style={{ background: "var(--hero-gradient)" }} />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-primary/8 blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 right-1/4 h-80 w-80 rounded-full bg-accent/6 blur-3xl pointer-events-none" />
+        <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
+
+        <div className="relative mx-auto max-w-5xl px-6 text-center animate-fade-up">
+          {/* Status Badge */}
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-primary backdrop-blur-md shadow-xs">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            Simple 3-Step Process
           </div>
-          <h1 className="text-balance text-4xl font-extrabold tracking-tight text-primaryFg sm:text-5xl" style={{ fontFamily: "'Outfit', sans-serif" }}>
-            Simple, transparent, and session-first.
+
+          {/* Heading */}
+          <h1 className="heading-display text-4xl sm:text-6xl font-black text-fg tracking-tight leading-[1.15]" style={{ fontFamily: "'Outfit', sans-serif" }}>
+            Simple, transparent, and <span className="gradient-text">session-first.</span>
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg leading-7 text-primaryFg/90">
-            A clear guided flow for both students and seniors — built on trust, quality, and accountability.
+
+          {/* Subtitle */}
+          <p className="mx-auto mt-5 max-w-2xl text-base sm:text-lg leading-relaxed text-muted font-semibold">
+            A clear guided mentorship flow for both students and seniors — built on trust, quality, and real accountability.
           </p>
+
+          {/* Fast 3-Step Process Highlights */}
+          <div className="mt-12 max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-left">
+            <div className="rounded-2xl border border-border/80 bg-surface/90 backdrop-blur p-4 hover:border-primary/40 hover:-translate-y-0.5 transition-all shadow-xs group">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-primary/10 text-primary font-black text-xs group-hover:bg-primary group-hover:text-white transition-colors">01</span>
+                <span className="text-xs font-black text-fg">Filter & Pick Senior</span>
+              </div>
+              <p className="mt-2 text-xs text-muted leading-relaxed font-medium">Browse verified seniors from IITs, BITS, and top universities filtered by college and branch.</p>
+            </div>
+            <div className="rounded-2xl border border-border/80 bg-surface/90 backdrop-blur p-4 hover:border-accent/40 hover:-translate-y-0.5 transition-all shadow-xs group">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-accent/10 text-accent font-black text-xs group-hover:bg-accent group-hover:text-white transition-colors">02</span>
+                <span className="text-xs font-black text-fg">Book 20-Min Slot</span>
+              </div>
+              <p className="mt-2 text-xs text-muted leading-relaxed font-medium">Lock your slot for ₹69 with instant calendar sync and dedicated in-app private video call.</p>
+            </div>
+            <div className="rounded-2xl border border-border/80 bg-surface/90 backdrop-blur p-4 hover:border-success/40 hover:-translate-y-0.5 transition-all shadow-xs group">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-success/10 text-success font-black text-xs group-hover:bg-success group-hover:text-white transition-colors">03</span>
+                <span className="text-xs font-black text-fg">Get Raw Truth</span>
+              </div>
+              <p className="mt-2 text-xs text-muted leading-relaxed font-medium">Ask unfiltered questions on real placement stats, branch vs college tradeoffs, and campus culture.</p>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
       <div className="mx-auto max-w-5xl px-6 py-14 sm:py-16">
         {/* Two column: students | seniors */}

@@ -77,7 +77,13 @@ function SessionTimer({ actualStart }) {
             <span>{remaining === 0 ? "Call Completed" : `${Math.ceil(remaining / 60)} mins left`}</span>
             <span>End</span>
           </div>
-        </div>
+        {/* 2-Minute Session Wrap-Up Alert */}
+        {remaining <= 120 && remaining > 0 && (
+          <div className="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center gap-2.5 text-xs font-bold text-amber-600 dark:text-amber-400 animate-pulse">
+            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+            <span>2 minutes remaining — wrap up your final questions and insights!</span>
+          </div>
+        )}
       </div>
 
       <div className="mt-4 pt-4 border-t border-border/50 text-xs font-semibold text-muted text-center leading-relaxed">
