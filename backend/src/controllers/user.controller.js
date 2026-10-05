@@ -1,10 +1,19 @@
 const User = require("../models/User");
 const { sendSuccess, sendError } = require("../utils/response.util");
+const memoryCache = require("../utils/cache.util");
 
-// 🎯 Get all seniors — Fix 5: only return safe public fields
+// 🎯 Get all seniors — Fix 5: only return safe public fields with caching & lean queries
 exports.getAllSeniors = async (req, res, next) => {
   try {
     const { q, college, domain, course, branch } = req.query;
+    const isDefaultQuery = !q && !college && !domain && !course && !branch;
+    const cacheKey = `seniors:${q || ""}:${college || ""}:${domain || course || ""}:${branch || ""}`;
+
+    const cachedData = memoryCache.get(cacheKey);
+    if (cachedData) {
+      res.set("Cache-Control", "public, max-age=180, stale-while-revalidate=60");
+      return res.status(200).json(cachedData);
+    }
 
     const and = [{ role: "senior", isVerified: true }];
 
@@ -39,9 +48,10 @@ exports.getAllSeniors = async (req, res, next) => {
     const filter = and.length === 1 ? and[0] : { $and: and };
 
     // Fix 5: Only expose safe public fields — no phone, upiId, balances, credits, payments
-    const seniors = await User.find(filter).select(
-      "name college affiliatedCollege branch domain bio rating numReviews isVerified year linkedin sessionsCompleted"
-    );
+    // Use .lean() for fast plain JSON objects
+    const seniors = await User.find(filter)
+      .select("name college affiliatedCollege branch domain bio rating numReviews isVerified year linkedin sessionsCompleted")
+      .lean();
 
     const Slot = require("../models/Slots");
     const now = new Date();
@@ -70,15 +80,20 @@ exports.getAllSeniors = async (req, res, next) => {
     }, {});
 
     const seniorsWithSlots = seniors.map(s => ({
-      ...s.toObject(),
+      ...s,
       activeSlotsCount: countMap[s._id.toString()] || 0
     }));
 
-    res.status(200).json({
+    const responsePayload = {
       success: true,
       count: seniorsWithSlots.length,
       seniors: seniorsWithSlots,
-    });
+    };
+
+    memoryCache.set(cacheKey, responsePayload, isDefaultQuery ? 180 : 90);
+
+    res.set("Cache-Control", "public, max-age=180, stale-while-revalidate=60");
+    res.status(200).json(responsePayload);
   } catch (error) {
     next(error);
   }
@@ -288,17 +303,26 @@ exports.getMe = async (req, res) => {
   }
 };
 
-// Fix 10: GET /users/seniors/:id — public endpoint to fetch a single verified senior
+// Fix 10: GET /users/seniors/:id — public endpoint to fetch a single verified senior with caching
 exports.getSeniorById = async (req, res) => {
   try {
     const { id } = req.params;
+    const cacheKey = `senior:${id}`;
+
+    const cachedData = memoryCache.get(cacheKey);
+    if (cachedData) {
+      res.set("Cache-Control", "public, max-age=180, stale-while-revalidate=60");
+      return res.json(cachedData);
+    }
+
     const mongoose = require("mongoose");
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid senior ID" });
     }
-    const senior = await User.findOne({ _id: id, role: "senior", isVerified: true }).select(
-      "name college affiliatedCollege branch domain bio rating numReviews isVerified year linkedin sessionsCompleted"
-    );
+    const senior = await User.findOne({ _id: id, role: "senior", isVerified: true })
+      .select("name college affiliatedCollege branch domain bio rating numReviews isVerified year linkedin sessionsCompleted")
+      .lean();
+
     if (!senior) return res.status(404).json({ message: "Senior not found" });
 
     const Slot = require("../models/Slots");
@@ -311,11 +335,15 @@ exports.getSeniorById = async (req, res) => {
     });
 
     const seniorObj = {
-      ...senior.toObject(),
+      ...senior,
       activeSlotsCount: count
     };
 
-    return res.json({ senior: seniorObj });
+    const responsePayload = { senior: seniorObj };
+    memoryCache.set(cacheKey, responsePayload, 180);
+
+    res.set("Cache-Control", "public, max-age=180, stale-while-revalidate=60");
+    return res.json(responsePayload);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

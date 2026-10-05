@@ -2,11 +2,22 @@ const College = require("../models/College");
 const User = require("../models/User");
 const Slot = require("../models/Slots");
 const Booking = require("../models/Booking");
+const memoryCache = require("../utils/cache.util");
 
 // 🎯 Get all colleges — supports searching by name/city and filtering by state/type
 exports.getAllColleges = async (req, res) => {
   try {
     const { q, state, type } = req.query;
+    const isDefaultQuery = !q && !state && !type;
+    const cacheKey = `colleges:${q || ""}:${state || ""}:${type || ""}`;
+
+    // Return cached payload if available
+    const cachedData = memoryCache.get(cacheKey);
+    if (cachedData) {
+      res.set("Cache-Control", "public, max-age=300, stale-while-revalidate=60");
+      return res.status(200).json(cachedData);
+    }
+
     const query = {};
 
     if (q && String(q).trim()) {
@@ -61,11 +72,17 @@ exports.getAllColleges = async (req, res) => {
       };
     });
 
-    res.status(200).json({
+    const responsePayload = {
       success: true,
       count: collegesWithSeniors.length,
       colleges: collegesWithSeniors
-    });
+    };
+
+    // Cache for 5 mins (default catalog) or 2 mins (filtered searches)
+    memoryCache.set(cacheKey, responsePayload, isDefaultQuery ? 300 : 120);
+
+    res.set("Cache-Control", "public, max-age=300, stale-while-revalidate=60");
+    res.status(200).json(responsePayload);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -78,11 +95,19 @@ exports.getAllColleges = async (req, res) => {
 exports.getCollegeById = async (req, res) => {
   try {
     const { id } = req.params;
+    const cacheKey = `college:${id}`;
+
+    const cachedData = memoryCache.get(cacheKey);
+    if (cachedData) {
+      res.set("Cache-Control", "public, max-age=180, stale-while-revalidate=60");
+      return res.status(200).json(cachedData);
+    }
+
     const mongoose = require("mongoose");
     let college = null;
 
     if (mongoose.Types.ObjectId.isValid(id)) {
-      college = await College.findById(id);
+      college = await College.findById(id).lean();
     }
 
     if (!college) {
@@ -92,7 +117,7 @@ exports.getCollegeById = async (req, res) => {
           { slug: id },
           { name: { $regex: `^${decoded.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, $options: "i" } }
         ]
-      });
+      }).lean();
     }
 
     if (!college) {
@@ -147,11 +172,16 @@ exports.getCollegeById = async (req, res) => {
       };
     });
 
-    res.status(200).json({
+    const responsePayload = {
       success: true,
       college,
       seniors: seniorsWithSlots
-    });
+    };
+
+    memoryCache.set(cacheKey, responsePayload, 180);
+
+    res.set("Cache-Control", "public, max-age=180, stale-while-revalidate=60");
+    res.status(200).json(responsePayload);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -163,16 +193,28 @@ exports.getCollegeById = async (req, res) => {
 // 🎯 Get global stats of colleges, seniors and bookings
 exports.getGlobalStats = async (req, res) => {
   try {
+    const cacheKey = "globalStats";
+    const cachedData = memoryCache.get(cacheKey);
+    if (cachedData) {
+      res.set("Cache-Control", "public, max-age=300, stale-while-revalidate=60");
+      return res.status(200).json(cachedData);
+    }
+
     const collegesCount = await College.countDocuments();
     const seniorsCount = await User.countDocuments({ role: "senior", isVerified: true });
     const sessionsCount = await Booking.countDocuments({ status: { $ne: "cancelled" } });
 
-    res.status(200).json({
+    const responsePayload = {
       success: true,
       collegesCount,
       seniorsCount,
       sessionsCount
-    });
+    };
+
+    memoryCache.set(cacheKey, responsePayload, 300);
+
+    res.set("Cache-Control", "public, max-age=300, stale-while-revalidate=60");
+    res.status(200).json(responsePayload);
   } catch (error) {
     res.status(500).json({
       success: false,

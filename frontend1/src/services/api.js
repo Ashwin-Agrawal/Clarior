@@ -82,4 +82,76 @@ api.interceptors.response.use(
   }
 );
 
+// ⚡ CLIENT-SIDE IN-MEMORY CACHE FOR STATIC/PUBLIC CATALOG ENDPOINTS
+const requestCache = new Map();
+const CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
+
+const isCacheableUrl = (url) => {
+  if (!url || typeof url !== "string") return false;
+  return (
+    url.startsWith("/colleges") ||
+    url.startsWith("/users/seniors")
+  );
+};
+
+const originalGet = api.get.bind(api);
+
+api.get = async function (url, config = {}) {
+  // If skipCache is requested or URL is not cacheable, bypass
+  if (config.skipCache || !isCacheableUrl(url)) {
+    return originalGet(url, config);
+  }
+
+  const cacheKey = `${url}:${JSON.stringify(config.params || {})}`;
+  const cached = requestCache.get(cacheKey);
+
+  if (cached && Date.now() < cached.expiresAt) {
+    if (isDev) console.log(`[API Cache] Returning cached: ${url}`);
+    return Promise.resolve(cached.response);
+  }
+
+  const response = await originalGet(url, config);
+
+  // Only cache successful 200 responses
+  if (response && response.status === 200) {
+    requestCache.set(cacheKey, {
+      response,
+      expiresAt: Date.now() + CACHE_TTL_MS,
+    });
+  }
+
+  return response;
+};
+
+// Invalidate relevant cache on mutations
+const invalidateCacheFor = (prefix) => {
+  for (const key of requestCache.keys()) {
+    if (key.includes(prefix)) {
+      requestCache.delete(key);
+    }
+  }
+};
+
+const originalPost = api.post.bind(api);
+api.post = async function (url, ...args) {
+  if (url.includes("/colleges")) invalidateCacheFor("/colleges");
+  if (url.includes("/users")) invalidateCacheFor("/users/seniors");
+  return originalPost(url, ...args);
+};
+
+const originalPatch = api.patch.bind(api);
+api.patch = async function (url, ...args) {
+  if (url.includes("/colleges")) invalidateCacheFor("/colleges");
+  if (url.includes("/users")) invalidateCacheFor("/users/seniors");
+  return originalPatch(url, ...args);
+};
+
+const originalDelete = api.delete.bind(api);
+api.delete = async function (url, ...args) {
+  if (url.includes("/colleges")) invalidateCacheFor("/colleges");
+  if (url.includes("/users")) invalidateCacheFor("/users/seniors");
+  return originalDelete(url, ...args);
+};
+
 export default api;
+

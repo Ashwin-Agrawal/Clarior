@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const memoryCache = require("../utils/cache.util");
 
 
 // 📊 GET ALL USERS
@@ -94,6 +95,10 @@ exports.verifySenior = async (req, res) => {
     const userObj = user.toObject();
     delete userObj.password;
 
+    memoryCache.delPrefix("senior");
+    memoryCache.delPrefix("college");
+    memoryCache.del("globalStats");
+
     res.json({
       success: true,
       message: "Senior verified successfully",
@@ -130,6 +135,10 @@ exports.deleteUser = async (req, res) => {
         message: "User not found",
       });
     }
+
+    memoryCache.delPrefix("senior");
+    memoryCache.delPrefix("college");
+    memoryCache.del("globalStats");
 
     res.json({
       success: true,

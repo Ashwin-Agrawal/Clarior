@@ -33,6 +33,7 @@ function Explore() {
   const [stateFilter, setStateFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [displayLimit, setDisplayLimit] = useState(18);
 
   useEffect(() => {
     const fetchColleges = async () => {
@@ -85,12 +86,22 @@ function Explore() {
     });
   }, [colleges, search, stateFilter, typeFilter]);
 
+  // Reset displayLimit on search/filter change
+  useEffect(() => {
+    setDisplayLimit(18);
+  }, [search, stateFilter, typeFilter]);
+
+  const visibleColleges = useMemo(() => {
+    return filtered.slice(0, displayLimit);
+  }, [filtered, displayLimit]);
+
   const hasFilters = search.trim() || stateFilter !== "All" || typeFilter !== "All";
 
   const clearFilters = () => {
     setSearch("");
     setStateFilter("All");
     setTypeFilter("All");
+    setDisplayLimit(18);
   };
 
   return (
@@ -230,11 +241,24 @@ function Explore() {
               ))}
             </div>
           ) : filtered.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in">
-              {filtered.map((college, idx) => (
-                <CollegeCard key={college._id} college={college} index={idx} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in">
+                {visibleColleges.map((college, idx) => (
+                  <CollegeCard key={college._id} college={college} index={idx} />
+                ))}
+              </div>
+              {filtered.length > displayLimit && (
+                <div className="mt-14 text-center animate-fade-in">
+                  <Button
+                    variant="secondary"
+                    className="rounded-full px-10 py-3.5 text-sm font-black tracking-wide border-border/80 hover:border-primary/40 shadow-xs cursor-pointer"
+                    onClick={() => setDisplayLimit((prev) => prev + 18)}
+                  >
+                    Load More Colleges ({filtered.length - displayLimit} more)
+                  </Button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="py-32 text-center animate-fade-in">
               <div className="relative mx-auto mb-8 flex h-24 w-24 items-center justify-center">
