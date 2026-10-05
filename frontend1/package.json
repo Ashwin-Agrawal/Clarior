@@ -31,7 +31,7 @@
     "vite-plugin-compression2": "^2.5.3"
   },
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "description": "Production frontend for Clarior - A mentorship platform for students.",
   "main": "eslint.config.js",
