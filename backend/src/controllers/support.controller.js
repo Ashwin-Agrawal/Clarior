@@ -1,7 +1,7 @@
 const SupportTicket = require("../models/SupportTicket");
 const emailService = require("../services/email.service");
 
-// 🎯 Submit a Support Ticket (Public)
+//  Submit a Support Ticket (Public)
 exports.createTicket = async (req, res) => {
   try {
     const { name, email, category, message } = req.body;
@@ -38,7 +38,7 @@ exports.createTicket = async (req, res) => {
   }
 };
 
-// 🎯 Get All Tickets (Admin Only)
+//  Get All Tickets (Admin Only)
 exports.getAllTickets = async (req, res) => {
   try {
     const tickets = await SupportTicket.find().sort({ createdAt: -1 });
@@ -56,7 +56,7 @@ exports.getAllTickets = async (req, res) => {
   }
 };
 
-// 🎯 Toggle Ticket Resolution Status (Admin Only)
+//  Toggle Ticket Resolution Status (Admin Only)
 exports.resolveTicket = async (req, res) => {
   try {
     const { ticketId } = req.params;
@@ -86,6 +86,31 @@ exports.resolveTicket = async (req, res) => {
       success: true,
       message: `Ticket marked as ${status}`,
       ticket,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+//  Get My Support Tickets (Authenticated User)
+exports.getMyTickets = async (req, res) => {
+  try {
+    const userEmail = req.user?.email;
+    if (!userEmail) {
+      return res.json({ success: true, count: 0, tickets: [] });
+    }
+
+    const tickets = await SupportTicket.find({
+      email: { $regex: new RegExp(`^${userEmail.trim()}$`, "i") }
+    }).sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: tickets.length,
+      tickets,
     });
   } catch (error) {
     res.status(500).json({

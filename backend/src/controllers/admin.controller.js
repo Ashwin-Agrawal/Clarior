@@ -2,7 +2,7 @@ const User = require("../models/User");
 const memoryCache = require("../utils/cache.util");
 
 
-// 📊 GET ALL USERS
+//  GET ALL USERS
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select("-password");
@@ -22,7 +22,7 @@ exports.getAllUsers = async (req, res) => {
 
 
 
-// 🔎 GET ONLY UNVERIFIED SENIORS
+//  GET ONLY UNVERIFIED SENIORS
 exports.getPendingSeniors = async (req, res) => {
   try {
     const seniors = await User.find({
@@ -44,7 +44,7 @@ exports.getPendingSeniors = async (req, res) => {
 
 
 
-// ✅ VERIFY SENIOR
+//  VERIFY SENIOR
 exports.verifySenior = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -114,7 +114,7 @@ exports.verifySenior = async (req, res) => {
 
 
 
-// ❌ REJECT / DELETE USER — with cascade cleanup
+//  REJECT / DELETE USER — with cascade cleanup
 exports.deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -152,13 +152,13 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-// 🧪 ADMIN: GRANT CALL CREDITS (testing/manual adjustments)
+//  ADMIN: GRANT CALL CREDITS (testing/manual adjustments)
 exports.grantCredits = async (req, res) => {
   try {
     const { userId } = req.params;
     const { credits } = req.body;
 
-    // 🔒 Validate inputs
+    //  Validate inputs
     if (!credits) {
       return res.status(400).json({ message: "Credits amount required" });
     }
@@ -168,7 +168,7 @@ exports.grantCredits = async (req, res) => {
       return res.status(400).json({ message: "Credits must be between 1 and 1000" });
     }
 
-    // 🔒 Ensure it's an integer
+    //  Ensure it's an integer
     if (!Number.isInteger(creditsNum)) {
       return res.status(400).json({ message: "Credits must be a whole number" });
     }
@@ -192,10 +192,10 @@ exports.grantCredits = async (req, res) => {
   }
 };
 
-// 🧪 ADMIN: FAST-FORWARD BOOKING (testing only - disabled in production)
+//  ADMIN: FAST-FORWARD BOOKING (testing only - disabled in production)
 exports.fastForwardBooking = async (req, res) => {
   try {
-    // 🔒 Only available in development
+    //  Only available in development
     if (process.env.NODE_ENV === "production") {
       return res.status(403).json({
         success: false,
@@ -231,7 +231,7 @@ exports.fastForwardBooking = async (req, res) => {
   }
 };
 
-// 💰 ADMIN: GET PENDING EARNINGS RELEASES
+//  ADMIN: GET PENDING EARNINGS RELEASES
 exports.getPendingReleases = async (req, res) => {
   try {
     const Booking = require("../models/Booking");
@@ -270,7 +270,7 @@ exports.getPendingReleases = async (req, res) => {
   }
 };
 
-// 💰 ADMIN: RELEASE EARNINGS FOR A BOOKING
+//  ADMIN: RELEASE EARNINGS FOR A BOOKING
 exports.releaseEarnings = async (req, res) => {
   try {
     const Booking = require("../models/Booking");
@@ -328,7 +328,7 @@ exports.releaseEarnings = async (req, res) => {
   }
 };
 
-// ❌ ADMIN: REJECT EARNINGS (REFUND STUDENT CREDIT & REVERSE SENIOR EARNINGS)
+//  ADMIN: REJECT EARNINGS (REFUND STUDENT CREDIT & REVERSE SENIOR EARNINGS)
 exports.rejectEarnings = async (req, res) => {
   const mongoose = require("mongoose");
   const session = await mongoose.startSession();
@@ -411,3 +411,129 @@ exports.rejectEarnings = async (req, res) => {
     session.endSession();
   }
 };
+
+//  GET ONLY PENDING ALUMNI APPLICATIONS
+exports.getPendingAlumni = async (req, res) => {
+  try {
+    const Alumni = require("../models/Alumni");
+    const pendingList = await Alumni.find({ status: "pending" })
+      .populate("user", "name email phone avatar createdAt")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.json({
+      success: true,
+      count: pendingList.length,
+      alumni: pendingList,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+//  APPROVE ALUMNI APPLICATION
+exports.verifyAlumni = async (req, res) => {
+  try {
+    const { alumniId } = req.params;
+    const Alumni = require("../models/Alumni");
+
+    const alumni = await Alumni.findById(alumniId);
+    if (!alumni) {
+      return res.status(404).json({ success: false, message: "Alumni application not found" });
+    }
+
+    const user = await User.findById(alumni.user);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Associated user not found" });
+    }
+
+    alumni.status = "approved";
+    alumni.reviewedBy = req.user.id;
+    alumni.reviewedAt = new Date();
+    await alumni.save();
+
+    user.role = "alumni";
+    user.isVerified = true;
+    user.applicationStatus = "approved";
+    user.alumniProfile = alumni._id;
+    await user.save();
+
+    // Trigger notification
+    (async () => {
+      try {
+        const Notification = require("../models/Notification");
+        await Notification.create({
+          recipient: user._id,
+          title: "Alumni Application Approved",
+          message: "Congratulations! Your Alumni Mentor profile has been approved. You can now set your available slots and start receiving bookings.",
+          type: "system",
+        });
+      } catch (err) {
+        console.error("Error sending alumni approval notification:", err.message);
+      }
+    })();
+
+    res.json({
+      success: true,
+      message: "Alumni mentor approved successfully",
+      alumni,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+//  REJECT ALUMNI APPLICATION
+exports.rejectAlumni = async (req, res) => {
+  try {
+    const { alumniId } = req.params;
+    const { reason } = req.body;
+    const Alumni = require("../models/Alumni");
+
+    const alumni = await Alumni.findById(alumniId);
+    if (!alumni) {
+      return res.status(404).json({ success: false, message: "Alumni application not found" });
+    }
+
+    const user = await User.findById(alumni.user);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Associated user not found" });
+    }
+
+    alumni.status = "rejected";
+    alumni.rejectionReason = reason || "Application could not be verified with company credentials.";
+    alumni.reviewedBy = req.user.id;
+    alumni.reviewedAt = new Date();
+    await alumni.save();
+
+    user.applicationStatus = "rejected";
+    await user.save();
+
+    // Trigger notification
+    (async () => {
+      try {
+        const Notification = require("../models/Notification");
+        await Notification.create({
+          recipient: user._id,
+          title: "Alumni Application Update",
+          message: `Your alumni application was not approved. Reason: ${alumni.rejectionReason}`,
+          type: "system",
+        });
+      } catch (err) {
+        console.error("Error sending alumni reject notification:", err.message);
+      }
+    })();
+
+    res.json({
+      success: true,
+      message: "Alumni application marked as rejected",
+      alumni,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+

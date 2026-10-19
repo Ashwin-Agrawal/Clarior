@@ -14,9 +14,12 @@ const {
   getPendingReleases,
   releaseEarnings,
   rejectEarnings,
+  getPendingAlumni,
+  verifyAlumni,
+  rejectAlumni,
 } = require("../controllers/admin.controller");
 
-// 🔐 only admin
+//  only admin
 router.use(authMiddleware, authorizeRoles("admin"));
 
 router.get("/users", getAllUsers);
@@ -29,5 +32,10 @@ router.post("/test/fast-forward-booking/:bookingId", fastForwardBooking);
 router.get("/pending-releases", getPendingReleases);
 router.patch("/release-earnings/:bookingId", releaseEarnings);
 router.patch("/reject-earnings/:bookingId", rejectEarnings);
+
+//  Alumni Verification
+router.get("/pending-alumni", getPendingAlumni);
+router.patch("/verify-alumni/:alumniId", verifyAlumni);
+router.patch("/reject-alumni/:alumniId", rejectAlumni);
 
 module.exports = router;

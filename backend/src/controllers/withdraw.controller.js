@@ -2,12 +2,12 @@ const Withdraw = require("../models/Withdraw");
 const User = require("../models/User");
 const mongoose = require("mongoose");
 
-// 🎓 REQUEST
+//  REQUEST
 exports.requestWithdraw = async (req, res) => {
   try {
     const { amount, upiId } = req.body;
     
-    // 🔒 Validate input
+    //  Validate input
     if (!amount) {
       return res.status(400).json({ message: "Amount is required" });
     }
@@ -18,7 +18,7 @@ exports.requestWithdraw = async (req, res) => {
       return res.status(400).json({ message: "Amount must be between 1 and 100000" });
     }
 
-    // 🔒 Prevent decimal amounts for payments
+    //  Prevent decimal amounts for payments
     if (!Number.isInteger(amountNum)) {
       return res.status(400).json({ message: "Amount must be a whole number" });
     }
@@ -87,7 +87,7 @@ exports.requestWithdraw = async (req, res) => {
   }
 };
 
-// 👑 APPROVE
+//  APPROVE
 exports.approveWithdraw = async (req, res) => {
   try {
     const withdraw = await Withdraw.findById(req.params.id);
@@ -128,7 +128,7 @@ exports.approveWithdraw = async (req, res) => {
   }
 };
 
-// 👑 REJECT
+//  REJECT
 exports.rejectWithdraw = async (req, res) => {
   try {
     const withdraw = await Withdraw.findById(req.params.id);
@@ -172,7 +172,23 @@ exports.rejectWithdraw = async (req, res) => {
   }
 };
 
-// 👑 GET PENDING WITHDRAWS (ADMIN)
+//  GET USER'S WITHDRAW HISTORY
+exports.getMyWithdraws = async (req, res) => {
+  try {
+    const withdraws = await Withdraw.find({ senior: req.user.id })
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: withdraws.length,
+      withdraws,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+//  GET PENDING WITHDRAWS (ADMIN)
 exports.getPendingWithdraws = async (req, res) => {
   try {
     const withdraws = await Withdraw.find({ status: "pending" })

@@ -4,7 +4,7 @@ const Slot = require("../models/Slots");
 const Booking = require("../models/Booking");
 const memoryCache = require("../utils/cache.util");
 
-// 🎯 Get all colleges — supports searching by name/city and filtering by state/type
+//  Get all colleges — supports searching by name/city and filtering by state/type
 exports.getAllColleges = async (req, res) => {
   try {
     const { q, state, type } = req.query;
@@ -91,7 +91,7 @@ exports.getAllColleges = async (req, res) => {
   }
 };
 
-// 🎯 Get single college by ID — returns college metadata + verified seniors list
+//  Get single college by ID — returns college metadata + verified seniors list
 exports.getCollegeById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -190,7 +190,7 @@ exports.getCollegeById = async (req, res) => {
   }
 };
 
-// 🎯 Get global stats of colleges, seniors and bookings
+//  Get global stats of colleges, seniors and bookings
 exports.getGlobalStats = async (req, res) => {
   try {
     const cacheKey = "globalStats";
@@ -223,7 +223,7 @@ exports.getGlobalStats = async (req, res) => {
   }
 };
 
-// 🎯 Request a new College (Public)
+//  Request a new College (Public)
 exports.requestCollege = async (req, res) => {
   try {
     const { name, city, state, type, established, requesterEmail } = req.body;
@@ -264,7 +264,7 @@ exports.requestCollege = async (req, res) => {
   }
 };
 
-// 🎯 Get all College requests (Admin Only)
+//  Get all College requests (Admin Only)
 exports.getCollegeRequests = async (req, res) => {
   try {
     const CollegeRequest = require("../models/CollegeRequest");
@@ -283,7 +283,7 @@ exports.getCollegeRequests = async (req, res) => {
   }
 };
 
-// 🎯 Approve College Request (Admin Only — Creates College automatically)
+//  Approve College Request (Admin Only — Creates College automatically)
 exports.approveCollegeRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
@@ -321,7 +321,7 @@ exports.approveCollegeRequest = async (req, res) => {
   }
 };
 
-// 🎯 Reject College Request (Admin Only)
+//  Reject College Request (Admin Only)
 exports.rejectCollegeRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
@@ -344,6 +344,32 @@ exports.rejectCollegeRequest = async (req, res) => {
       success: true,
       message: "College request rejected",
       request: requestObj
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+//  Get My College Requests (Authenticated User)
+exports.getMyCollegeRequests = async (req, res) => {
+  try {
+    const CollegeRequest = require("../models/CollegeRequest");
+    const userEmail = req.user?.email;
+    if (!userEmail) {
+      return res.json({ success: true, count: 0, requests: [] });
+    }
+
+    const requests = await CollegeRequest.find({
+      requesterEmail: { $regex: new RegExp(`^${userEmail.trim()}$`, "i") }
+    }).sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: requests.length,
+      requests,
     });
   } catch (error) {
     res.status(500).json({

@@ -2,7 +2,7 @@ const User = require("../models/User");
 const { sendSuccess, sendError } = require("../utils/response.util");
 const memoryCache = require("../utils/cache.util");
 
-// 🎯 Get all seniors — Fix 5: only return safe public fields with caching & lean queries
+//  Get all seniors — Fix 5: only return safe public fields with caching & lean queries
 exports.getAllSeniors = async (req, res, next) => {
   try {
     const { q, college, domain, course, branch } = req.query;
@@ -99,7 +99,7 @@ exports.getAllSeniors = async (req, res, next) => {
   }
 };
 
-// 🧑‍🏫 APPLY FOR SENIOR ROLE
+// ‍ APPLY FOR SENIOR ROLE
 exports.applySenior = async (req, res) => {
   try {
     const { phone, college, domain, branch, year, cgpa, bio, linkedin, upiId, affiliatedCollege } = req.body;
@@ -185,12 +185,12 @@ exports.applySenior = async (req, res) => {
   }
 };
 
-// ✏️ UPDATE PROFILE
+// ️ UPDATE PROFILE
 exports.updateProfile = async (req, res) => {
   try {
     const { college, domain, branch, bio, isAnonymous, year, avatar, cgpa } = req.body;
 
-    // 🔒 Validate input lengths
+    //  Validate input lengths
     if (college && college.length > 100) {
       return res.status(400).json({ message: "College name too long" });
     }
@@ -245,7 +245,7 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
-// 💰 ADD / UPDATE UPI (NEW)
+//  ADD / UPDATE UPI (NEW)
 exports.updateUpi = async (req, res) => {
   try {
     const { upiId } = req.body;
@@ -258,7 +258,7 @@ exports.updateUpi = async (req, res) => {
 
     const trimmedUpi = upiId.trim();
 
-    // 🔒 Validate UPI format: username@bankname or 10-digit number@bankname
+    //  Validate UPI format: username@bankname or 10-digit number@bankname
     const upiRegex = /^[a-zA-Z0-9._-]{3,}@[a-zA-Z]{3,}$/;
     if (!upiRegex.test(trimmedUpi)) {
       return res.status(400).json({
@@ -292,7 +292,7 @@ exports.updateUpi = async (req, res) => {
   }
 };
 
-// 👤 GET CURRENT USER (NEW)
+//  GET CURRENT USER (NEW)
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
@@ -319,11 +319,41 @@ exports.getSeniorById = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid senior ID" });
     }
-    const senior = await User.findOne({ _id: id, role: "senior", isVerified: true })
-      .select("name college affiliatedCollege branch domain bio rating numReviews isVerified year linkedin sessionsCompleted")
+    let senior = await User.findOne({ _id: id, role: { $in: ["senior", "alumni"] }, isVerified: true })
+      .select("name college affiliatedCollege branch domain bio rating numReviews isVerified year linkedin sessionsCompleted role")
       .lean();
 
-    if (!senior) return res.status(404).json({ message: "Senior not found" });
+    if (!senior) {
+      // Check if user is linked to an approved Alumni profile
+      const Alumni = require("../models/Alumni");
+      const alumni = await Alumni.findOne({ user: id, status: "approved" })
+        .populate("user", "name avatar rating numReviews isVerified sessionsCompleted role")
+        .select("-companyEmail -upiId -reviewedBy -rejectionReason -linkedin")
+        .lean();
+
+      if (alumni && alumni.user) {
+        senior = {
+          _id: alumni.user._id,
+          name: alumni.user.name,
+          college: alumni.college,
+          branch: alumni.specialization || alumni.degree || "Industry Mentor",
+          domain: `${alumni.currentJobTitle} @ ${alumni.currentCompany}`,
+          bio: alumni.bio,
+          rating: alumni.user.rating || alumni.rating || 5,
+          numReviews: alumni.user.numReviews || alumni.numReviews || 0,
+          isVerified: true,
+          sessionsCompleted: alumni.sessionsCompleted || 0,
+          isAlumni: true,
+          currentCompany: alumni.currentCompany,
+          currentJobTitle: alumni.currentJobTitle,
+          sessionPrice: alumni.sessionPrice,
+          isCollegeDropout: alumni.isCollegeDropout,
+          role: "alumni",
+        };
+      }
+    }
+
+    if (!senior) return res.status(404).json({ message: "Mentor not found" });
 
     const Slot = require("../models/Slots");
     const now = new Date();
@@ -379,7 +409,7 @@ exports.updateVerificationDetails = async (req, res) => {
   }
 };
 
-// 👤 GET LOGGED IN USER'S TICKETS & COLLEGE REQUESTS
+//  GET LOGGED IN USER'S TICKETS & COLLEGE REQUESTS
 exports.getMyRequests = async (req, res) => {
   try {
     const SupportTicket = require("../models/SupportTicket");

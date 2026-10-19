@@ -227,16 +227,24 @@ function DynamicSlogan() {
 }
 
 
-// ── Wave Section Divider ────────────────────────────────────────
-function WaveDivider({ flip = false, color = "rgb(var(--bg))" }) {
+// ── Sleek Modern Section Divider ────────────────────────────────
+function SectionDivider({ accent = false, subtle = false }) {
   return (
-    <div className="wave-divider" style={{ transform: flip ? "rotate(180deg)" : "none", marginTop: flip ? "-1px" : 0, marginBottom: flip ? 0 : "-1px" }}>
-      <svg viewBox="0 0 1440 100" preserveAspectRatio="none" style={{ height: "60px" }}>
-        <path
-          d="M0,40 C240,100 480,0 720,50 C960,100 1200,10 1440,60 L1440,100 L0,100 Z"
-          style={{ fill: color }}
-        />
-      </svg>
+    <div className="relative w-full overflow-hidden py-3 sm:py-5 pointer-events-none flex items-center justify-center select-none" aria-hidden="true">
+      {/* Ambient Radial Glow on Accent Divider */}
+      {accent && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 sm:w-[520px] h-8 modern-divider-glow blur-xl rounded-full pointer-events-none" />
+      )}
+      {/* Hairline Border with Soft Gradient Edge Fade */}
+      <div className={`relative h-px w-full max-w-6xl mx-auto px-4 ${
+        subtle
+          ? "bg-gradient-to-r from-transparent via-border/50 to-transparent"
+          : "bg-gradient-to-r from-transparent via-border/80 via-30% via-primary/35 via-50% via-border/80 via-70% to-transparent"
+      }`}>
+        {accent && (
+          <span className="absolute left-1/2 -top-[1px] -translate-x-1/2 h-[2px] w-24 sm:w-32 bg-gradient-to-r from-transparent via-primary to-transparent rounded-full shadow-[0_0_10px_rgba(37,99,235,0.45)]" />
+        )}
+      </div>
     </div>
   );
 }
@@ -357,12 +365,14 @@ function Home() {
     if (!tutorialAutoplay) return;
     const timer = setTimeout(() => {
       if (tutorialStep >= 4) {
-        // After student path completes, switch to senior path
+        // Rotate through student -> senior -> alumni -> student
         if (tutorialRole === "student") {
           setTutorialRole("senior");
           setTutorialStep(1);
+        } else if (tutorialRole === "senior") {
+          setTutorialRole("alumni");
+          setTutorialStep(1);
         } else {
-          // After senior path completes, loop back to student step 1
           setTutorialRole("student");
           setTutorialStep(1);
         }
@@ -730,23 +740,28 @@ function Home() {
                   
                   {/* Subtext */}
                   <p className="scroll-reveal reveal-up stagger-2 mt-6 text-lg md:text-xl text-muted leading-snug font-semibold tracking-tight">
-                    1:1 calls with verified college seniors.
-                    <span className="text-fg font-black"> Starting at ₹69.</span>
+                    1:1 private calls with verified college seniors & working alumni mentors.
+                    <span className="text-fg font-black"> Real insider advice.</span>
                   </p>
 
-                  {/* CTA Buttons — Single row on mobile */}
-                  <div className="scroll-reveal reveal-up stagger-3 mt-8 flex flex-row items-center justify-center lg:justify-start gap-2.5 sm:gap-4 w-full">
-                    <Link to="/explore" className="flex-1 sm:flex-initial min-w-0">
-                      <Button size="lg" className="aurora-shine relative w-full overflow-hidden rounded-full px-3.5 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-base font-extrabold group hover:-translate-y-1 transition-all duration-300">
+                  {/* CTA Buttons */}
+                  <div className="scroll-reveal reveal-up stagger-3 mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-2.5 sm:gap-3 w-full">
+                    <Link to="/explore" className="min-w-0">
+                      <Button size="lg" className="aurora-shine relative overflow-hidden rounded-full px-4 sm:px-7 py-2.5 sm:py-3 text-xs sm:text-base font-extrabold group hover:-translate-y-1 transition-all duration-300">
                         <span className="relative z-10 flex items-center gap-1.5 justify-center truncate">
                           Explore Seniors
                           <LineIcon name="arrow" className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1 shrink-0" />
                         </span>
                       </Button>
                     </Link>
-                    <Link to="/become-mentor" className="flex-1 sm:flex-initial min-w-0">
-                      <Button variant="secondary" size="lg" className="w-full rounded-full px-3.5 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-base font-extrabold hover:-translate-y-1 transition-transform border-2 truncate">
-                        Become Senior
+                    <Link to="/explore?tab=alumni" className="min-w-0">
+                      <Button variant="outline" size="lg" className="rounded-full px-4 sm:px-7 py-2.5 sm:py-3 text-xs sm:text-base font-extrabold hover:-translate-y-1 transition-all border-2 border-primary/30 bg-primary/5 text-primary hover:bg-primary/10">
+                        Find Alumni
+                      </Button>
+                    </Link>
+                    <Link to="/become-mentor" className="min-w-0">
+                      <Button variant="secondary" size="lg" className="rounded-full px-4 sm:px-7 py-2.5 sm:py-3 text-xs sm:text-base font-extrabold hover:-translate-y-1 transition-transform border-2 truncate">
+                        Become a Mentor
                       </Button>
                     </Link>
                   </div>
@@ -875,7 +890,7 @@ function Home() {
                       );
                     })()}
 
-                    {/* Top Role Selector Toggle (Student vs Senior) */}
+                    {/* Top Role Selector Toggle (Student vs Senior vs Alumni) */}
                     <div className="flex p-1 rounded-2xl bg-surface2 border border-border mb-6 relative">
                       <button
                         type="button"
@@ -909,15 +924,31 @@ function Home() {
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                         Senior Path
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTutorialRole("alumni");
+                          setTutorialStep(1);
+                          setTutorialAutoplay(true);
+                        }}
+                        className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 ${
+                          tutorialRole === "alumni"
+                            ? "bg-surface text-accent border border-border shadow-sm font-black scale-[1.01]"
+                            : "text-muted hover:text-fg font-bold"
+                        }`}
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.694m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                        Alumni Path
+                      </button>
                     </div>
 
                     {/* Step Navigation Progress indicators */}
                     <div className="grid grid-cols-4 gap-2 mb-6">
                       {[
-                        { step: 1, label: tutorialRole === "student" ? "Credits" : "Set Slots" },
-                        { step: 2, label: tutorialRole === "student" ? "Explore" : "Get Booked" },
-                        { step: 3, label: tutorialRole === "student" ? "1:1 Call" : "Share Info" },
-                        { step: 4, label: tutorialRole === "student" ? "Clarity" : "Success" }
+                        { step: 1, label: tutorialRole === "student" ? "Credits" : tutorialRole === "senior" ? "Set Slots" : "Work ID" },
+                        { step: 2, label: tutorialRole === "student" ? "Explore" : tutorialRole === "senior" ? "Get Booked" : "Capacity" },
+                        { step: 3, label: tutorialRole === "student" ? "1:1 Call" : tutorialRole === "senior" ? "Share Info" : "1:1 Call" },
+                        { step: 4, label: tutorialRole === "student" ? "Clarity" : tutorialRole === "senior" ? "Success" : "80% Net" }
                       ].map((s) => (
                         <button
                           key={s.step}
@@ -1311,12 +1342,189 @@ function Home() {
                                 >
                                   Loop Again
                                 </button>
-                                <Link to="/become-mentor" className="flex-1">
+                                 <Link to="/become-mentor" className="flex-1">
                                   <button
                                     type="button"
                                     className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
                                   >
                                     Apply As Senior
+                                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                                  </button>
+                                </Link>
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
+
+                      {/* ----------------- ALUMNI PATH ----------------- */}
+                      {tutorialRole === "alumni" && (
+                        <>
+                          {/* Step 1: Work ID & Flexible Pricing */}
+                          {tutorialStep === 1 && (
+                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
+                              <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent flex items-center gap-1">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-accent animate-ping" />
+                                  Alumni / Step 01
+                                </span>
+                                <h3 className="text-lg font-black text-fg mt-1">Verified Work ID & Pricing</h3>
+                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">
+                                  Submit your corporate email and set your custom 20-minute session rate (e.g. ₹250 to ₹600).
+                                </p>
+                              </div>
+
+                              <div className="my-4 p-4 rounded-2xl border border-border bg-surface2 flex items-center justify-between shadow-sm">
+                                <div>
+                                  <div className="text-[10px] font-black text-muted uppercase tracking-wider">Session Pricing</div>
+                                  <div className="text-base font-black text-fg mt-0.5">₹350 / 20 min</div>
+                                  <div className="text-[10px] text-accent font-bold mt-0.5">Keep 80% (₹280 Net) · 20% Fee</div>
+                                </div>
+                                <span className="text-[9px] font-black uppercase bg-accent/10 text-accent border border-accent/20 px-2.5 py-1 rounded-md shadow-xs">
+                                  Work Verified
+                                </span>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setTutorialStep(2);
+                                  setTutorialAutoplay(false);
+                                }}
+                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
+                              >
+                                View Capacity Setup
+                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Step 2: Set Capacity */}
+                          {tutorialStep === 2 && (
+                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
+                              <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent flex items-center gap-1">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-accent animate-ping" />
+                                  Alumni / Step 02
+                                </span>
+                                <h3 className="text-lg font-black text-fg mt-1">Control Weekly Capacity</h3>
+                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">
+                                  Choose how many sessions you can take weekly and approve custom time requests matching your office hours.
+                                </p>
+                              </div>
+
+                              <div className="my-4 p-4 rounded-2xl border border-border bg-surface2 flex items-center justify-between shadow-sm">
+                                <div className="flex items-center gap-3">
+                                  <div className="h-9 w-9 rounded-xl bg-accent/10 text-accent border border-accent/20 flex items-center justify-center text-xs font-black">
+                                    5
+                                  </div>
+                                  <div>
+                                    <div className="text-xs font-black text-fg">Weekly Call Limit</div>
+                                    <div className="text-[10px] text-muted font-bold">5 sessions / week max</div>
+                                  </div>
+                                </div>
+                                <span className="text-[9px] font-black uppercase bg-success/10 text-success border border-success/20 px-2 py-0.5 rounded-md">
+                                  Active
+                                </span>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setTutorialStep(3);
+                                  setTutorialAutoplay(false);
+                                }}
+                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
+                              >
+                                Join Mentorship Call
+                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Step 3: Mentor 1-on-1 */}
+                          {tutorialStep === 3 && (
+                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
+                              <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent flex items-center gap-1">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-accent animate-ping" />
+                                  Alumni / Step 03
+                                </span>
+                                <h3 className="text-lg font-black text-fg mt-1">1:1 Career Guidance</h3>
+                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">
+                                  Give unfiltered career coaching: off-campus resume reviews, system design, mock interviews, and compensation insights.
+                                </p>
+                              </div>
+
+                              <div className="my-4 p-3.5 rounded-2xl border border-border bg-surface2 flex items-center justify-between shadow-sm">
+                                <div className="flex items-center gap-2.5">
+                                  <div className="h-8 w-8 rounded-full bg-accent/10 text-accent border border-accent/20 flex items-center justify-center text-xs font-black">
+                                    AM
+                                  </div>
+                                  <div>
+                                    <div className="text-xs font-black text-fg">Career Roadmap Session</div>
+                                    <div className="text-[10px] text-muted font-bold">20-Min Private Video Room</div>
+                                  </div>
+                                </div>
+                                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setTutorialStep(4);
+                                  setTutorialAutoplay(false);
+                                }}
+                                className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
+                              >
+                                View Payout Settlement
+                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Step 4: 80% Net Payouts */}
+                          {tutorialStep === 4 && (
+                            <div className="flex-1 flex flex-col justify-between animate-quote-slide">
+                              <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-success flex items-center gap-1">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-success animate-ping" />
+                                  Alumni / Step 04
+                                </span>
+                                <h3 className="text-lg font-black text-fg mt-1">Keep 80% Net Payouts</h3>
+                                <p className="text-xs text-muted font-medium mt-1.5 leading-relaxed">
+                                  Session earnings are credited immediately after the call. Request direct UPI withdrawal to your bank anytime.
+                                </p>
+                              </div>
+
+                              <div className="my-4 p-4 rounded-2xl border border-border bg-surface2 flex items-center justify-between shadow-sm">
+                                <div>
+                                  <div className="text-[10px] font-black text-muted uppercase tracking-wider">Settled to Wallet</div>
+                                  <div className="text-base font-black text-success mt-0.5">80% Net Transfer</div>
+                                  <div className="text-[10px] text-muted font-bold">Direct UPI Payout</div>
+                                </div>
+                                <span className="text-[9px] font-black uppercase bg-success/10 text-success border border-success/20 px-2.5 py-1 rounded-md shadow-xs">
+                                  Instant
+                                </span>
+                              </div>
+
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setTutorialStep(1);
+                                    setTutorialAutoplay(true);
+                                  }}
+                                  className="px-4 py-3.5 rounded-2xl border border-border bg-surface text-fg hover:bg-surface2 font-black text-xs uppercase tracking-wider transition-all cursor-pointer shadow-sm"
+                                >
+                                  Loop Again
+                                </button>
+                                <Link to="/become-mentor" className="flex-1">
+                                  <button
+                                    type="button"
+                                    className="w-full py-3.5 rounded-2xl bg-primary text-primary-fg font-black text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group"
+                                  >
+                                    Apply As Alumni
                                     <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                                   </button>
                                 </Link>
@@ -1526,13 +1734,13 @@ function Home() {
           </SiteContainer>
         </section>
 
-        {/* Wave Divider */}
-        <WaveDivider color="rgb(var(--surface-2))" />
+        {/* Modern Section Transition */}
+        <SectionDivider accent />
 
         {/* ═══════════════════════════════════════════════════════
             COLLEGES CAROUSEL — Scroll Reveal
             ═══════════════════════════════════════════════════════ */}
-        <section className="pt-8 pb-16 relative overflow-hidden">
+        <section className="py-12 sm:py-16 relative overflow-hidden">
           <SiteContainer>
             <div ref={collegesRevealRef} className="relative overflow-hidden rounded-[40px] border border-border/60 bg-surface p-6 shadow-card md:p-10">
               <div className="absolute -inset-10 bg-gradient-to-tr from-primary/5 to-accent/5 rounded-[64px] blur-3xl pointer-events-none opacity-60 section-glow" />
@@ -1595,8 +1803,8 @@ function Home() {
           </SiteContainer>
         </section>
 
-        {/* Wave Divider */}
-        <WaveDivider flip color="rgb(var(--bg))" />
+        {/* Modern Section Transition */}
+        <SectionDivider subtle />
 
         {/* ═══════════════════════════════════════════════════════
             WHY CLARIOR — Bento Box features grid
@@ -1968,8 +2176,8 @@ function Home() {
           </SiteContainer>
         </section>
 
-        {/* Wave Divider */}
-        <WaveDivider color="rgb(var(--surface-2))" />
+        {/* Modern Section Transition */}
+        <SectionDivider accent />
 
         {/* ═══════════════════════════════════════════════════════
             PRICING — 3D Tilt Cards + Animated Borders + Scroll Reveal
@@ -2086,13 +2294,13 @@ function Home() {
           </SiteContainer>
         </section>
 
-        {/* Wave Divider */}
-        <WaveDivider flip color="rgb(var(--bg))" />
+        {/* Modern Section Transition */}
+        <SectionDivider subtle />
 
         {/* ═══════════════════════════════════════════════════════
             CLARITY HUB — Risk Slider, Real Live Board & FAQ Accordion
             ═══════════════════════════════════════════════════════ */}
-        <section className="py-16 md:py-20 relative overflow-hidden border-t border-border/40">
+        <section className="py-16 md:py-20 relative overflow-hidden">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-primary/5 blur-3xl pointer-events-none" />
           
           <SiteContainer>

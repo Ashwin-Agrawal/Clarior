@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["student", "senior", "admin"],
+      enum: ["student", "senior", "alumni", "admin"],
       default: "student",
       required: true,
     },
@@ -44,7 +44,13 @@ const userSchema = new mongoose.Schema(
       default: null,
     },
 
-    // 🎓 ACADEMIC INFO
+    alumniProfile: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Alumni",
+      default: null,
+    },
+
+    // ACADEMIC INFO
     college: {
       type: String,
     },
@@ -74,7 +80,7 @@ const userSchema = new mongoose.Schema(
       max: 10,
     },
 
-    // 👤 PROFILE
+    // PROFILE
     bio: {
       type: String,
     },
@@ -94,7 +100,7 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    // ⭐ RATING SYSTEM
+    // RATING SYSTEM
     rating: {
       type: Number,
       default: 0,
@@ -109,13 +115,13 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
 
-    // 💰 PAYMENT (NEW)
+    // PAYMENT
     upiId: {
       type: String,
       default: null,
     },
 
-    // 💰 WALLET SYSTEM (FIXED STRUCTURE)
+    // WALLET SYSTEM
     callCredits: {
       type: Number,
       default: 0, // for students

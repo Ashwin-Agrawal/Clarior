@@ -18,9 +18,9 @@ exports.createSlotRequest = async (req, res) => {
       return res.status(400).json({ message: "Senior ID, preferred date, and preferred time period are required" });
     }
 
-    const senior = await User.findOne({ _id: seniorId, role: "senior" });
+    const senior = await User.findOne({ _id: seniorId, role: { $in: ["senior", "alumni"] } });
     if (!senior) {
-      return res.status(404).json({ message: "Senior not found" });
+      return res.status(404).json({ message: "Senior or Alumni mentor not found" });
     }
 
     const requestDate = new Date(preferredDate);
@@ -69,7 +69,7 @@ exports.createSlotRequest = async (req, res) => {
 exports.getSlotRequests = async (req, res) => {
   try {
     let requests;
-    if (req.user.role === "senior") {
+    if (req.user.role === "senior" || req.user.role === "alumni") {
       requests = await SlotRequest.find({ senior: req.user.id })
         .populate("student", "name email college branch year")
         .sort({ createdAt: -1 });
@@ -87,14 +87,14 @@ exports.getSlotRequests = async (req, res) => {
 
 // @desc    Accept or Decline a slot request
 // @route   PATCH /api/slot-requests/:id/status
-// @access  Private (Senior only)
+// @access  Private (Senior or Alumni only)
 exports.updateSlotRequestStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    if (req.user.role !== "senior") {
-      return res.status(403).json({ message: "Only seniors can respond to requests" });
+    if (req.user.role !== "senior" && req.user.role !== "alumni") {
+      return res.status(403).json({ message: "Only seniors or alumni can respond to requests" });
     }
 
     if (!["accepted", "rejected"].includes(status)) {

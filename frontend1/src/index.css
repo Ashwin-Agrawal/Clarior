@@ -853,20 +853,13 @@ html.dark .gradient-text-animated {
   will-change: transform;
 }
 
-/* ─── Wave Section Divider ───────────────────────────────────── */
-.wave-divider {
-  position: relative;
-  overflow: hidden;
+/* ─── Sleek Modern Section Divider ───────────────────────────── */
+.modern-divider-glow {
+  background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(37, 99, 235, 0.18), transparent 75%);
 }
 
-.wave-divider svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.wave-divider path {
-  transition: d 0.5s ease;
+.dark .modern-divider-glow {
+  background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(37, 99, 235, 0.12), transparent 75%);
 }
 
 /* ─── Noise / Grain Texture Overlay ──────────────────────────── */
@@ -980,10 +973,13 @@ html.dark .grain-overlay {
 
 /* ─── Navbar Link Custom Properties ──────────────────────────── */
 .nav-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 9999px;
   padding: 6px 16px !important;
   font-size: 14px !important;
+  line-height: 1.25 !important;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
   outline: none !important;
   cursor: pointer;

@@ -20,13 +20,14 @@ const globalErrorHandler = require("./middleware/errorHandler.middleware");
 const paymentRoutes = require("./routes/payments.routes");
 const notificationRoutes = require("./routes/notification.routes");
 const slotRequestRoutes = require("./routes/slotRequest.routes");
+const alumniRoutes = require("./routes/alumni.routes");
 
 const app = express();
 
-// 🛡️ TRUST PROXY (Required for Render/Vercel to handle rate limiting correctly)
+// ️ TRUST PROXY (Required for Render/Vercel to handle rate limiting correctly)
 app.set("trust proxy", 1);
 
-// ─── 🌐 CORS (must come BEFORE helmet & other middleware) ───
+// ───  CORS (must come BEFORE helmet & other middleware) ───
 const allowedOrigins = new Set(
   String(process.env.CORS_ORIGINS || "")
     .split(",")
@@ -81,10 +82,10 @@ const corsOptions = {
 // Handle preflight (OPTIONS) for ALL routes handled by cors middleware
 app.use(cors(corsOptions));
 
-// 📦 COMPRESSION (Gzip)
+//  COMPRESSION (Gzip)
 app.use(compression());
 
-// 🔐 Security — configured to NOT conflict with CORS
+//  Security — configured to NOT conflict with CORS
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
@@ -92,7 +93,7 @@ app.use(
   })
 );
 
-// 🔒 Additional Security Headers + FIXED CSP
+//  Additional Security Headers + FIXED CSP
 app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "DENY");
@@ -100,7 +101,7 @@ app.use((req, res, next) => {
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("Permissions-Policy", "geolocation=(), microphone=(self \"https://meet.jit.si\"), camera=(self \"https://meet.jit.si\")");
 
-  // ✅ DYNAMIC CSP (Environment Aware)
+  //  DYNAMIC CSP (Environment Aware)
   const connectSrc = [
     "'self'",
     "https://api.razorpay.com",
@@ -122,7 +123,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// 🛡️ RATE LIMITING
+// ️ RATE LIMITING
 const isDev = process.env.NODE_ENV !== "production" || !process.env.NODE_ENV;
 
 const limiter = rateLimit({
@@ -160,22 +161,22 @@ app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
 app.use("/api/payment", paymentLimiter);
 
-// 🧠 Body Parser
+//  Body Parser
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ limit: "1mb", extended: true }));
 
-// 🍪 Cookies
+//  Cookies
 app.use(cookieParser());
 
-// 🧪 Health Check
+//  Health Check
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "API is running 🚀",
+    message: "API is running ",
   });
 });
 
-// 🚀 ROUTES
+//  ROUTES
 if (process.env.NODE_ENV !== "production") {
   app.use("/api/test", testRoutes);
 }
@@ -195,8 +196,9 @@ app.use("/api/support", supportRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/slot-requests", slotRequestRoutes);
+app.use("/api/alumni", alumniRoutes);
 
-// ❗ 404
+//  404
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -204,7 +206,7 @@ app.use((req, res) => {
   });
 });
 
-// 🔥 ERROR HANDLER
+//  ERROR HANDLER
 app.use(globalErrorHandler);
 
 module.exports = app;

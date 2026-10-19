@@ -9,17 +9,26 @@ const {
   approveWithdraw,
   rejectWithdraw,
   getPendingWithdraws,
+  getMyWithdraws,
 } = require("../controllers/withdraw.controller");
 
-// 🎓 SENIOR REQUEST
+//  SENIOR & ALUMNI REQUEST
 router.post(
   "/request",
   authMiddleware,
-  authorizeRoles("senior"),
+  authorizeRoles("senior", "alumni"),
   requestWithdraw
 );
 
-// 👑 ADMIN APPROVE
+//  SENIOR & ALUMNI VIEW OWN WITHDRAWS
+router.get(
+  "/my",
+  authMiddleware,
+  authorizeRoles("senior", "alumni"),
+  getMyWithdraws
+);
+
+//  ADMIN APPROVE
 router.patch(
   "/approve/:id",
   authMiddleware,
@@ -27,7 +36,7 @@ router.patch(
   approveWithdraw
 );
 
-// 👑 ADMIN REJECT
+//  ADMIN REJECT
 router.patch(
   "/reject/:id",
   authMiddleware,
@@ -35,7 +44,7 @@ router.patch(
   rejectWithdraw
 );
 
-// 👑 ADMIN GET PENDING
+//  ADMIN GET PENDING
 router.get(
   "/pending",
   authMiddleware,

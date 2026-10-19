@@ -11,22 +11,26 @@ const {
   requestCollege,
   getCollegeRequests,
   approveCollegeRequest,
-  rejectCollegeRequest
+  rejectCollegeRequest,
+  getMyCollegeRequests,
 } = require("../controllers/college.controller");
 
-// 🌍 PUBLIC — global stats of colleges, seniors and bookings
+//  PUBLIC — global stats of colleges, seniors and bookings
 router.get("/stats", getGlobalStats);
 
-// 🌍 PUBLIC — request a new college to be added
+//  USER — view own college requests
+router.get("/my-requests", authMiddleware, getMyCollegeRequests);
+
+//  PUBLIC — request a new college to be added
 router.post("/request", requestCollege);
 
-// 🌍 PUBLIC — all colleges list (search/filters)
+//  PUBLIC — all colleges list (search/filters)
 router.get("/", getAllColleges);
 
-// 🌍 PUBLIC — single college profile & its seniors list
+//  PUBLIC — single college profile & its seniors list
 router.get("/:id", getCollegeById);
 
-// 🔐 ADMIN ONLY — Manage college requests
+//  ADMIN ONLY — Manage college requests
 router.get("/admin/requests", authMiddleware, authorizeRoles("admin"), getCollegeRequests);
 router.patch("/admin/requests/:requestId/approve", authMiddleware, authorizeRoles("admin"), approveCollegeRequest);
 router.patch("/admin/requests/:requestId/reject", authMiddleware, authorizeRoles("admin"), rejectCollegeRequest);

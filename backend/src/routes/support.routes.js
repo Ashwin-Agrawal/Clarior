@@ -8,12 +8,16 @@ const {
   createTicket,
   getAllTickets,
   resolveTicket,
+  getMyTickets,
 } = require("../controllers/support.controller");
 
-// 🌍 PUBLIC — Submit ticket
+//  PUBLIC — Submit ticket
 router.post("/", createTicket);
 
-// 🔐 ADMIN ONLY — Manage tickets
+//  USER — view own tickets
+router.get("/my-tickets", authMiddleware, getMyTickets);
+
+//  ADMIN ONLY — Manage tickets
 router.get("/admin/tickets", authMiddleware, authorizeRoles("admin"), getAllTickets);
 router.patch("/admin/tickets/:ticketId/resolve", authMiddleware, authorizeRoles("admin"), resolveTicket);
 

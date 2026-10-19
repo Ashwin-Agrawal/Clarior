@@ -13,16 +13,24 @@ const studentSteps = [
 ];
 
 const seniorSteps = [
-  {  title: "Apply and get verified", desc: "Submit your profile and college details. Our team reviews and approves verified seniors within 48 hours." },
+  { title: "Apply and get verified", desc: "Submit your profile and college details. Our team reviews and approves verified seniors within 48 hours." },
   { title: "Set availability & approve requests", desc: "Add open slots whenever you're free, and review incoming custom slot requests from students directly on your dashboard. Accept to open slots automatically." },
   { title: "Guide a student", desc: "Join the call and share your honest, experience-based perspective. No scripts, just real talk." },
   { title: "Earn per session", desc: "Earn ₹52 per completed session. Once you hit the payout threshold, request a withdrawal anytime." },
 ];
 
+const alumniSteps = [
+  { title: "Apply with Work Credentials", desc: "Submit your verified corporate work email, college or dropout background, current company, job role, and experience. Applications are reviewed within 48 hours." },
+  { title: "Set Flexible Pricing & Weekly Capacity", desc: "Choose your own 20-minute session rate (e.g. ₹150 - ₹500). Clarior has a fixed 20% platform fee, and you keep 80% net earnings per completed call." },
+  { title: "Open Slots or Accept Custom Requests", desc: "Set your weekly recurring hours or approve custom slot requests sent by aspiring college students and juniors seeking career guidance." },
+  { title: "Conduct 1-on-1 Mentorship Call", desc: "Join the private built-in video room. Provide candid career coaching, resume critique, interview strategies, and real corporate culture insights." },
+  { title: "Direct Weekly UPI Settlements", desc: "Your 80% earnings are automatically credited upon session completion. Request direct UPI withdrawal anytime from your dashboard with zero payout hassle." },
+];
+
 const policies = [
-  { icon: "◆", title: "Verified seniors only", desc: "Every senior is manually reviewed before they can accept bookings." },
-  { icon: "■", title: "Honest guidance required", desc: "Misleading advice or repeated poor feedback leads to account removal." },
-  { icon: "", title: "Transparent ratings", desc: "Every session is rated. Quality stays visible and accountability stays real." },
+  { id: "verified", title: "Verified mentors only", desc: "Every senior and working alumni mentor is manually vetted before they can accept bookings." },
+  { id: "honest", title: "Honest guidance required", desc: "Misleading advice or repeated poor feedback leads to account review and removal." },
+  { id: "transparent", title: "Transparent ratings", desc: "Every session is rated by students. Quality stays visible and accountability stays real." },
 ];
 
 function Step({ number, title, desc, last = false }) {
@@ -47,13 +55,17 @@ function Step({ number, title, desc, last = false }) {
 }
 
 const faqItems = [
-  { group: "general", q: "What is Clarior?", a: "Clarior is a peer mentorship platform connecting students with verified college seniors for 1-on-1 counseling calls. Seniors share their honest, firsthand experience about college selection, branches, and placement preparation." },
+  { group: "general", q: "What is Clarior?", a: "Clarior is a peer mentorship platform connecting students with verified college seniors and working corporate alumni for 1-on-1 counseling calls. Mentors share honest, firsthand experience about college selection, branches, job prep, and corporate careers." },
   { group: "general", q: "How long is each guidance session?", a: "Each scheduled session is exactly 20 minutes long. This keeps the conversation focused, highly efficient, and productive." },
-  { group: "students", q: "How do I book a session?", a: "Go to 'Buy Credits' to purchase a session pass (1 credit = 1 session). Then browse the 'Colleges' directory, select a verified senior's profile, choose an available time slot, and click Book." },
-  { group: "students", q: "What if a senior has no slots available that fit my schedule?", a: "No problem! You can request a custom slot directly from their profile page. Simply choose a date, a time period (Morning/Afternoon/Evening), and add optional prep notes. The senior will receive an alert and can accept the request, automatically creating the slot for you to book." },
-  { group: "students", q: "What happens if a senior cancels or misses a call?", a: "If a senior cancels a session or fails to show up, the credit is immediately refunded back to your account wallet so you can book another slot." },
-  { group: "seniors", q: "How do I earn on Clarior?", a: "You earn ₹52 per completed 20-minute guidance call. Once your application is verified, you can set your open time slots and accept bookings." },
-  { group: "seniors", q: "When can I withdraw my earnings?", a: "Once your session is marked complete, you can request a withdrawal via UPI directly from your dashboard balance. Withdrawals are processed within 24 hours." }
+  { group: "students", q: "How do I book a session?", a: "Go to 'Buy Credits' to purchase a session pass (1 credit = 1 session). Then browse the 'Colleges' or 'Alumni' directory, select a verified mentor's profile, choose an available time slot, and click Book." },
+  { group: "students", q: "What if a mentor has no slots available that fit my schedule?", a: "No problem! You can request a custom slot directly from their profile page. Simply choose a date, a time period (Morning/Afternoon/Evening), and add optional prep notes. The mentor will receive an alert and can accept the request, automatically creating the slot for you to book." },
+  { group: "students", q: "What happens if a mentor cancels or misses a call?", a: "If a mentor cancels a session or fails to show up, the credit or payment is immediately refunded back to your account wallet so you can book another slot." },
+  { group: "seniors", q: "How do I earn on Clarior as a college senior?", a: "You earn ₹52 per completed 20-minute guidance call. Once your application is verified, you can set your open time slots and accept bookings." },
+  { group: "seniors", q: "When can I withdraw my earnings?", a: "Once your session is marked complete, you can request a withdrawal via UPI directly from your dashboard balance. Withdrawals are processed promptly." },
+  { group: "alumni", q: "How does pricing and the platform fee work for Alumni mentors?", a: "Alumni mentors set their own flexible session price for 20-minute calls. Clarior applies a fixed 20% platform fee to cover payment gateways, infrastructure, and verification. You retain 80% of every completed session fee directly into your payout balance." },
+  { group: "alumni", q: "Why is a company email required during Alumni registration?", a: "To protect students and maintain verified pedigree, every alumni mentor must submit their active corporate email domain (e.g. @google.com, @microsoft.com, @swiggy.in). Your corporate email and personal phone number are strictly kept private and are never shown publicly." },
+  { group: "alumni", q: "Can college dropouts apply as Alumni mentors?", a: "Yes. Experienced industry professionals are welcome regardless of traditional academic paths. Simply toggle the 'College Dropout' option during application and enter your current company, designation, and verified experience." },
+  { group: "alumni", q: "What can students ask an Alumni mentor?", a: "Students consult working alumni for resume and portfolio feedback, off-campus hiring strategies, mock tech or PM interviews, career roadmaps, and honest insights into real day-to-day company culture." }
 ];
 
 // ── Interactive Call Room Mockup ────────────────────
@@ -200,8 +212,9 @@ function HeroMockupRoom() {
 }
 
 function HowItWorks() {
-  useSEO({ title: 'How It Works', description: 'Learn how Clarior connects students with verified seniors for 1:1 guidance sessions at ₹69.' });
+  useSEO({ title: 'How It Works | Clarior', description: 'Learn how Clarior connects students with verified college seniors and working alumni mentors for 1:1 guidance sessions.' });
 
+  const [activeTrack, setActiveTrack] = useState("all");
   const [faqSearch, setFaqSearch] = useState("");
   const [faqTab, setFaqTab] = useState("all");
   const [openFaq, setOpenFaq] = useState(null);
@@ -230,7 +243,7 @@ function HowItWorks() {
           {/* Status Badge */}
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-primary backdrop-blur-md shadow-xs">
             <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-            Simple 3-Step Process
+            Clear Mentorship Flow
           </div>
 
           {/* Heading */}
@@ -240,7 +253,7 @@ function HowItWorks() {
 
           {/* Subtitle */}
           <p className="mx-auto mt-5 max-w-2xl text-base sm:text-lg leading-relaxed text-muted font-semibold">
-            A clear guided mentorship flow for both students and seniors — built on trust, quality, and real accountability.
+            Dedicated mentorship pathways for students, college seniors, and working alumni — built on trust, verified credentials, and real accountability.
           </p>
 
           {/* Fast 3-Step Process Highlights */}
@@ -248,70 +261,153 @@ function HowItWorks() {
             <div className="rounded-2xl border border-border/80 bg-surface/90 backdrop-blur p-4 hover:border-primary/40 hover:-translate-y-0.5 transition-all shadow-xs group">
               <div className="flex items-center gap-2.5">
                 <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-primary/10 text-primary font-black text-xs group-hover:bg-primary group-hover:text-white transition-colors">01</span>
-                <span className="text-xs font-black text-fg">Filter & Pick Senior</span>
+                <span className="text-xs font-black text-fg">Pick Senior or Alumni</span>
               </div>
-              <p className="mt-2 text-xs text-muted leading-relaxed font-medium">Browse verified seniors from IITs, BITS, and top universities filtered by college and branch.</p>
+              <p className="mt-2 text-xs text-muted leading-relaxed font-medium">Browse verified college seniors from top institutes or working alumni from top companies.</p>
             </div>
             <div className="rounded-2xl border border-border/80 bg-surface/90 backdrop-blur p-4 hover:border-accent/40 hover:-translate-y-0.5 transition-all shadow-xs group">
               <div className="flex items-center gap-2.5">
                 <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-accent/10 text-accent font-black text-xs group-hover:bg-accent group-hover:text-white transition-colors">02</span>
                 <span className="text-xs font-black text-fg">Book 20-Min Slot</span>
               </div>
-              <p className="mt-2 text-xs text-muted leading-relaxed font-medium">Lock your slot for ₹69 with instant calendar sync and dedicated in-app private video call.</p>
+              <p className="mt-2 text-xs text-muted leading-relaxed font-medium">Lock your slot directly or request a custom time with private in-app video calling.</p>
             </div>
             <div className="rounded-2xl border border-border/80 bg-surface/90 backdrop-blur p-4 hover:border-success/40 hover:-translate-y-0.5 transition-all shadow-xs group">
               <div className="flex items-center gap-2.5">
                 <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-success/10 text-success font-black text-xs group-hover:bg-success group-hover:text-white transition-colors">03</span>
                 <span className="text-xs font-black text-fg">Get Raw Truth</span>
               </div>
-              <p className="mt-2 text-xs text-muted leading-relaxed font-medium">Ask unfiltered questions on real placement stats, branch vs college tradeoffs, and campus culture.</p>
+              <p className="mt-2 text-xs text-muted leading-relaxed font-medium">Ask unfiltered questions on placements, real branch workloads, and corporate hiring reality.</p>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="mx-auto max-w-5xl px-6 py-14 sm:py-16">
-        {/* Two column: students | seniors */}
-        <div className="grid gap-12 lg:grid-cols-2">
-          {/* For Students */}
-          <div className="animate-fade-up">
-            <div className="mb-8 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                </svg>
-              </div>
-              <div>
-                <h2 className="text-xl font-extrabold text-fg" style={{ fontFamily: "'Outfit', sans-serif" }}>For Students</h2>
-                <p className="text-xs text-muted">Get guidance in 5 easy steps</p>
-              </div>
-            </div>
-            <div>
-              {studentSteps.map((step, i) => (
-                <Step key={step.title} number={i + 1} title={step.title} desc={step.desc} last={i === studentSteps.length - 1} />
-              ))}
-            </div>
+      <div className="mx-auto max-w-6xl px-6 py-14 sm:py-16">
+        {/* Track Filter Pills */}
+        <div className="mb-10 text-center animate-fade-up">
+          <div className="inline-flex flex-wrap justify-center gap-2 p-1.5 rounded-3xl bg-surface2/60 border border-border/70 backdrop-blur-md">
+            {[
+              { id: "all", label: "All 3 Pathways" },
+              { id: "students", label: "For Students" },
+              { id: "seniors", label: "For College Seniors" },
+              { id: "alumni", label: "For Working Alumni", isNew: true },
+            ].map((track) => (
+              <button
+                key={track.id}
+                onClick={() => setActiveTrack(track.id)}
+                className={`relative px-5 py-2.5 rounded-full text-xs font-black tracking-wider transition-all duration-200 cursor-pointer uppercase flex items-center gap-1.5 ${
+                  activeTrack === track.id
+                    ? "bg-primary text-primary-fg shadow-sm scale-[1.02]"
+                    : "text-muted hover:text-fg hover:bg-surface/80"
+                }`}
+              >
+                <span>{track.label}</span>
+                {track.isNew && (
+                  <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black uppercase tracking-tight bg-accent text-white">
+                    New
+                  </span>
+                )}
+              </button>
+            ))}
           </div>
+        </div>
+
+        {/* Tracks Grid (Responsive: 1 col, 2 col, or 3 col depending on selection) */}
+        <div className={`grid gap-8 ${
+          activeTrack === "all"
+            ? "grid-cols-1 lg:grid-cols-3"
+            : "grid-cols-1 max-w-3xl mx-auto"
+        }`}>
+          {/* For Students */}
+          {(activeTrack === "all" || activeTrack === "students") && (
+            <div className="animate-fade-up rounded-3xl border border-border/80 bg-surface/60 p-6 sm:p-7 shadow-xs flex flex-col justify-between">
+              <div>
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-black text-fg" style={{ fontFamily: "'Outfit', sans-serif" }}>For Students</h2>
+                    <p className="text-xs text-muted">Get guidance in 5 easy steps</p>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  {studentSteps.map((step, i) => (
+                    <Step key={step.title} number={i + 1} title={step.title} desc={step.desc} last={i === studentSteps.length - 1} />
+                  ))}
+                </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-border/50 text-center">
+                <Link to="/explore" className="text-xs font-bold text-primary hover:underline">
+                  Browse Seniors & Colleges →
+                </Link>
+              </div>
+            </div>
+          )}
 
           {/* For Seniors */}
-          <div className="animate-fade-up delay-200">
-            <div className="mb-8 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-success/10 text-success">
-                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
+          {(activeTrack === "all" || activeTrack === "seniors") && (
+            <div className="animate-fade-up delay-100 rounded-3xl border border-border/80 bg-surface/60 p-6 sm:p-7 shadow-xs flex flex-col justify-between">
+              <div>
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-success/10 text-success">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-black text-fg" style={{ fontFamily: "'Outfit', sans-serif" }}>For College Seniors</h2>
+                    <p className="text-xs text-muted">Earn ₹52/call guiding juniors</p>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  {seniorSteps.map((step, i) => (
+                    <Step key={step.title} number={i + 1} title={step.title} desc={step.desc} last={i === seniorSteps.length - 1} />
+                  ))}
+                </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-border/50 text-center">
+                <Link to="/become-mentor" className="text-xs font-bold text-success hover:underline">
+                  Apply as College Senior →
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* For Working Alumni */}
+          {(activeTrack === "all" || activeTrack === "alumni") && (
+            <div className="animate-fade-up delay-200 rounded-3xl border border-primary/30 bg-primary/[0.02] p-6 sm:p-7 shadow-xs flex flex-col justify-between relative overflow-hidden">
+              <div className="absolute top-0 right-0 px-3 py-1 bg-gradient-to-r from-primary to-accent text-white text-[9px] font-black uppercase tracking-wider rounded-bl-xl shadow-xs">
+                New Feature
               </div>
               <div>
-                <h2 className="text-xl font-extrabold text-fg" style={{ fontFamily: "'Outfit', sans-serif" }}>For Seniors</h2>
-                <p className="text-xs text-muted">Earn while helping others</p>
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent/10 text-accent">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.694m7.5 0a48.667 48.667 0 00-7.5 0" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-black text-fg" style={{ fontFamily: "'Outfit', sans-serif" }}>For Working Alumni</h2>
+                    <p className="text-xs text-muted">Set price & keep 80% earnings</p>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  {alumniSteps.map((step, i) => (
+                    <Step key={step.title} number={i + 1} title={step.title} desc={step.desc} last={i === alumniSteps.length - 1} />
+                  ))}
+                </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-border/50 text-center">
+                <Link to="/become-mentor" className="text-xs font-bold text-accent hover:underline">
+                  Apply as Alumni Mentor (80% Payout) →
+                </Link>
               </div>
             </div>
-            <div>
-              {seniorSteps.map((step, i) => (
-                <Step key={step.title} number={i + 1} title={step.title} desc={step.desc} last={i === seniorSteps.length - 1} />
-              ))}
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Live Call Room Preview Simulation */}
@@ -340,8 +436,8 @@ function HowItWorks() {
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {policies.map(p => (
-              <div key={p.title} className="surface-muted rounded-2xl p-5 text-center shadow-soft">
-                <div className="mb-3 text-3xl">{p.icon}</div>
+              <div key={p.id} className="surface-muted rounded-2xl p-5 text-center shadow-soft">
+                <div className="mb-3 flex justify-center">{p.icon}</div>
                 <h3 className="text-sm font-bold text-fg">{p.title}</h3>
                 <p className="mt-2 text-xs leading-5 text-muted">{p.desc}</p>
               </div>
@@ -349,7 +445,7 @@ function HowItWorks() {
           </div>
           <div className="mt-6 text-center">
             <Link to="/mentor-guidelines" className="text-sm font-semibold text-primary transition hover:underline">
-              Read full senior guidelines →
+              Read full mentor guidelines →
             </Link>
           </div>
         </div>
@@ -370,7 +466,7 @@ function HowItWorks() {
                 type="text"
                 value={faqSearch}
                 onChange={(e) => setFaqSearch(e.target.value)}
-                placeholder="Search questions (e.g. refund, payouts...)"
+                placeholder="Search questions (e.g. alumni, refund, fee, payouts...)"
                 className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-border bg-surface text-fg text-sm focus:outline-none focus:border-primary/50 focus:shadow-glow transition-all"
               />
               <svg className="absolute left-4 top-4 h-4.5 w-4.5 text-muted" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -381,17 +477,17 @@ function HowItWorks() {
 
             {/* Filter Tabs */}
             <div className="mt-6 flex flex-wrap justify-center gap-2">
-              {["all", "general", "students", "seniors"].map((tab) => (
+              {["all", "general", "students", "seniors", "alumni"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => { setFaqTab(tab); setOpenFaq(null); }}
-                  className={`px-6 py-2.5 rounded-full text-xs font-black tracking-wider transition-all duration-300 cursor-pointer uppercase ${
+                  className={`px-5 py-2.5 rounded-full text-xs font-black tracking-wider transition-all duration-300 cursor-pointer uppercase ${
                     faqTab === tab
                       ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white border-transparent shadow-md shadow-blue-500/20 scale-[1.03]"
                       : "bg-white border border-slate-200 text-slate-600 hover:border-blue-400 hover:text-blue-600 dark:bg-surface/50 dark:border-border/75 dark:text-muted dark:hover:text-primary"
                   }`}
                 >
-                  {tab}
+                  {tab === "alumni" ? "Alumni (New)" : tab}
                 </button>
               ))}
             </div>
@@ -400,7 +496,7 @@ function HowItWorks() {
           <div className="space-y-3 max-w-3xl mx-auto">
             {filteredFaqs.length === 0 ? (
               <div className="text-center py-8 text-sm font-semibold text-muted">
-                No matching questions found. Try search query "refund" or "credits".
+                No matching questions found. Try search query "alumni", "payout", or "fee".
               </div>
             ) : (
               <>
@@ -442,18 +538,24 @@ function HowItWorks() {
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-10 flex flex-wrap justify-center gap-4 animate-fade-up delay-400">
+        <div className="mt-12 flex flex-wrap justify-center items-center gap-3.5 animate-fade-up delay-400">
           <Link
             to="/explore"
-            className="rounded-full bg-primary px-8 py-3.5 text-base font-bold text-primaryFg shadow-soft transition-smooth hover:-translate-y-0.5 hover:shadow-lift"
+            className="rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primaryFg shadow-soft transition-smooth hover:-translate-y-0.5 hover:shadow-lift"
           >
-            Find a senior now →
+            Find a Senior
           </Link>
           <Link
-            to="/become-senior"
-            className="rounded-full border border-border bg-surface px-8 py-3.5 text-base font-semibold text-fg transition-smooth hover:-translate-y-0.5 hover:bg-surface2 hover:shadow-soft"
+            to="/explore?tab=alumni"
+            className="rounded-full border-2 border-primary/40 bg-primary/5 px-7 py-3.5 text-sm font-black text-primary transition-smooth hover:-translate-y-0.5 hover:bg-primary/10 shadow-xs"
           >
-            Become a Senior
+            Browse Alumni Mentors
+          </Link>
+          <Link
+            to="/become-mentor"
+            className="rounded-full border border-border bg-surface px-7 py-3.5 text-sm font-semibold text-fg transition-smooth hover:-translate-y-0.5 hover:bg-surface2 hover:shadow-soft"
+          >
+            Become a Mentor
           </Link>
         </div>
       </div>

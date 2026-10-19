@@ -49,6 +49,7 @@ function App() {
           {/* PUBLIC ROUTES */}
           <Route path="/" element={<Home />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/alumni" element={<Navigate to="/explore?tab=alumni" replace />} />
           <Route path="/college/:id" element={<CollegeProfile />} />
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/buy-credits" element={<BuyCredits />} />
@@ -94,11 +95,19 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/requests"
+            element={
+              <ProtectedRoute>
+                <Navigate to="/dashboard?tab=requests" replace />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/bookings"
             element={
-              <RoleRoute allowedRoles={["student", "senior"]}>
+              <RoleRoute allowedRoles={["student", "senior", "alumni"]}>
                 <MyBookings />
               </RoleRoute>
             }
@@ -106,7 +115,7 @@ function App() {
           <Route
             path="/my-bookings"
             element={
-              <RoleRoute allowedRoles={["student", "senior"]}>
+              <RoleRoute allowedRoles={["student", "senior", "alumni"]}>
                 <MyBookings />
               </RoleRoute>
             }
@@ -115,7 +124,7 @@ function App() {
           <Route
             path="/session/:bookingId"
             element={
-              <RoleRoute allowedRoles={["student", "senior"]}>
+              <RoleRoute allowedRoles={["student", "senior", "alumni"]}>
                 <Session />
               </RoleRoute>
             }
@@ -124,7 +133,7 @@ function App() {
           <Route
             path="/availability"
             element={
-              <RoleRoute allowedRoles={["senior"]}>
+              <RoleRoute allowedRoles={["senior", "alumni"]}>
                 <SeniorSlots />
               </RoleRoute>
             }
@@ -132,7 +141,7 @@ function App() {
           <Route
             path="/senior-slots"
             element={
-              <RoleRoute allowedRoles={["senior"]}>
+              <RoleRoute allowedRoles={["senior", "alumni"]}>
                 <SeniorSlots />
               </RoleRoute>
             }
